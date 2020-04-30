@@ -84,6 +84,9 @@
     <ClCompile Include="Loader\ImageLoader.cpp">
       <Filter>Loader\ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="NetWork.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -133,6 +136,9 @@
     </ClInclude>
     <ClInclude Include="Loader\Loader.h">
       <Filter>Loader\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="NetWork.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

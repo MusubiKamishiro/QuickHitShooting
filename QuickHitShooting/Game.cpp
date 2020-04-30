@@ -4,7 +4,11 @@
 #include "Scene/SceneManager.h"
 #include "Loader/FileSystem.h"
 #include "FrameFixity/FrameFixity.h"
+#include "NetWork.h"
 
+namespace {
+	std::vector<int> ip = { 192,168,56,1 };
+}
 
 Game::Game() : _screenSize(1280, 720)
 {
@@ -55,6 +59,7 @@ void Game::Initialize()
 
 	_peripheral.reset(new Peripheral());
 	_fileSystem.reset(new FileSystem());
+	NetWork::Instance().Connect(ip);
 }
 
 void Game::Run()
