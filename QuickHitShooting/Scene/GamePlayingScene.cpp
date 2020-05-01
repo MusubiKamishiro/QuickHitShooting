@@ -11,13 +11,17 @@
 #include "../Loader/ImageLoader.h"
 #include "../Loader/SoundLoader.h"
 
+#include "../Gun.h"
+
 
 GamePlayingScene::GamePlayingScene()
 {
 	_pal = 0;
 	
 	_updater = &GamePlayingScene::FadeinUpdate;
-	_drawer = &GamePlayingScene::RoundDraw;
+	_drawer = &GamePlayingScene::TestDraw;
+
+	_gun.reset(new Gun());
 }
 
 GamePlayingScene::~GamePlayingScene()
@@ -51,20 +55,24 @@ void GamePlayingScene::FadeoutUpdate(const Peripheral & p)
 
 void GamePlayingScene::WaitUpdate(const Peripheral & p)
 {
-	if (p.IsTrigger(MOUSE_INPUT_LEFT))
+	/*if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
 		_updater = &GamePlayingScene::FadeoutUpdate;
+	}*/
+
+	if (p.IsTrigger(MOUSE_INPUT_RIGHT))
+	{
+		_gun->Reload();
+	}
+	if (p.IsTrigger(MOUSE_INPUT_LEFT))
+	{
+		_gun->Shot();
 	}
 }
 
-void GamePlayingScene::RoundDraw()
+void GamePlayingScene::TestDraw()
 {
-	
-}
-
-void GamePlayingScene::ResultDraw()
-{
-	
+	_gun->Draw();
 }
 
 void GamePlayingScene::Update(const Peripheral& p)

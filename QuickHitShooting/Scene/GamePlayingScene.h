@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "../Geometry.h"
 
+class Gun;
 
 class GamePlayingScene : public Scene
 {
@@ -14,8 +15,9 @@ private:
 	void WaitUpdate(const Peripheral& p);
 	
 	void (GamePlayingScene::*_drawer)();
-	void RoundDraw();
-	void ResultDraw();
+	void TestDraw();
+
+	std::shared_ptr<Gun> _gun;
 
 public:
 	GamePlayingScene();
