@@ -1,7 +1,7 @@
 #include "NetWork.h"
 #include <cassert>
 
-bool NetWork::Connect(std::vector<int>& ip)
+void NetWork::Connect(std::vector<int>& ip)
 {
 	IPDATA data;
 	int DataLength = 0;
@@ -23,6 +23,15 @@ bool NetWork::Connect(std::vector<int>& ip)
 	else {
 		assert(false && "Connection failed.");
 	}
-	return false;
+}
+
+void NetWork::Listen()
+{
+	PreparationListenNetWork(NetHandle);
+}
+
+void NetWork::Close()
+{
+	CloseNetWork(NetHandle);
 }
 

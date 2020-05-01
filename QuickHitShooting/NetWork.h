@@ -12,7 +12,9 @@ public:
 	}
 	~NetWork() {};
 
-	bool Connect(std::vector<int>& ip);
+	void Connect(std::vector<int>& ip);
+	void Listen();
+	void Close();
 private:
 	NetWork() {};
 	NetWork(const NetWork&) {};
