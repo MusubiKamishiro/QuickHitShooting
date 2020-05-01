@@ -10,28 +10,32 @@ void NetWork::Connect(std::vector<int>& ip)
 	data.d2 = ip[1];
 	data.d3 = ip[2];
 	data.d4 = ip[3];
-	NetHandle = ConnectNetWork(data, Port);
-	if (NetHandle != -1) {
-		NetWorkSend(NetHandle, "繋がれやゴルァ！！", 19);
-
-		while (!ProcessMessage()) {
-			DataLength = GetNetWorkDataLength(NetHandle);
-			if (DataLength != 0) break;
-		}
-		NetWorkRecv(NetHandle, StrBuffer, DataLength);
-	}
-	else {
-		assert(false && "Connection failed.");
-	}
+	NetHandle = ConnectNetWork(data, Port);		// 接続
 }
 
+// 接続待ち状態にする関数
 void NetWork::Listen()
 {
 	PreparationListenNetWork(NetHandle);
 }
 
+// 接続を閉じる関数
 void NetWork::Close()
 {
 	CloseNetWork(NetHandle);
+}
+
+void NetWork::ReciveProcess()
+{
+	while (!ProcessMessage()) {
+		// データが送られてくるまで待機
+		if (GetNetWorkDataLength(NetHandle) != 0) {
+			break;
+		}
+	}
+	// データサイズ取得
+	auto dataLength = GetNetWorkDataLength(NetHandle);
+	// データ受信
+	NetWorkRecv(NetHandle, RcvBuffer, dataLength);
 }
 
