@@ -7,7 +7,7 @@
 #include "NetWork.h"
 
 namespace {
-	std::vector<int> ip = { 192,168,56,1 };
+	std::vector<int> ip = { 127,0,0,1 };
 }
 
 Game::Game() : _screenSize(1280, 720)
@@ -59,7 +59,6 @@ void Game::Initialize()
 
 	_peripheral.reset(new Peripheral());
 	_fileSystem.reset(new FileSystem());
-	NetWork::Instance().Connect(ip);
 }
 
 void Game::Run()
@@ -93,6 +92,19 @@ void Game::Run()
 			scenes.Update(*_peripheral);
 
 			scenes.Draw();
+
+			if (CheckHitKey(KEY_INPUT_C)) {
+				NetWork::Instance().Connect(ip);
+			}
+
+			if (CheckHitKey(KEY_INPUT_L)) {
+				NetWork::Instance().Listen();
+			}
+
+			if (CheckHitKey(KEY_INPUT_S)) {
+				NetWork::Instance().Send("Hello");
+			}
+
 
 #ifdef _DEBUG
 			DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);

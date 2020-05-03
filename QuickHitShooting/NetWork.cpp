@@ -37,5 +37,6 @@ void NetWork::ReciveProcess()
 	auto dataLength = GetNetWorkDataLength(NetHandle);
 	// データ受信
 	NetWorkRecv(NetHandle, RcvBuffer, dataLength);
+	DrawString(100, 100, (TCHAR*)RcvBuffer, 0xffffff);
 }
 
