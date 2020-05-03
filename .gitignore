@@ -4,3 +4,6 @@
 /.vs
 /x64
 /QuickHitShooting/x64
+/QuickHitShooting/*.vcxproj
+/QuickHitShooting/*.filters
+/QuickHitShooting/*.user
