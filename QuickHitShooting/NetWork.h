@@ -1,53 +1,38 @@
 #pragma once
-#include <string>
-#include <vector>
 #include <DxLib.h>
-#include <thread>
+#include <string>
+
+struct SendData {
+	std::string Buffer;
+	bool result;
+};
 
 class NetWork
 {
+private:
+	NetWork();
+	NetWork(const NetWork&);
+	void operator=(const NetWork&) {};
+
 public:
 	static NetWork& Instance() {
 		static NetWork instance;
 		return instance;
 	}
-	~NetWork() {};
+	// クライアント側関数
+	void SetIP(int* ip);		// IPアドレスを設定する
+	// 共通関数
+	void Send(SendData* data);		// データを送る
+	SendData Recive();		// データを受け取る
+	
 
-	void Connect(std::vector<int>& ip);		// 接続状態にする
-	void Listen();		// 受信できるようにする
-	void Close();		// 接続を閉じる関数
-	template <class X>void Send(X data);		// データを送る
-	template <class X>X Recive();		// データを受け取る
+	~NetWork();
 
-private:
-	NetWork() {};
-	NetWork(const NetWork&) {};
-	void operator=(const NetWork&) {};
-	void ReciveProcess();		// データ受信処理
-
-	IPDATA* ConnectionIP = nullptr;	// 接続先のIPアドレス
-	void* RcvBuffer = nullptr;		// 受信データ格納変数
-	int NetHandle = -1;		// ネットワークハンドル
-	int Port = 2222;		// ポート番号
+	SendData* dataBuffer = new SendData();		// データバッファ
+	IPDATA Ip = {};		// IPアドレス
+	int NetHandle = 0;		// ネットワークハンドル
+	int LostNetHandle = 0;		// 切断されたネットワークのハンドル
+	int DataLength = 0;		// 受信データ量保存変数
+	int Port = 2222;		// 接続ポート番号
 };
 
-// データを送るための関数
-// 引数に送りたいデータを入れる
-template<class X>
-inline void NetWork::Send(X data)
-{
-	if (NetHandle == -1) return;
-	std::thread send(NetWorkSend,this,NetHandle,data,sizeof(data));
-	send.join();
-}
-
-// データを受け取る関数
-// 戻り値に受信したデータへのアドレスが帰ってくる
-template<class X>
-inline X NetWork::Recive()
-{
-	if (NetHandle == -1) return nullptr;
-	std::thread recive(ReciveProcess);
-	recive.join();
-	return RcvBuffer;
-}

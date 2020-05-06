@@ -5,10 +5,7 @@
 #include "Loader/FileSystem.h"
 #include "FrameFixity/FrameFixity.h"
 #include "NetWork.h"
-
-namespace {
-	std::vector<int> ip = { 127,0,0,1 };
-}
+#include <iostream>
 
 Game::Game() : _screenSize(1280, 720)
 {
@@ -93,18 +90,10 @@ void Game::Run()
 
 			scenes.Draw();
 
-			if (CheckHitKey(KEY_INPUT_C)) {
-				NetWork::Instance().Connect(ip);
-			}
-
-			if (CheckHitKey(KEY_INPUT_L)) {
-				NetWork::Instance().Listen();
-			}
-
 			if (CheckHitKey(KEY_INPUT_S)) {
-				NetWork::Instance().Send("Hello");
+				auto res = NetWork::Instance().Recive();
+				std::cout << res.Buffer << std::endl;
 			}
-
 
 #ifdef _DEBUG
 			DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);

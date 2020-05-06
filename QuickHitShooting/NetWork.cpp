@@ -1,42 +1,76 @@
 #include "NetWork.h"
-#include <cassert>
+#include <thread>
+#include <iostream>
 
-void NetWork::Connect(std::vector<int>& ip)
-{
-	IPDATA data;
-	int DataLength = 0;
-	char StrBuffer[512];
-	data.d1 = ip[0];
-	data.d2 = ip[1];
-	data.d3 = ip[2];
-	data.d4 = ip[3];
-	NetHandle = ConnectNetWork(data, Port);		// 接続
+NetWork::NetWork() {
 }
 
-// 接続待ち状態にする関数
-void NetWork::Listen()
-{
-	PreparationListenNetWork(NetHandle);
+NetWork::NetWork(const NetWork&) {
 }
 
-// 接続を閉じる関数
-void NetWork::Close()
+void NetWork::SetIP(int* ip)
 {
-	CloseNetWork(NetHandle);
+	Ip.d1 = ip[0];
+	Ip.d2 = ip[1];
+	Ip.d3 = ip[2];
+	Ip.d4 = ip[3];
 }
 
-void NetWork::ReciveProcess()
+void NetWork::Send(SendData* data)
 {
+	NetHandle = ConnectNetWork(Ip, Port);
+	if (NetHandle == -1) return;
+	NetWorkSend(NetHandle, data, sizeof(SendData));
 	while (!ProcessMessage()) {
-		// データが送られてくるまで待機
-		if (GetNetWorkDataLength(NetHandle) != 0) {
-			break;
+		DataLength = GetNetWorkDataLength(NetHandle);
+		if (DataLength != 0)break;
+	}
+	NetWorkRecv(NetHandle, dataBuffer, DataLength);
+	if (dataBuffer->result) {
+		std::cout << dataBuffer->Buffer << std::endl;
+		dataBuffer->result = false;
+		if (dataBuffer->Buffer != "") {
+			CloseNetWork(NetHandle);
 		}
 	}
-	// データサイズ取得
-	auto dataLength = GetNetWorkDataLength(NetHandle);
-	// データ受信
-	NetWorkRecv(NetHandle, RcvBuffer, dataLength);
-	DrawString(100, 100, (TCHAR*)RcvBuffer, 0xffffff);
 }
 
+SendData NetWork::Recive()
+{
+	PreparationListenNetWork(Port);
+	NetHandle = -1;
+	while (!ProcessMessage() && CheckHitKey(KEY_INPUT_ESCAPE) == 0) {
+		NetHandle = GetNewAcceptNetWork();
+		if (NetHandle != -1) break;
+	}
+
+	if (NetHandle != -1) {
+		StopListenNetWork();
+		GetNetWorkIP(NetHandle, &Ip);
+		while (!ProcessMessage()) {
+			if (GetNetWorkDataLength(NetHandle) != 0)break;
+		}
+
+		DataLength = GetNetWorkDataLength(NetHandle);
+		NetWorkRecv(NetHandle, dataBuffer, DataLength);
+		if (!dataBuffer->result) {
+			std::cout << dataBuffer->Buffer << std::endl;
+			dataBuffer->result = true;
+			dataBuffer->Buffer += "Success";
+			NetWorkSend(NetHandle, dataBuffer, sizeof(SendData));
+			while (!ProcessMessage()) {
+				LostNetHandle = GetLostNetWork();
+				if (LostNetHandle == NetHandle) break;
+			}
+		}
+		return *dataBuffer;
+	}
+	else {
+		return SendData{};
+	}
+}
+
+NetWork::~NetWork()
+{
+	std::free(dataBuffer);
+}
