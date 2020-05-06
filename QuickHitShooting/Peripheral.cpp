@@ -34,6 +34,11 @@ bool Peripheral::IsTrigger(const int& cmd) const
 	return (!(oldMouseState & cmd) && (mouseState & cmd));
 }
 
+Vector2<int> Peripheral::GetMousePos() const
+{
+	return mousePos;
+}
+
 void Peripheral::DebugDraw()
 {
 	//DxLib::DrawBox(0, 0, 400, 200, 0xffffff, true);
