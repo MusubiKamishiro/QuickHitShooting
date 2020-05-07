@@ -1,6 +1,6 @@
 #include "StageLoader.h"
 
-StageLoader::StageLoader()
+StageLoader::StageLoader() : _waveEnd(55)
 {
 }
 
@@ -10,6 +10,7 @@ StageLoader::~StageLoader()
 
 int StageLoader::Load(const std::string& path)
 {
+
 	return 0;
 }
 
