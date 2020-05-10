@@ -1,28 +1,93 @@
 #include "NetWork.h"
-#include <cassert>
+#include <thread>
+#include <iostream>
 
-bool NetWork::Connect(std::vector<int>& ip)
-{
-	IPDATA data;
-	int DataLength = 0;
-	char StrBuffer[512];
-	data.d1 = ip[0];
-	data.d2 = ip[1];
-	data.d3 = ip[2];
-	data.d4 = ip[3];
-	NetHandle = ConnectNetWork(data, Port);
-	if (NetHandle != -1) {
-		NetWorkSend(NetHandle, "繋がれやゴルァ！！", 19);
-
-		while (!ProcessMessage()) {
-			DataLength = GetNetWorkDataLength(NetHandle);
-			if (DataLength != 0) break;
-		}
-		NetWorkRecv(NetHandle, StrBuffer, DataLength);
-	}
-	else {
-		assert(false && "Connection failed.");
-	}
-	return false;
+NetWork::NetWork() {
 }
 
+NetWork::NetWork(const NetWork&) {
+}
+
+// IPアドレスをセットする
+void NetWork::SetIP(int* ip)
+{
+	Ip.d1 = ip[0];
+	Ip.d2 = ip[1];
+	Ip.d3 = ip[2];
+	Ip.d4 = ip[3];
+}
+
+void NetWork::Send(SendData* data)
+{
+	// 指定したIPアドレス、ポート番号で接続
+	NetHandle = ConnectNetWork(Ip, Port);
+	if (NetHandle == -1) return;
+	// 引数でもらったデータを相手に送る
+	NetWorkSend(NetHandle, data, sizeof(SendData));
+	// 相手から返信があるまで待機
+	while (!ProcessMessage()) {
+		// 受信データの大きさを取得
+		DataLength = GetNetWorkDataLength(NetHandle);
+		if (DataLength != 0)break;
+	}
+	// 送られてきたデータを受信
+	NetWorkRecv(NetHandle, dataBuffer, DataLength);
+	if (dataBuffer->result) {
+		std::cout << dataBuffer->Buffer << std::endl;
+		dataBuffer->result = false;
+		if (dataBuffer->Buffer != "") {
+			// 接続を切る
+			CloseNetWork(NetHandle);
+		}
+	}
+}
+
+SendData NetWork::Recive()
+{
+	// 接続待ち状態にする
+	PreparationListenNetWork(Port);
+	NetHandle = -1;
+	while (!ProcessMessage() && CheckHitKey(KEY_INPUT_ESCAPE) == 0) {
+		// 接続があるまで待機
+		NetHandle = GetNewAcceptNetWork();
+		if (NetHandle != -1) break;
+	}
+
+	if (NetHandle != -1) {
+		// 接続待ち状態を解除する
+		StopListenNetWork();
+		// 相手のIPアドレスを取得する
+		GetNetWorkIP(NetHandle, &Ip);
+		while (!ProcessMessage()) {
+			// 相手からデータを送られてくるまで待機
+			if (GetNetWorkDataLength(NetHandle) != 0)break;
+		}
+
+		// 送られてきたデータの大きさを取得
+		DataLength = GetNetWorkDataLength(NetHandle);
+		// 送られてきたデータを取得
+		NetWorkRecv(NetHandle, dataBuffer, DataLength);
+		if (!dataBuffer->result) {
+			std::cout << dataBuffer->Buffer << std::endl;
+			dataBuffer->result = true;
+			dataBuffer->Buffer += "Success";
+			// 相手に受信が成功したことを送り返す
+			NetWorkSend(NetHandle, dataBuffer, sizeof(SendData));
+			while (!ProcessMessage()) {
+				// 相手から接続を切られたら終了
+				LostNetHandle = GetLostNetWork();
+				if (LostNetHandle == NetHandle) break;
+			}
+		}
+		return *dataBuffer;
+	}
+	else {
+		return SendData{};
+	}
+}
+
+NetWork::~NetWork()
+{
+	// データバッファ―を解放する
+	std::free(dataBuffer);
+}
