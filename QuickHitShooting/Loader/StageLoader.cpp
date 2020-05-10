@@ -1,5 +1,6 @@
+#include <windows.h>
+#include <DxLib.h>
 #include "StageLoader.h"
-
 StageLoader::StageLoader() : _waveEnd(55)
 {
 }
@@ -18,13 +19,17 @@ int StageLoader::Load(const std::string& path)
 		if (fopen_s(&file, path.c_str(), "rb") != 0)
 		{
 			/// ファイル読み込み失敗
+			MessageBox(GetMainWindowHandle(),
+				"Failed to Loading stage",
+				"ステージ読み込みに失敗しました。",
+				MB_OK);
 			return -1;
 		}
 
 		/// データ読み込みに必要なもの
 		TargetData target;
 		std::vector<TargetData> targetData;
-		int bytePos = 0;
+		int bytePos   = 0;
 		char checkVal = 0;
 
 		/// バイナリの先頭ポインタを指定する
@@ -69,7 +74,6 @@ int StageLoader::Load(const std::string& path)
 				_table[path].push_back(targetData);
 				targetData.clear();
 			}
-
 			/// eofの確認を行うための読み込み
 			fread(&checkVal, sizeof(checkVal), 1, file);
 		}
