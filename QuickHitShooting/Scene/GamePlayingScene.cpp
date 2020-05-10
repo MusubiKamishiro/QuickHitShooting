@@ -12,6 +12,8 @@
 #include "../Loader/SoundLoader.h"
 
 #include "../Gun.h"
+#include "../Enemy.h"
+#include "../CollisionDetector.h"
 
 
 GamePlayingScene::GamePlayingScene()
@@ -22,6 +24,10 @@ GamePlayingScene::GamePlayingScene()
 	_drawer = &GamePlayingScene::TestDraw;
 
 	_gun.reset(new Gun());
+	_enemy.reset(new Enemy());
+	_cd.reset(new CollisionDetector());
+
+	hitFlag = false;
 }
 
 GamePlayingScene::~GamePlayingScene()
@@ -59,20 +65,32 @@ void GamePlayingScene::WaitUpdate(const Peripheral & p)
 	{
 		_updater = &GamePlayingScene::FadeoutUpdate;
 	}*/
+	Rect r;
+	r = Rect(100, 100, 200, 200);
 
-	if (p.IsTrigger(MOUSE_INPUT_RIGHT))
-	{
-		_gun->Reload();
-	}
 	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
-		_gun->Shot();
+		if (_gun->Shot() && _cd->IsCollision(p.GetMousePos(), _enemy->GetRect()))
+		{
+			hitFlag = true;
+		}
+	}
+	else if (p.IsTrigger(MOUSE_INPUT_RIGHT))
+	{
+		_gun->Reload();
 	}
 }
 
 void GamePlayingScene::TestDraw()
 {
+	_enemy->Draw();
+
 	_gun->Draw();
+
+	if (hitFlag)
+	{
+		DxLib::DrawString(500, 0, "Hit", 0xff0000);
+	}
 }
 
 void GamePlayingScene::Update(const Peripheral& p)

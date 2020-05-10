@@ -5,6 +5,8 @@
 #include "../Geometry.h"
 
 class Gun;
+class Enemy;
+class CollisionDetector;
 
 class GamePlayingScene : public Scene
 {
@@ -18,6 +20,10 @@ private:
 	void TestDraw();
 
 	std::shared_ptr<Gun> _gun;
+	std::shared_ptr<Enemy> _enemy;
+	std::shared_ptr<CollisionDetector> _cd;
+
+	bool hitFlag;
 
 public:
 	GamePlayingScene();

@@ -36,7 +36,8 @@ public:
 
 	void Reload();
 
-	void Shot();
+	// ’e‚ª”­ŽË‚³‚ê‚½‚çtrue‚ð•Ô‚·
+	bool Shot();
 
 	void Draw();
 };

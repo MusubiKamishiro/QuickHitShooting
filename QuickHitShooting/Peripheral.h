@@ -31,6 +31,8 @@ public:
 	//@retval true	‰Ÿ‚µ‚½, false ‰Ÿ‚µ‚Ä‚È‚¢
 	bool IsTrigger(const int& cmd)const;
 
+	Vector2<int> GetMousePos()const;
+
 	void DebugDraw();
 };
 

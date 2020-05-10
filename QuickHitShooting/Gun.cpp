@@ -26,12 +26,14 @@ void Gun::Reload()
 	_gun.BulletsInMagazine += magazine;
 }
 
-void Gun::Shot()
+bool Gun::Shot()
 {
 	if (_gun.BulletsInMagazine > 0)
 	{
 		_gun.BulletsInMagazine -= 1;
+		return true;
 	}
+	return false;
 }
 
 void Gun::Draw()
