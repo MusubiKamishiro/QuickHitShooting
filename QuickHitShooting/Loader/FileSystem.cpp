@@ -24,8 +24,8 @@ std::string FileSystem::GetExtension(const std::string& path)
 	return path.substr(idx, path.length() - idx);
 }
 
-int FileSystem::Load(const std::string& filePath)
+bool FileSystem::Load(const std::string& filePath, Data& data)
 {
 	auto ext = GetExtension(filePath.c_str());
-	return loaders[ext]->Load(filePath.c_str());
+	return loaders[ext]->Load(filePath.c_str(), data);
 }

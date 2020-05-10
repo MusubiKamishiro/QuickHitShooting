@@ -11,29 +11,42 @@ ImageLoader::~ImageLoader()
 {
 }
 
-int ImageLoader::Load(const std::string& path)
+bool ImageLoader::Load(const std::string& path, Data& data)
 {
-	int img = 0;
+	ImageData& img = dynamic_cast<ImageData&>(data);
 
 	// データが見つからなかったら読み込む
 	auto it = table.find(path.c_str());
 	if (it == table.end())
 	{
-		img = DxLib::LoadGraph(path.c_str());
-		if (img != -1)
+		img.handle = DxLib::LoadGraph(path.c_str());
+		if (img.handle != -1)
 		{
-			table.emplace(path, img);
+			table.emplace(path, img.handle);
+			return true;
 		}
-		return img;
+		return false;
 	}
 	else
 	{
 		// 見つかったらハンドルを返す
-		return table[path.c_str()];
+		img.handle = table[path.c_str()];
+		return true;
 	}
 	return false;
 }
 
 void ImageLoader::UnLoad(const std::string& path)
 {
+}
+
+
+bool ImageData::IsAvailable()
+{
+	return true;
+}
+
+int ImageData::GetHandle() const
+{
+	return handle;
 }

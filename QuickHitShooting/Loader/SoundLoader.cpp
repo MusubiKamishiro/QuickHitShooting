@@ -11,29 +11,41 @@ SoundLoader::~SoundLoader()
 {
 }
 
-int SoundLoader::Load(const std::string& path)
+bool SoundLoader::Load(const std::string& path, Data& data)
 {
-	int sound = 0;
+	SoundData& sound = dynamic_cast<SoundData&>(data);
 
 	// データが見つからなかったら読み込む
 	auto it = table.find(path.c_str());
 	if (it == table.end())
 	{
-		sound = DxLib::LoadSoundMem(path.c_str());
-		if (sound != -1)
+		sound.handle = DxLib::LoadSoundMem(path.c_str());
+		if (sound.handle != -1)
 		{
-			table.emplace(path, sound);
+			table.emplace(path, sound.handle);
+			return true;
 		}
-		return sound;
+		return false;
 	}
 	else
 	{
 		// 見つかったらハンドルを返す
-		return table[path.c_str()];
+		sound.handle = table[path.c_str()];
+		return true;
 	}
 	return false;
 }
 
 void SoundLoader::UnLoad(const std::string& path)
 {
+}
+
+bool SoundData::IsAvailable()
+{
+	return true;
+}
+
+int SoundData::GetHandle() const
+{
+	return handle;
 }

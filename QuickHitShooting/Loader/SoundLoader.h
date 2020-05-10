@@ -12,7 +12,18 @@ public:
 	SoundLoader();
 	~SoundLoader();
 
-	int Load(const std::string& path)override final;
+	bool Load(const std::string& path, Data& data)override final;
 
 	void UnLoad(const std::string& path)override final;
+};
+
+class SoundData : public Data
+{
+	friend SoundLoader;
+private:
+	int handle;
+	bool IsAvailable();
+
+public:
+	int GetHandle()const;
 };

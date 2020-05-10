@@ -12,7 +12,18 @@ public:
 	ImageLoader();
 	~ImageLoader();
 
-	int Load(const std::string& path)override final;
+	bool Load(const std::string& path, Data& data)override final;
 
 	void UnLoad(const std::string& path)override final;
+};
+
+class ImageData : public Data
+{
+	friend ImageLoader;
+private:
+	int handle;
+	bool IsAvailable();
+
+public:
+	int GetHandle()const;
 };
