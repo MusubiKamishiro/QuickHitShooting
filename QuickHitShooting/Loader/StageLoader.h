@@ -1,34 +1,50 @@
 #pragma once
-#include <vector>
-#include <map>
 #include "Loader.h"
-#include "../Geometry.h"
+#include <map>
 
 struct TargetData
 {
 	unsigned char type;
 	unsigned int  dispTime;
-	unsigned int  appearTime;
-	Vector2<int>  pos;
+	unsigned int appearTime;
+
+	/// 座標も入れるかもしれない
 };
 
-using vec2_targetData = std::vector<std::vector<TargetData>>;
-
-class StageLoader :
-	public Loader
+class StageLoader : public Loader
 {
 private:
-
-	std::map<std::string, vec2_targetData> _table;
-
-	/// バイナリ上でウェーブのエンドポイントを示すもの
+	///ステージのテーブルマップ
+	///@param string ファイルパス
+	///@param TargetData サウンドハンドル
+	std::map<std::string, TargetData> _table;
+	/// ステージデータに必要なものを書く
 	const char _waveEnd;
 public:
 	StageLoader();
 	~StageLoader();
 
-	int Load(const std::string& path) override;
+	///ロード
+	///@param path ファイルのパス
+	///@param data データオブジェクトへの参照
+	///@retval true 成功
+	///@retval false 失敗
+	bool Load(const std::string& path, Data& data) override;
 
+	/// アンロード
+	///@param path ファイルのパス
 	void UnLoad(const std::string& path)override;
 };
 
+class StageData : public Data
+{
+	friend StageLoader;
+private:
+	TargetData _targetData;
+
+	///ダミー関数
+	bool IsAvailable();
+
+public:
+	TargetData GetTargetData()const;
+};

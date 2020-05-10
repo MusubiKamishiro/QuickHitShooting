@@ -23,6 +23,6 @@ public:
 	FileSystem();
 	~FileSystem();
 
-	int Load(const std::string& filePath);
+	bool Load(const std::string& filePath, Data& data);
 };
 
