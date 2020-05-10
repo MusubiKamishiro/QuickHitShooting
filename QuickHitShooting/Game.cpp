@@ -6,6 +6,7 @@
 #include "FrameFixity/FrameFixity.h"
 #include "NetWork.h"
 #include <iostream>
+#include <thread>
 
 Game::Game() : _screenSize(1280, 720)
 {
@@ -85,10 +86,12 @@ void Game::Run()
 				break;
 			}
 
-			_peripheral->Update();
-			scenes.Update(*_peripheral);
-
-			scenes.Draw();
+			std::thread upThread([&]() {
+				_peripheral->Update();
+				scenes.Update(*_peripheral);
+				scenes.Draw();
+			});
+			upThread.join();
 
 			if (CheckHitKey(KEY_INPUT_S)) {
 				auto res = NetWork::Instance().Recive();

@@ -17,7 +17,6 @@ private:
 	const Vector2<int> _screenSize;
 	std::unique_ptr<Peripheral> _peripheral;
 	std::shared_ptr<FileSystem> _fileSystem;
-
 public:
 	static Game& Instance()
 	{

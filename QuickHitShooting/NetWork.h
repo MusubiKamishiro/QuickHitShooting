@@ -15,12 +15,7 @@ private:
 	NetWork(const NetWork&);
 	void operator=(const NetWork&) {};
 
-	SendData* dataBuffer = new SendData();		// データバッファ
-	IPDATA Ip = {};		// IPアドレス
-	int NetHandle = 0;		// ネットワークハンドル
-	int LostNetHandle = 0;		// 切断されたネットワークのハンドル
-	int DataLength = 0;		// 受信データ量保存変数
-	int Port = 2222;		// 接続ポート番号
+	
 
 public:
 	// ネットワーククラスのインスタンスを返す
