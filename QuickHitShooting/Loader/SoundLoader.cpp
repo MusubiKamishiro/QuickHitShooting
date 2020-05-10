@@ -16,13 +16,13 @@ bool SoundLoader::Load(const std::string& path, Data& data)
 	SoundData& sound = dynamic_cast<SoundData&>(data);
 
 	// データが見つからなかったら読み込む
-	auto it = table.find(path.c_str());
-	if (it == table.end())
+	auto it = _table.find(path.c_str());
+	if (it == _table.end())
 	{
-		sound.handle = DxLib::LoadSoundMem(path.c_str());
-		if (sound.handle != -1)
+		sound._handle = DxLib::LoadSoundMem(path.c_str());
+		if (sound._handle != -1)
 		{
-			table.emplace(path, sound.handle);
+			_table.emplace(path, sound._handle);
 			return true;
 		}
 		return false;
@@ -30,7 +30,7 @@ bool SoundLoader::Load(const std::string& path, Data& data)
 	else
 	{
 		// 見つかったらハンドルを返す
-		sound.handle = table[path.c_str()];
+		sound._handle = _table[path.c_str()];
 		return true;
 	}
 	return false;
@@ -47,5 +47,5 @@ bool SoundData::IsAvailable()
 
 int SoundData::GetHandle() const
 {
-	return handle;
+	return _handle;
 }

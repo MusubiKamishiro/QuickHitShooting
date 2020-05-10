@@ -16,13 +16,13 @@ bool ImageLoader::Load(const std::string& path, Data& data)
 	ImageData& img = dynamic_cast<ImageData&>(data);
 
 	// データが見つからなかったら読み込む
-	auto it = table.find(path.c_str());
-	if (it == table.end())
+	auto it = _table.find(path.c_str());
+	if (it == _table.end())
 	{
-		img.handle = DxLib::LoadGraph(path.c_str());
-		if (img.handle != -1)
+		img._handle = DxLib::LoadGraph(path.c_str());
+		if (img._handle != -1)
 		{
-			table.emplace(path, img.handle);
+			_table.emplace(path, img._handle);
 			return true;
 		}
 		return false;
@@ -30,7 +30,7 @@ bool ImageLoader::Load(const std::string& path, Data& data)
 	else
 	{
 		// 見つかったらハンドルを返す
-		img.handle = table[path.c_str()];
+		img._handle = _table[path.c_str()];
 		return true;
 	}
 	return false;
@@ -48,5 +48,5 @@ bool ImageData::IsAvailable()
 
 int ImageData::GetHandle() const
 {
-	return handle;
+	return _handle;
 }
