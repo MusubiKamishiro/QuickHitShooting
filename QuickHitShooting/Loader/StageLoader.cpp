@@ -42,7 +42,7 @@ bool StageLoader::Load(const std::string& path, Data& data)
 
 				/// 的が出現してから消えるまでの時間
 				fread(&target.appearTime, sizeof(target.appearTime), 1, file);
-				bytePos += sizeof(target.apperTime);
+				bytePos += sizeof(target.appearTime);
 
 				/// 的のX座標
 				fread(&target.pos.x, sizeof(target.pos.x), 1, file);
