@@ -15,8 +15,6 @@ private:
 	NetWork(const NetWork&);
 	void operator=(const NetWork&) {};
 
-	
-
 public:
 	// ネットワーククラスのインスタンスを返す
 	static NetWork& Instance() {
@@ -27,7 +25,7 @@ public:
 	void SetIP(int* ip);		// IPアドレスを設定する、int型の配列を入れる
 	// 共通関数
 	void Send(SendData* data);		// データを送る
-	SendData Recive();		// データを受け取る
+	void Recive(SendData& data);		// データを受け取る
 	
 	~NetWork();
 };

@@ -1,7 +1,6 @@
 #include "NetWork.h"
 #include <iostream>
 #include <thread>
-#include <future>
 
 namespace {
 	SendData* dataBuffer = new SendData();		// データバッファ
@@ -10,6 +9,8 @@ namespace {
 	int LostNetHandle = 0;		// 切断されたネットワークのハンドル
 	int DataLength = 0;		// 受信データ量保存変数
 	int Port = 2222;		// 接続ポート番号
+	int waitTime = 0;
+	bool isProc = false;
 }
 
 NetWork::NetWork() {
@@ -25,44 +26,6 @@ void NetWork::SetIP(int* ip)
 	Ip.d2 = ip[1];
 	Ip.d3 = ip[2];
 	Ip.d4 = ip[3];
-}
-
-void ReciveProcess() {
-	// 接続待ち状態にする
-	PreparationListenNetWork(Port);
-	while (!ProcessMessage() && CheckHitKey(KEY_INPUT_ESCAPE) == 0) {
-		// 接続があるまで待機
-		NetHandle = GetNewAcceptNetWork();
-		if (NetHandle != -1) break;
-	}
-
-	if (NetHandle != -1) {
-		// 接続待ち状態を解除する
-		StopListenNetWork();
-		// 相手のIPアドレスを取得する
-		GetNetWorkIP(NetHandle, &Ip);
-		while (!ProcessMessage()) {
-			// 相手からデータを送られてくるまで待機
-			if (GetNetWorkDataLength(NetHandle) != 0)break;
-		}
-
-		// 送られてきたデータの大きさを取得
-		DataLength = GetNetWorkDataLength(NetHandle);
-		// 送られてきたデータを取得
-		NetWorkRecv(NetHandle, dataBuffer, DataLength);
-		if (!dataBuffer->result) {
-			std::cout << dataBuffer->Buffer << std::endl;
-			dataBuffer->result = true;
-			dataBuffer->Buffer += "Success";
-			// 相手に受信が成功したことを送り返す
-			NetWorkSend(NetHandle, dataBuffer, sizeof(SendData));
-			while (!ProcessMessage()) {
-				// 相手から接続を切られたら終了
-				LostNetHandle = GetLostNetWork();
-				if (LostNetHandle == NetHandle) break;
-			}
-		}
-	}
 }
 
 void NetWork::Send(SendData* data)
@@ -90,11 +53,55 @@ void NetWork::Send(SendData* data)
 	}
 }
 
-SendData NetWork::Recive()
+void NetWork::Recive(SendData& data)
 {
-	std::thread reciveThread(ReciveProcess);
-	reciveThread.join();
-	return *dataBuffer;
+	// 接続待ち状態にする
+	if (isProc) {
+		auto res = PreparationListenNetWork(Port);
+		isProc = true;
+	}
+	
+	while (!ProcessMessage() && CheckHitKey(KEY_INPUT_ESCAPE) == 0) {
+		// 接続があるまで待機
+		NetHandle = GetNewAcceptNetWork();
+		if (NetHandle != -1) break;
+	}
+	
+	if (NetHandle != -1) {
+		// 接続待ち状態を解除する
+		//StopListenNetWork();
+		// 相手のIPアドレスを取得する
+		GetNetWorkIP(NetHandle, &Ip);
+		while (!ProcessMessage()) {
+			// 相手からデータを送られてくるまで待機
+			if (GetNetWorkDataLength(NetHandle) != 0)break;
+		}
+		// 送られてきたデータの大きさを取得
+		DataLength = GetNetWorkDataLength(NetHandle);
+		// 送られてきたデータを取得
+		NetWorkRecv(NetHandle, dataBuffer, DataLength);
+		if (!dataBuffer->result) {
+			std::cout << dataBuffer->Buffer << std::endl;
+			dataBuffer->result = true;
+			dataBuffer->Buffer += "Success";
+			// 相手に受信が成功したことを送り返す
+			NetWorkSend(NetHandle, dataBuffer, sizeof(SendData));
+			while (!ProcessMessage()) {
+				// 相手から接続を切られたら終了
+				LostNetHandle = GetLostNetWork();
+				if (LostNetHandle == NetHandle) break;
+			}
+		}
+		data = *dataBuffer;
+
+	}
+	else {
+		data = SendData{};
+	}
+	NetHandle = 0;
+	LostNetHandle = 0;
+	DataLength = 0;
+	dataBuffer = new SendData();
 }
 
 NetWork::~NetWork()

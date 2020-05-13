@@ -102,10 +102,11 @@
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>$(DXLIB_DIR)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <OpenMPSupport>true</OpenMPSupport>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -163,6 +164,7 @@
     <ClCompile Include="Loader\SoundLoader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NetWork.cpp" />
+    <ClCompile Include="NetWorkWS2.cpp" />
     <ClCompile Include="Peripheral.cpp" />
     <ClCompile Include="Scene\GamePlayingScene.cpp" />
     <ClCompile Include="Scene\PauseScene.cpp" />
@@ -185,6 +187,7 @@
     <ClInclude Include="Loader\Loader.h" />
     <ClInclude Include="Loader\SoundLoader.h" />
     <ClInclude Include="NetWork.h" />
+    <ClInclude Include="NetWorkWS2.h" />
     <ClInclude Include="Peripheral.h" />
     <ClInclude Include="Scene\GamePlayingScene.h" />
     <ClInclude Include="Scene\PauseScene.h" />

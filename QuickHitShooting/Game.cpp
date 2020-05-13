@@ -8,6 +8,11 @@
 #include <iostream>
 #include <thread>
 
+namespace {
+	int nowInput = 0;
+	int oldInput = 0;
+}
+
 Game::Game() : _screenSize(1280, 720)
 {
 }
@@ -86,17 +91,25 @@ void Game::Run()
 				break;
 			}
 
-			std::thread upThread([&]() {
+			std::thread updateThread([&]() {
 				_peripheral->Update();
 				scenes.Update(*_peripheral);
 				scenes.Draw();
-			});
-			upThread.join();
+				});
+			updateThread.join();
 
-			if (CheckHitKey(KEY_INPUT_S)) {
-				auto res = NetWork::Instance().Recive();
-				std::cout << res.Buffer << std::endl;
+			if (nowInput && !oldInput) {
+				std::thread reciveThread([]() {
+					DxLib::DxLib_Init();
+					SendData data;
+					NetWork::Instance().Recive(data);
+					std::cout << data.Buffer << std::endl;
+					});
+				reciveThread.detach();
 			}
+
+			oldInput = nowInput;
+			nowInput = CheckHitKey(KEY_INPUT_S);
 
 #ifdef _DEBUG
 			DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
