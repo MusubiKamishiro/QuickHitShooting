@@ -1,6 +1,6 @@
 #include "NormalEnemy.h"
 
-NormalEnemy::NormalEnemy(const unsigned int& dispTime, const unsigned int& appearTime, const Vector2<int>& pos)
+NormalEnemy::NormalEnemy(const int& dispTime, const int& appearTime, const Vector2<int>& pos)
 {
 	_dispTime	= dispTime;
 	_appearTime = appearTime;

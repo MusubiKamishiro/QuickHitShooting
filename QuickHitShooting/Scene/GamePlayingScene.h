@@ -1,12 +1,15 @@
 #pragma once
 #include <memory>
 #include <array>
+#include <vector>
 #include "Scene.h"
 #include "../Geometry.h"
 
 class Gun;
 class Enemy;
 class CollisionDetector;
+
+struct TargetData;
 
 class GamePlayingScene : public Scene
 {
@@ -19,12 +22,17 @@ private:
 	void (GamePlayingScene::*_drawer)();
 	void TestDraw();
 
+	void CreateEnemy();
+	std::shared_ptr<Enemy> GetEnemyInfo(const TargetData& target);
+	
+
 	std::shared_ptr<Gun> _gun;
-	std::shared_ptr<Enemy> _enemy;
 	std::shared_ptr<CollisionDetector> _cd;
 
 	/// ‰¼‚Å•¡”‚Ì“G‚ğoŒ»‚³‚¹‚Ä‚¢‚é
 	std::vector<std::shared_ptr<Enemy>> _enemies;
+
+	int _waveCnt;
 
 	bool hitFlag;
 

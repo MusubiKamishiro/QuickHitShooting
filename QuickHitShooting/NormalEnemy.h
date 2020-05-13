@@ -4,8 +4,7 @@ class NormalEnemy :
 	public Enemy
 {
 public:
-	NormalEnemy(const unsigned int& dispTime,
-				const unsigned int& appearTime,
+	NormalEnemy(const int& dispTime, const int& appearTime,
 				const Vector2<int>& pos);
 	~NormalEnemy();
 };

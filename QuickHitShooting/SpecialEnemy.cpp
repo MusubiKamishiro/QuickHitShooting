@@ -1,6 +1,6 @@
 #include "SpecialEnemy.h"
 
-SpecialEnemy::SpecialEnemy(const unsigned int& dispTime, const unsigned int& appearTime, const Vector2<int>& pos)
+SpecialEnemy::SpecialEnemy(const int& dispTime, const int& appearTime, const Vector2<int>& pos)
 {
 	_dispTime	= dispTime;
 	_appearTime = appearTime;

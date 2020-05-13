@@ -9,13 +9,17 @@ protected:
 	Vector2<int> _pos;
 	Rect _rect;
 
-	unsigned int _dispTime;
-	unsigned int _appearTime;
+	int _dispTime;
+	int _appearTime;
 
 public:
 	virtual ~Enemy();
 
 	void Draw();
+	void Update(); 
+
+	// ‰¼‚Ì“Gíœ—pŠÖ”
+	bool Destroy();
 
 	Vector2<int> GetPos()const;
 	Rect GetRect()const;

@@ -10,11 +10,14 @@
 #include "../Loader/FileSystem.h"
 #include "../Loader/ImageLoader.h"
 #include "../Loader/SoundLoader.h"
+#include "../Loader/StageLoader.h"
 
 #include "../Gun.h"
 #include "../Enemy.h"
+#include "../NormalEnemy.h"
+#include "../SpecialEnemy.h"
+#include "../DeductionEnemy.h"
 #include "../CollisionDetector.h"
-
 
 GamePlayingScene::GamePlayingScene()
 {
@@ -24,10 +27,59 @@ GamePlayingScene::GamePlayingScene()
 	_drawer = &GamePlayingScene::TestDraw;
 
 	_gun.reset(new Gun());
-	_enemy.reset(new Enemy());
 	_cd.reset(new CollisionDetector());
 
 	hitFlag = false;
+
+	_waveCnt = 0;
+	/// ステージ読み込み(いずれセレクトシーンに移動する予定)
+
+	auto stageCnt = []()
+	{
+		int cnt = 0;
+		HANDLE handle;
+		WIN32_FIND_DATA findData;
+		std::string searchName = "../StageData/*.bin";
+		handle = FindFirstFile(searchName.c_str(), &findData);
+
+		do {
+			if (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+			{
+				cnt++;
+			}
+		} while (FindNextFile(handle, &findData));
+		FindClose(handle);
+
+		if (cnt == 0)
+		{
+			MessageBox(GetMainWindowHandle(),
+				"ステージデータが見つかりませんでした。",
+				"Not Found StageData",
+				MB_OK);
+		}
+		return cnt;
+	};
+
+	int cnt = stageCnt();
+
+	StageData stage;
+	for (int i = 0; i < cnt; ++i)
+	{
+		TargetData debug;
+		std::string stageNum = std::to_string(i + 1);
+		Game::Instance().GetFileSystem()->Load("StageData/stage" + stageNum + ".bin", stage);
+
+		for (auto wave : stage.GetStageData())
+		{
+			for (auto target : wave)
+			{
+				debug = target;
+			}
+		}
+	}
+
+	/// 敵の仮生成
+	CreateEnemy();
 }
 
 GamePlayingScene::~GamePlayingScene()
@@ -70,9 +122,12 @@ void GamePlayingScene::WaitUpdate(const Peripheral & p)
 
 	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
-		if (_gun->Shot() && _cd->IsCollision(p.GetMousePos(), _enemy->GetRect()))
+		for (auto enemy : _enemies)
 		{
-			hitFlag = true;
+			if (_gun->Shot() && _cd->IsCollision(p.GetMousePos(), enemy->GetRect()))
+			{
+				hitFlag = true;
+			}
 		}
 	}
 	else if (p.IsTrigger(MOUSE_INPUT_RIGHT))
@@ -83,7 +138,10 @@ void GamePlayingScene::WaitUpdate(const Peripheral & p)
 
 void GamePlayingScene::TestDraw()
 {
-	_enemy->Draw();
+	for (auto& enemy : _enemies)
+	{
+		enemy->Draw();
+	}
 
 	_gun->Draw();
 
@@ -93,9 +151,50 @@ void GamePlayingScene::TestDraw()
 	}
 }
 
+void GamePlayingScene::CreateEnemy()
+{
+	/// 仮でステージデータを読み込んでいる
+	StageData stage;
+	Game::Instance().GetFileSystem()->Load("StageData/stage1.bin", stage);
+
+	auto data = stage.GetStageData()[_waveCnt];
+	for (auto target : data)
+	{
+		/// 敵の生成
+		_enemies.push_back(GetEnemyInfo(target));
+	}
+}
+std::shared_ptr<Enemy> GamePlayingScene::GetEnemyInfo(const TargetData& target)
+{
+	if (target.type == 0)
+	{
+		/// 通常の的を生成する
+		return std::make_shared<NormalEnemy>(target.dispTime, target.appearTime, target.pos);
+	}
+	else if (target.type == 1)
+	{
+		/// 特別な的を生成する
+		return std::make_shared<SpecialEnemy>(target.dispTime, target.appearTime, target.pos);
+	}
+	else if (target.type == 2)
+	{
+		/// 減点の的を生成する
+		return std::make_shared<DeductionEnemy>(target.dispTime, target.appearTime, target.pos);
+	}
+	else{}
+
+	/// 該当なし
+	return nullptr;
+}
+
 void GamePlayingScene::Update(const Peripheral& p)
 {
 	(this->*_updater)(p);
+
+	for (auto& enemy : _enemies)
+	{
+		enemy->Update();
+	}
 }
 
 void GamePlayingScene::Draw()

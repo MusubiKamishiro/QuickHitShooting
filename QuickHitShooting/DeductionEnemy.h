@@ -3,8 +3,8 @@
 class DeductionEnemy :
 	public Enemy
 {
-	DeductionEnemy(const unsigned int& dispTime,
-				   const unsigned int& appearTime,
+public:
+	DeductionEnemy(const int& dispTime, const int& appearTime,
 				   const Vector2<int>& pos);
 	~DeductionEnemy();
 };

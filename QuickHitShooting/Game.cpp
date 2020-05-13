@@ -66,55 +66,11 @@ void Game::Initialize()
 	_fileSystem.reset(new FileSystem());
 	// NetWork::Instance().Connect(ip);
 
-	auto stageCnt = []()
-	{
-		int cnt = 0;
-		HANDLE handle;
-		WIN32_FIND_DATA findData;
-		std::string searchName = "../StageData/*.bin";
-		handle = FindFirstFile(searchName.c_str(), &findData);
-
-		do {
-			if (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-			{
-				cnt++;
-			}
-		} while (FindNextFile(handle, &findData));
-		FindClose(handle);
-
-		if (cnt == 0)
-		{
-			MessageBox(GetMainWindowHandle(),
-				"ステージデータが見つかりませんでした。",
-				"Not Found StageData",
-				MB_OK);
-		}
-		return cnt;
-	};
-
-	int cnt = stageCnt();
-
-	StageData stage;
-	for (int i = 0; i < cnt; ++i)
-	{
-		TargetData debug;
-		std::string stageNum = std::to_string(i + 1);
-		_fileSystem->Load("StageData/stage" + stageNum + ".bin", stage);
-
-		for (auto wave : stage.GetStageData())
-		{
-			for (auto target : wave)
-			{
-				debug = target;
-			}
-		}
-	}
-
 }
 
 void Game::Run()
 {
-	auto& scenes = SceneManager::Instance();
+	auto& scenes	= SceneManager::Instance();
 	FrameFixity& ff = FrameFixity::Instance();
 	ff.FFInitialize();
 
