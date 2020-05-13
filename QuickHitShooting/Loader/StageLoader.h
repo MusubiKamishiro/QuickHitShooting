@@ -10,7 +10,6 @@ struct TargetData
 	unsigned int  dispTime;
 	unsigned int  appearTime;
 	Vector2<int>  pos;
-	/// À•W‚à“ü‚ê‚é‚©‚à‚µ‚ê‚È‚¢
 };
 
 using vec2_target = std::vector<std::vector<TargetData>>;

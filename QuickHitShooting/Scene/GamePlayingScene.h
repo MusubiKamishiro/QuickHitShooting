@@ -23,6 +23,9 @@ private:
 	std::shared_ptr<Enemy> _enemy;
 	std::shared_ptr<CollisionDetector> _cd;
 
+	/// ‰¼‚Å•¡”‚Ì“G‚ğoŒ»‚³‚¹‚Ä‚¢‚é
+	std::vector<std::shared_ptr<Enemy>> _enemies;
+
 	bool hitFlag;
 
 public:

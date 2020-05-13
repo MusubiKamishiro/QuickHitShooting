@@ -6,6 +6,9 @@
 #include "FrameFixity/FrameFixity.h"
 #include "NetWork.h"
 
+/// デバッグ用のインクルード
+#include "Loader/StageLoader.h"
+
 namespace {
 	std::vector<int> ip = { 192,168,56,1 };
 }
@@ -24,20 +27,22 @@ Game::~Game()
 
 void Game::Initialize()
 {
-#ifdef _DEBUG
-	DxLib::ChangeWindowMode(true);
-#else
-	int ans = MessageBox(DxLib::GetMainWindowHandle(), "フルスクリーンで表示しますか？", "画面の大きさどうしようか", MB_YESNO | MB_ICONQUESTION);
+//#ifdef _DEBUG
+//	DxLib::ChangeWindowMode(true);
+//#else
+//	int ans = MessageBox(DxLib::GetMainWindowHandle(), "フルスクリーンで表示しますか？", "画面の大きさどうしようか", MB_YESNO | MB_ICONQUESTION);
+//
+//	if (ans == IDYES)
+//	{
+//		DxLib::ChangeWindowMode(false);
+//	}
+//	else
+//	{
+//		DxLib::ChangeWindowMode(true);
+//	}
+//#endif // _DEBUG
 
-	if (ans == IDYES)
-	{
-		DxLib::ChangeWindowMode(false);
-	}
-	else
-	{
-		DxLib::ChangeWindowMode(true);
-	}
-#endif // _DEBUG
+	DxLib::ChangeWindowMode(true);
 
 	// 画面サイズの設定
 	DxLib::SetGraphMode(_screenSize.x, _screenSize.y, 32);
@@ -59,7 +64,52 @@ void Game::Initialize()
 
 	_peripheral.reset(new Peripheral());
 	_fileSystem.reset(new FileSystem());
-	NetWork::Instance().Connect(ip);
+	// NetWork::Instance().Connect(ip);
+
+	auto stageCnt = []()
+	{
+		int cnt = 0;
+		HANDLE handle;
+		WIN32_FIND_DATA findData;
+		std::string searchName = "../StageData/*.bin";
+		handle = FindFirstFile(searchName.c_str(), &findData);
+
+		do {
+			if (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+			{
+				cnt++;
+			}
+		} while (FindNextFile(handle, &findData));
+		FindClose(handle);
+
+		if (cnt == 0)
+		{
+			MessageBox(GetMainWindowHandle(),
+				"ステージデータが見つかりませんでした。",
+				"Not Found StageData",
+				MB_OK);
+		}
+		return cnt;
+	};
+
+	int cnt = stageCnt();
+
+	StageData stage;
+	for (int i = 0; i < cnt; ++i)
+	{
+		TargetData debug;
+		std::string stageNum = std::to_string(i + 1);
+		_fileSystem->Load("StageData/stage" + stageNum + ".bin", stage);
+
+		for (auto wave : stage.GetStageData())
+		{
+			for (auto target : wave)
+			{
+				debug = target;
+			}
+		}
+	}
+
 }
 
 void Game::Run()
@@ -94,12 +144,13 @@ void Game::Run()
 
 			scenes.Draw();
 
+
 #ifdef _DEBUG
 			DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
 			_peripheral->DebugDraw();
 #endif // _DEBUG
-
 			DxLib::ScreenFlip();
+
 		}
 	}
 

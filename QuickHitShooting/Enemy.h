@@ -4,12 +4,16 @@
 class Enemy
 {
 private:
-	Vector2<int> pos;
-	Rect rect;
+
+protected:
+	Vector2<int> _pos;
+	Rect _rect;
+
+	unsigned int _dispTime;
+	unsigned int _appearTime;
 
 public:
-	Enemy();
-	~Enemy();
+	virtual ~Enemy();
 
 	void Draw();
 
