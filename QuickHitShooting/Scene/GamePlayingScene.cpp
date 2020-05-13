@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include <algorithm>
 #include "GamePlayingScene.h"
 #include "ResultScene.h"
 #include "SceneManager.h"
@@ -24,7 +25,7 @@ GamePlayingScene::GamePlayingScene()
 	_pal = 0;
 	
 	_updater = &GamePlayingScene::FadeinUpdate;
-	_drawer = &GamePlayingScene::TestDraw;
+	_drawer  = &GamePlayingScene::TestDraw;
 
 	_gun.reset(new Gun());
 	_cd.reset(new CollisionDetector());
@@ -195,6 +196,16 @@ void GamePlayingScene::Update(const Peripheral& p)
 	{
 		enemy->Update();
 	}
+
+	/* Œ»ó‚ÍA•\¦‚³‚ê‚Ä‚©‚çˆê’èŠÔ‚½‚Â‚ÆÁ‚¦‚é‚æ‚¤‚É‚µ‚Ä‚¢‚é */
+
+	/// íœ‚Å‚«‚é“G‚ğŒŸõ‚µ‚Ä‚¢‚é
+	auto result = std::remove_if(_enemies.begin(),
+								 _enemies.end(),
+								 [](std::shared_ptr<Enemy>& enemy) { return enemy->Destroy(); });
+
+	/// “G‚Ìíœ
+	_enemies.erase(result, _enemies.end());
 }
 
 void GamePlayingScene::Draw()
