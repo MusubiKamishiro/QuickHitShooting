@@ -42,8 +42,8 @@ public:
 
 	void InitializeServer();
 	void InitializeClient(int* ip);
-	void ReciveServer();
-	void SendClient();
+	void ReciveServer(SendDataWS2& data);
+	void SendClient(SendDataWS2& data);
 	void Terminate();
 };
 

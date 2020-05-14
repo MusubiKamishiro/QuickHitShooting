@@ -30,23 +30,23 @@ void NetWorkWS2::InitializeClient(int* ip)
 	dataBuffer.Buffer.resize(256);
 }
 
-void NetWorkWS2::ReciveServer()
+void NetWorkWS2::ReciveServer(SendDataWS2& data)
 {
 	while (true) {
 		len = sizeof(client);
 		sock = accept(sock0, (sockaddr*)&client, &len);
 		send(sock, "HELLO", 5, 0);
-		int n = recv(sock, (char*)&dataBuffer.Buffer, (int)dataBuffer.Buffer.size(), 0);
-		std::cout << n << dataBuffer.Buffer << std::endl;
+		int n = recv(sock, (char*)&data.Buffer, (int)data.Buffer.size(), 0);
+		std::cout << n << data.Buffer << std::endl;
 		closesocket(sock);
 	}
 }
 
-void NetWorkWS2::SendClient()
+void NetWorkWS2::SendClient(SendDataWS2& data)
 {
 	connect(sock, (sockaddr*)&server, sizeof(server));
-	int n = recv(sock, (char*)&dataBuffer.Buffer, (int)dataBuffer.Buffer.size(),0);
-	std::cout << n << dataBuffer.Buffer << std::endl;
+	int n = recv(sock, (char*)&data.Buffer, (int)data.Buffer.size(),0);
+	std::cout << n << data.Buffer << std::endl;
 	send(sock, "Recived", 7, 0);
 	closesocket(sock);
 }

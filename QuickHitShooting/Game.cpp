@@ -5,6 +5,7 @@
 #include "Loader/FileSystem.h"
 #include "FrameFixity/FrameFixity.h"
 #include "NetWork.h"
+#include "NetWorkWS2.h"
 #include <iostream>
 #include <thread>
 
@@ -102,8 +103,11 @@ void Game::Run()
 				std::thread reciveThread([]() {
 					DxLib::DxLib_Init();
 					SendData data;
-					NetWork::Instance().Recive(data);
-					std::cout << data.Buffer << std::endl;
+					SendDataWS2 dataws2;
+					//NetWork::Instance().Recive(data);
+					NetWorkWS2::Instance().InitializeServer();
+					NetWorkWS2::Instance().ReciveServer(dataws2);
+					//std::cout << data.Buffer << std::endl;
 					});
 				reciveThread.detach();
 			}
