@@ -24,7 +24,6 @@ void TargetType::Update(int& wCnt, int& tCnt,
 
 	ChangeTarget(tCnt, (int)stageData[wCnt].size(), input);
 	ChangeWave(wCnt, (int)stageData.size(), input);
-	SetPosition(wCnt, tCnt, input, stageData);
 	DataConfig(wCnt, tCnt, input, stageData);
 	//// フォントサイズの変更を忘れないようにしておく
 	DrawString(0, 0, "的IDの設定", 0xffffff);

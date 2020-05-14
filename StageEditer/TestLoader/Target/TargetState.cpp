@@ -28,16 +28,6 @@ void TargetState::ChangeWave(int& wCnt, const int& wCntMax, const unique_input& 
 	else {}
 }
 
-void TargetState::SetPosition(const int& wCnt, const int& tCnt, 
-							  const unique_input& input, vec2_target& stageData)
-{
-	if (input->IsMouseTrigger(MOUSE_INPUT_LEFT))
-	{
-		/// 的の座標を更新する
-		GetMousePoint(&stageData[wCnt][tCnt].posX, &stageData[wCnt][tCnt].posY);
-	}
-}
-
 void TargetState::DebugDraw(const int& wCnt, const int& tCnt, vec2_target stageData)
 {
 	int strWidth, strHeight;
@@ -61,15 +51,15 @@ void TargetState::DebugDraw(const int& wCnt, const int& tCnt, vec2_target stageD
 	DrawString(1000, 40 * 4, "消えるまでの時間 : ", 0xffffff);
 	DrawFormatString(1000 + strWidth, 40 * 4, 0xffffff, "%d", stageData[wCnt][tCnt].appearTime);
 
-	int posX, posY;
-	GetMousePoint(&posX, &posY);
-	DrawBox(posX - (_boxSize / 2), posY - (_boxSize / 2),
-			posX + (_boxSize / 2), posY + (_boxSize / 2),
+	Vector2<int> pos;
+	GetMousePoint(&pos.x, &pos.y);
+	DrawBox(pos.x - (_boxSize / 2), pos.y - (_boxSize / 2),
+			pos.x + (_boxSize / 2), pos.y + (_boxSize / 2),
 			0x7fffd4, true);
 
-	posX = stageData[wCnt][tCnt].posX;
-	posY = stageData[wCnt][tCnt].posY;
-	DrawBox(posX - (_boxSize / 2), posY - (_boxSize / 2),
-			posX + (_boxSize / 2), posY + (_boxSize / 2),
+	pos.x = stageData[wCnt][tCnt].pos.x;
+	pos.y = stageData[wCnt][tCnt].pos.y;
+	DrawBox(pos.x - (_boxSize / 2), pos.y - (_boxSize / 2),
+			pos.x + (_boxSize / 2), pos.y + (_boxSize / 2),
 			0xff4500, true);
 }

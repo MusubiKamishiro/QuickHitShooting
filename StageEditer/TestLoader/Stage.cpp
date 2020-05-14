@@ -7,7 +7,8 @@
 
 std::unique_ptr<Stage, Stage::EditerDeleter> Stage::s_Instance(new Stage());
 
-Stage::Stage() : _targetCntMax(5), _screenX(1920), _screenY(1080),_waveEnd(55)
+Stage::Stage() : _targetCntMax(5), _screen(1920, 1080), 
+_gameScreen(1280, 720), _waveEnd(55)
 {
 	Init();
 	_input = std::make_unique<Input>();
@@ -21,7 +22,7 @@ Stage::~Stage()
 bool Stage::Init()
 {
 	ChangeWindowMode(true);
-	SetGraphMode(_screenX, _screenY, 32);
+	SetGraphMode(_screen.x, _screen.y, 32);
 	if (DxLib::DxLib_Init() == -1)
 	{
 		return false;
@@ -74,8 +75,8 @@ void Stage::Edit()
 			target.type			= 0;
 			target.appearTime	= 0;
 			target.dispTime		= 0;
-			target.posX			= 0;
-			target.posY			= 0;
+			target.pos.x		= 0;
+			target.pos.y		= 0;
 		}
 	}
 
@@ -106,10 +107,10 @@ void Stage::WaveUpdate()
 
 	SetFontSize(80);
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, "現在のウェーブ数", strlen("現在のウェーブ数"));
-	DrawString((_screenX / 2) - (strWidth / 2), (_screenY / 2) - strHeight, "現在のウェーブ数", 0xffffff);
+	DrawString((_screen.x / 2) - (strWidth / 2), (_screen.y / 2) - strHeight, "現在のウェーブ数", 0xffffff);
 
 	SetFontSize(140);
-	DrawFormatString((_screenX / 2), (_screenY / 2) + strHeight, 0x88ff88, "%d", _waveCnt);
+	DrawFormatString((_screen.x / 2), (_screen.y / 2) + strHeight, 0x88ff88, "%d", _waveCnt);
 }
 
 void Stage::TargetUpdate()
@@ -135,10 +136,10 @@ void Stage::TargetUpdate()
 
 	SetFontSize(80);
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, "出現する的の数", strlen("出現する的の数"));
-	DrawString((_screenX / 2) - (strWidth / 2), (_screenY / 2) - strHeight, "出現する的の数", 0xffffff);
+	DrawString((_screen.x / 2) - (strWidth / 2), (_screen.y / 2) - strHeight, "出現する的の数", 0xffffff);
 
 	SetFontSize(140);
-	DrawFormatString((_screenX / 2), (_screenY / 2) + strHeight, 0x88ff88, "%d", _targetCnt);
+	DrawFormatString((_screen.x / 2), (_screen.y / 2) + strHeight, 0x88ff88, "%d", _targetCnt);
 }
 
 void Stage::EditUpdate()
@@ -193,8 +194,8 @@ bool Stage::Save()
 				fwrite(&target.type, sizeof(target.type), 1, file);
 				fwrite(&target.dispTime, sizeof(target.dispTime), 1, file);
 				fwrite(&target.appearTime, sizeof(target.appearTime), 1, file);
-				fwrite(&target.posX, sizeof(target.posX), 1, file);
-				fwrite(&target.posY, sizeof(target.posY), 1, file);
+				fwrite(&target.pos.x, sizeof(target.pos.x), 1, file);
+				fwrite(&target.pos.y, sizeof(target.pos.y), 1, file);
 			}
 			/// ウェーブ情報のエンドポイントを書き込む
 			fwrite(&_waveEnd, sizeof(_waveEnd), 1, file);
@@ -253,12 +254,12 @@ bool Stage::Load()
 				bytePos += sizeof(target.appearTime);
 
 				/// 的のX座標
-				fread(&target.posX, sizeof(target.posX), 1, file);
-				bytePos += sizeof(target.posX);
+				fread(&target.pos.x, sizeof(target.pos.x), 1, file);
+				bytePos += sizeof(target.pos.x);
 
 				/// 的のY座標
-				fread(&target.posY, sizeof(target.posY), 1, file);
-				bytePos += sizeof(target.posY);
+				fread(&target.pos.y, sizeof(target.pos.y), 1, file);
+				bytePos += sizeof(target.pos.y);
 			}
 
 			/// 的情報の登録

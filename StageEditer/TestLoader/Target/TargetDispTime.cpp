@@ -24,7 +24,6 @@ void TargetDispTime::Update(int& wCnt, int& tCnt,
 
 	ChangeTarget(tCnt, (int)stageData[wCnt].size(), input);
 	ChangeWave(wCnt, (int)stageData.size(), input);
-	SetPosition(wCnt, tCnt, input, stageData);
 	DataConfig(wCnt, tCnt, input, stageData);
 
 	DrawString(0, 0, "“I‚ªoŒ»‚·‚é‚Ü‚Å‚ÌŠÔİ’è", 0xffffff);
