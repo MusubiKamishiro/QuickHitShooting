@@ -105,7 +105,7 @@ void Game::Run()
 					//SendData data;
 					SendDataWS2 dataws2;
 					//NetWork::Instance().Recive(data);
-					NetWorkWS2::Instance().InitializeServer();
+					NetWorkWS2::Instance().Initialize();
 					NetWorkWS2::Instance().ReciveServer(dataws2);
 					//std::cout << data.Buffer << std::endl;
 					});
