@@ -1,6 +1,6 @@
 #include <DxLib.h>
 #include "TargetAppearTime.h"
-#include "TargetType.h"
+#include "TargetPosition.h"
 
 TargetAppearTime::TargetAppearTime()
 {
@@ -17,7 +17,7 @@ void TargetAppearTime::Update(int& wCnt, int& tCnt,
 	{
 		// ターゲット位置の初期化
 		tCnt = 0;
-		Stage::GetInstance().ChagneState(new TargetType());
+		Stage::GetInstance().ChagneState(new TargetPosition());
 		return;
 	}
 
