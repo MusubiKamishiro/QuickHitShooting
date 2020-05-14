@@ -85,8 +85,6 @@ private:
 
 	int _nowWaveCnt, _nowTargetCnt;
 
-	double _screenRateX, _screenRateY;
-
 	OPENFILENAME openFileName;
 
 	// ウェーブのデータ保持用変数

@@ -32,6 +32,7 @@ bool Stage::Init()
 	SetDrawScreen(DX_SCREEN_BACK);
 
 	Wave();
+
 	return false;
 }
 
@@ -186,6 +187,11 @@ bool Stage::Save()
 		FILE* file;
 		/// フォルダーで指定したファイルを開く
 		fopen_s(&file, openFileName.lpstrFile, "wb");
+
+		/// エディターの画面サイズからゲームの画面サイズの倍率を求めている
+		Vector2<double> rate = Vector2<double>((double)_gameScreen.x / _screen.x,
+											   (double)_gameScreen.y / _screen.y);
+
 		for (auto wave : _stageData)
 		{
 			for (auto target : wave)
@@ -227,6 +233,11 @@ bool Stage::Load()
 		FILE* file;
 		/// フォルダーで指定したファイルを開く
 		fopen_s(&file, openFileName.lpstrFile, "rb");
+
+
+		/// ゲームの画面サイズからエディターの画面サイズの倍率を求めている
+		Vector2<double> rate = Vector2<double>((double)_gameScreen.x / _screen.x,
+											   (double)_gameScreen.y / _screen.y);
 		
 		TargetData target;
 		std::vector<TargetData> targetData;
@@ -255,6 +266,7 @@ bool Stage::Load()
 
 				/// 的のX座標
 				fread(&target.pos.x, sizeof(target.pos.x), 1, file);
+				target.pos.x *= _screenRate.x;
 				bytePos += sizeof(target.pos.x);
 
 				/// 的のY座標
