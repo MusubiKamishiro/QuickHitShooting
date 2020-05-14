@@ -10,7 +10,7 @@ NetWorkWS2::~NetWorkWS2()
 
 void NetWorkWS2::InitializeServer()
 {
-	Initialize();
+	//Initialize();
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(Port);
 	addr.sin_addr.S_un.S_addr = INADDR_ANY;
@@ -20,7 +20,7 @@ void NetWorkWS2::InitializeServer()
 
 void NetWorkWS2::InitializeClient(int* ip)
 {
-	Initialize();
+	//Initialize();
 	server.sin_family = AF_INET;
 	server.sin_port = htons(Port);
 	InetPton(server.sin_family,(char*)ip, &server.sin_addr.S_un.S_addr);
@@ -36,18 +36,18 @@ void NetWorkWS2::ReciveServer(SendDataWS2& data)
 		len = sizeof(client);
 		sock = accept(sock0, (sockaddr*)&client, &len);
 		send(sock, "HELLO", 5, 0);
-		int n = recv(sock, (char*)&data.Buffer, (int)data.Buffer.size(), 0);
-		std::cout << n << data.Buffer << std::endl;
 		closesocket(sock);
 	}
+	SendDataWS2 returnData;
+	returnData.Buffer = "Success";
+	SendClient(returnData);
 }
 
 void NetWorkWS2::SendClient(SendDataWS2& data)
 {
 	connect(sock, (sockaddr*)&server, sizeof(server));
-	int n = recv(sock, (char*)&data.Buffer, (int)data.Buffer.size(),0);
+	int n = recv(sock, (char*)data.Buffer.c_str(), sizeof(data.Buffer),0);
 	std::cout << n << data.Buffer << std::endl;
-	send(sock, "Recived", 7, 0);
 	closesocket(sock);
 }
 
@@ -56,8 +56,13 @@ void NetWorkWS2::Terminate()
 	WSACleanup();
 }
 
-void NetWorkWS2::Initialize()
+void NetWorkWS2::Initialize(int* ip)
 {
 	WSAStartup(MAKEWORD(2, 0), &wsaData);
 	sock0 = socket(AF_INET, SOCK_STREAM, 0);
+	if (ip == nullptr)
+	{
+		InitializeClient(ip);
+	}
+	InitializeServer();
 }

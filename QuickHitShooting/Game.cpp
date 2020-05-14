@@ -1,11 +1,11 @@
 #include "Game.h"
+#include "NetWorkWS2.h"
 #include <DxLib.h>
 #include "Peripheral.h"
 #include "Scene/SceneManager.h"
 #include "Loader/FileSystem.h"
 #include "FrameFixity/FrameFixity.h"
-#include "NetWork.h"
-#include "NetWorkWS2.h"
+//#include "NetWork.h"
 #include <iostream>
 #include <thread>
 
@@ -102,7 +102,7 @@ void Game::Run()
 			if (nowInput && !oldInput) {
 				std::thread reciveThread([]() {
 					DxLib::DxLib_Init();
-					SendData data;
+					//SendData data;
 					SendDataWS2 dataws2;
 					//NetWork::Instance().Recive(data);
 					NetWorkWS2::Instance().InitializeServer();
