@@ -10,6 +10,7 @@ class Enemy;
 class CollisionDetector;
 
 struct TargetData;
+struct GunStatus;
 
 class GamePlayingScene : public Scene
 {
@@ -37,7 +38,7 @@ private:
 	bool hitFlag;
 
 public:
-	GamePlayingScene();
+	GamePlayingScene(const GunStatus& gunState);
 	~GamePlayingScene();
 
 	void Update(const Peripheral& p);

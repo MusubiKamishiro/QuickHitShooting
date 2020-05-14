@@ -17,8 +17,6 @@ void Menu::AddMenuList(const std::string& name, const Vector2<int>& pos, const S
 {
 	MenuData md = MenuData(Rect(pos, size), img);
 	_menuTable.emplace(name, md);
-
-	_menuTable[name.c_str()];
 }
 
 bool Menu::CheckCrick(const std::string& name, const Peripheral& p)

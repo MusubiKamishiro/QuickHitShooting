@@ -10,9 +10,9 @@ class Peripheral
 {
 private:
 	int mouseState;		// マウスの入力情報
-	int oldMouseState;
+	int oldMouseState;	// 1フレーム前のマウスの入力情報
 
-	Vector2<int> mousePos;
+	Vector2<int> mousePos;	// マウスの座標
 
 public:
 	Peripheral();

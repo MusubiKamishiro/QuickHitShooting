@@ -31,14 +31,19 @@ private:
 	GunStatus _gun;
 
 public:
-	Gun();
+	Gun(const GunStatus& gunState);
 	~Gun();
 
+	///ƒ}ƒKƒWƒ“‚É’e‚ğ‚ß‚é
+	///ƒ}ƒKƒWƒ““à‚É’e‚ªc‚Á‚Ä‚¢‚Ä‚à‰Â”\
 	void Reload();
 
-	// ’e‚ª”­Ë‚³‚ê‚½‚çtrue‚ğ•Ô‚·
+	///’e‚ª”­Ë‚³‚ê‚½‚çtrue‚ğ•Ô‚·
+	///@retval true Œ‚‚Á‚½
+	///@retval false ƒ}ƒKƒWƒ““à‚É’e‚ª‚È‚¢
 	bool Shot();
 
+	///c’e”“™‚Ì•`‰æ
 	void Draw();
 };
 

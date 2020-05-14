@@ -2,6 +2,7 @@
 #include <memory>
 #include <array>
 #include "Scene.h"
+#include "../Gun.h"
 
 class TrimString;
 
@@ -14,6 +15,7 @@ private:
 	void FadeoutUpdate(const Peripheral& p);
 	void WaitUpdate(const Peripheral& p);
 
+	GunStatus _gunState;
 	std::unique_ptr<TrimString> _trimString;
 public:
 	SelectScene();

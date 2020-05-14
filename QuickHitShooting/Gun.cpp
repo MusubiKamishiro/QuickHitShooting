@@ -1,12 +1,9 @@
 #include "Gun.h"
 #include <DxLib.h>
 
-Gun::Gun()
+Gun::Gun(const GunStatus& gunState)
 {
-	_gun.maxBullets = 900;
-	_gun.remainingBullets = _gun.maxBullets;
-	_gun.maxBulletsInMagazine = 10;
-	_gun.BulletsInMagazine = _gun.maxBulletsInMagazine;
+	_gun = gunState;
 }
 
 Gun::~Gun()

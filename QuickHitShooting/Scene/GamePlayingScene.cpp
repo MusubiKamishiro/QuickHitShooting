@@ -20,14 +20,14 @@
 #include "../DeductionEnemy.h"
 #include "../CollisionDetector.h"
 
-GamePlayingScene::GamePlayingScene()
+GamePlayingScene::GamePlayingScene(const GunStatus& gunState)
 {
 	_pal = 0;
 	
 	_updater = &GamePlayingScene::FadeinUpdate;
 	_drawer  = &GamePlayingScene::TestDraw;
 
-	_gun.reset(new Gun());
+	_gun.reset(new Gun(gunState));
 	_cd.reset(new CollisionDetector());
 
 	hitFlag = false;

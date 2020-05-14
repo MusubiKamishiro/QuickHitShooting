@@ -29,7 +29,7 @@ void SelectScene::FadeoutUpdate(const Peripheral& p)
 	if (_pal <= 0)
 	{
 		
-		SceneManager::Instance().ChangeScene(std::make_unique<GamePlayingScene>());
+		SceneManager::Instance().ChangeScene(std::make_unique<GamePlayingScene>(_gunState));
 	}
 	else
 	{
@@ -51,6 +51,11 @@ SelectScene::SelectScene()
 	_trimString = std::make_unique<TrimString>();
 
 	_updater = &SelectScene::FadeinUpdate;
+
+	_gunState.maxBullets = 900;
+	_gunState.remainingBullets = _gunState.maxBullets;
+	_gunState.maxBulletsInMagazine = 10;
+	_gunState.BulletsInMagazine = _gunState.maxBulletsInMagazine;
 }
 
 SelectScene::~SelectScene()

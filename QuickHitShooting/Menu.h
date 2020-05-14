@@ -25,6 +25,7 @@ private:
 	///@param int メニューデータ
 	std::map<std::string, MenuData> _menuTable;
 
+	// 当たり判定
 	std::shared_ptr<CollisionDetector> _cd;
 
 public:
