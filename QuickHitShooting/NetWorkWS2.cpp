@@ -38,9 +38,9 @@ void NetWorkWS2::ReciveServer(SendDataWS2& data)
 		send(sock, "HELLO", 5, 0);
 		closesocket(sock);
 	}
-	SendDataWS2 returnData;
-	returnData.Buffer = "Success";
-	SendClient(returnData);
+	SendDataWS2 sendData;
+	sendData.Buffer = "Success";
+	SendClient(sendData);
 }
 
 void NetWorkWS2::SendClient(SendDataWS2& data)
@@ -49,6 +49,9 @@ void NetWorkWS2::SendClient(SendDataWS2& data)
 	int n = recv(sock, (char*)data.Buffer.c_str(), sizeof(data.Buffer),0);
 	std::cout << n << data.Buffer << std::endl;
 	closesocket(sock);
+	SendDataWS2 reciveData;
+	reciveData.Buffer = "Recive";
+	ReciveServer(reciveData);
 }
 
 void NetWorkWS2::Terminate()
@@ -61,9 +64,6 @@ void NetWorkWS2::Initialize(const std::string& ip)
 	WSAStartup(MAKEWORD(2, 0), &wsaData);
 	sock0 = socket(AF_INET, SOCK_STREAM, 0);
 	sock = socket(AF_INET, SOCK_STREAM, 0);
-	if (ip != "")
-	{
-		InitializeClient(ip);
-	}
+	InitializeClient(ip);
 	InitializeServer();
 }

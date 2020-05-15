@@ -40,7 +40,7 @@ public:
 		return instance;
 	}
 	~NetWorkWS2();
-	void Initialize(const std::string& ip = "");
+	void Initialize(const std::string& ip);
 	void ReciveServer(SendDataWS2& data);
 	void SendClient(SendDataWS2& data);
 	void Terminate();
