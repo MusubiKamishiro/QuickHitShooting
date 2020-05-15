@@ -102,12 +102,9 @@ void Game::Run()
 			if (nowInput && !oldInput) {
 				std::thread reciveThread([]() {
 					DxLib::DxLib_Init();
-					//SendData data;
 					SendDataWS2 dataws2;
-					//NetWork::Instance().Recive(data);
 					NetWorkWS2::Instance().Initialize("192.168.11.47");
-					NetWorkWS2::Instance().ReciveServer(dataws2);
-					//std::cout << data.Buffer << std::endl;
+					NetWorkWS2::Instance().SendServer(dataws2);
 					});
 				reciveThread.detach();
 			}

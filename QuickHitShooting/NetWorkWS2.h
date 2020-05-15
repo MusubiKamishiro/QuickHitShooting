@@ -41,8 +41,8 @@ public:
 	}
 	~NetWorkWS2();
 	void Initialize(const std::string& ip);
-	void ReciveServer(SendDataWS2& data);
-	void SendClient(SendDataWS2& data);
+	void SendServer(SendDataWS2& data);
+	void RecivedClient(SendDataWS2& data);
 	void Terminate();
 };
 
