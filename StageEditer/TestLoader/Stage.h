@@ -77,6 +77,10 @@ private:
 	bool Save();
 	bool Load();
 
+	bool IsReset();
+	bool IsSave();
+	bool IsLoad();
+
 	void Draw();
 
 	// ウェーブ数のカウント保存用
