@@ -8,6 +8,7 @@
 class Gun;
 class Enemy;
 class CollisionDetector;
+class Menu;
 
 struct TargetData;
 struct GunStatus;
@@ -29,6 +30,7 @@ private:
 
 	std::shared_ptr<Gun> _gun;
 	std::shared_ptr<CollisionDetector> _cd;
+	std::shared_ptr<Menu> _menu;
 
 	/// ‰¼‚Å•¡”‚Ì“G‚ğoŒ»‚³‚¹‚Ä‚¢‚é
 	std::vector<std::shared_ptr<Enemy>> _enemies;

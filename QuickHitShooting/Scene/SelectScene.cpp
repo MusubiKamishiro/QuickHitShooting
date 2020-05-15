@@ -19,7 +19,7 @@ SelectScene::SelectScene()
 
 	ImageData data;
 	Game::Instance().GetFileSystem()->Load("img/gun.png", data);
-	_img = data.GetHandle();
+	int img = data.GetHandle();
 
 	_menu.reset(new Menu());
 	_gunState.name = "Gun1";
@@ -27,21 +27,21 @@ SelectScene::SelectScene()
 	_gunState.remainingBullets = _gunState.maxBullets;
 	_gunState.maxBulletsInMagazine = 10;
 	_gunState.BulletsInMagazine = _gunState.maxBulletsInMagazine;
-	AddGunMenu(_gunState, Vector2<int>(300, 600), Size(400, 200), _img);
+	AddGunMenu(_gunState, Vector2<int>(300, 600), Size(400, 200), img);
 
 	_gunState.name = "Gun2";
 	_gunState.maxBullets = 500;
 	_gunState.remainingBullets = _gunState.maxBullets;
 	_gunState.maxBulletsInMagazine = 10;
 	_gunState.BulletsInMagazine = _gunState.maxBulletsInMagazine;
-	AddGunMenu(_gunState, Vector2<int>(650, 600), Size(400, 200), _img);
+	AddGunMenu(_gunState, Vector2<int>(650, 600), Size(400, 200), img);
 
 	_gunState.name = "Gun3";
 	_gunState.maxBullets = 300;
 	_gunState.remainingBullets = _gunState.maxBullets;
 	_gunState.maxBulletsInMagazine = 40;
 	_gunState.BulletsInMagazine = _gunState.maxBulletsInMagazine;
-	AddGunMenu(_gunState, Vector2<int>(1000, 600), Size(400, 200), _img);
+	AddGunMenu(_gunState, Vector2<int>(1000, 600), Size(400, 200), img);
 
 	_updater = &SelectScene::FadeinUpdate;
 }

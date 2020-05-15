@@ -21,7 +21,6 @@ private:
 	std::shared_ptr<Menu> _menu;
 	GunStatus _gunState;
 
-	int _img;
 	std::vector<GunStatus> _gunStatus;
 	
 	///e‚Ìƒƒjƒ…[‚Ì’Ç‰Á

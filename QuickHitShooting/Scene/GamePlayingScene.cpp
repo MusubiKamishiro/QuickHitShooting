@@ -7,11 +7,11 @@
 #include "../Peripheral.h"
 
 #include "../Game.h"
-
 #include "../Loader/FileSystem.h"
 #include "../Loader/ImageLoader.h"
 #include "../Loader/SoundLoader.h"
 #include "../Loader/StageLoader.h"
+#include "../Menu.h"
 
 #include "../Gun.h"
 #include "../Enemy.h"
@@ -29,6 +29,12 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState)
 
 	_gun.reset(new Gun(gunState));
 	_cd.reset(new CollisionDetector());
+	_menu.reset(new Menu());
+
+	ImageData data;
+	Game::Instance().GetFileSystem()->Load("img/pause.png", data);
+	int i = data.GetHandle();
+	_menu->AddMenuList("pause", Vector2<int>(_scrSize.x - 25, 25), Size(50, 50), i);
 
 	hitFlag = false;
 
@@ -131,6 +137,12 @@ void GamePlayingScene::WaitUpdate(const Peripheral & p)
 	{
 		_gun->Reload();
 	}
+
+	//ポーズボタンを押したらポーズシーンに切り替え
+	if (_menu->CheckCrick("pause", p))
+	{
+		SceneManager::Instance().PushScene(std::make_unique<PauseScene>());
+	}
 }
 
 void GamePlayingScene::TestDraw()
@@ -141,6 +153,7 @@ void GamePlayingScene::TestDraw()
 	}
 
 	_gun->Draw();
+	_menu->Draw();
 
 	if (hitFlag)
 	{

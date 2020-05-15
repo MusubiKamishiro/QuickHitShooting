@@ -1,9 +1,12 @@
 #include "Gun.h"
 #include <DxLib.h>
+#include "Game.h"
+#include "TrimString.h"
 
 Gun::Gun(const GunStatus& gunState)
 {
 	_gun = gunState;
+	_trimString.reset(new TrimString());
 }
 
 Gun::~Gun()
@@ -35,6 +38,9 @@ bool Gun::Shot()
 
 void Gun::Draw()
 {
-	DxLib::DrawFormatString(200, 200, 0xff0000, "残弾数：%d", _gun.remainingBullets);
-	DxLib::DrawFormatString(200, 300, 0xff0000, "マガジン内残弾数：%d", _gun.BulletsInMagazine);
+	Vector2<int> ssize = Game::Instance().GetScreenSize();
+	_trimString->ChangeFontSize(30);
+
+	DxLib::DrawFormatString(750, ssize.y - _trimString->GetFontSize(), 0xff0000, "残弾数：%d", _gun.remainingBullets);
+	DxLib::DrawFormatString(950, ssize.y - _trimString->GetFontSize(), 0xff0000, "マガジン内残弾数：%d", _gun.BulletsInMagazine);
 }

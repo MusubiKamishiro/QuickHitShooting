@@ -1,5 +1,8 @@
 #pragma once
 #include <string>
+#include <memory>
+
+class TrimString;
 
 // e‚Ìí—Ş
 enum class GunType
@@ -29,6 +32,7 @@ class Gun
 {
 private:
 	GunStatus _gun;
+	std::unique_ptr<TrimString> _trimString;
 
 public:
 	Gun(const GunStatus& gunState);

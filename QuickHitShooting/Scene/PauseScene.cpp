@@ -18,10 +18,10 @@ void PauseScene::FadeoutUpdate(const Peripheral & p)
 
 void PauseScene::WaitUpdate(const Peripheral & p)
 {
-	/*if (p.IsTrigger(0, "PAUSE"))
+	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
-		updater = &PauseScene::FadeoutUpdate;
-	}*/
+		_updater = &PauseScene::FadeoutUpdate;
+	}
 }
 
 PauseScene::PauseScene()
