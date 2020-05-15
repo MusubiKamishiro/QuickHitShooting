@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include "../Stage.h"
 #include "TargetType.h"
 #include "TargetDispTime.h"
 
@@ -24,14 +25,40 @@ void TargetType::Update(int& wCnt, int& tCnt,
 
 	ChangeTarget(tCnt, (int)stageData[wCnt].size(), input);
 	ChangeWave(wCnt, (int)stageData.size(), input);
+	
 	DataConfig(wCnt, tCnt, input, stageData);
 	//// フォントサイズの変更を忘れないようにしておく
-	DrawString(0, 0, "的IDの設定", 0xffffff);
+
+	Draw(wCnt, tCnt, stageData);
 
 	DebugDraw(wCnt, tCnt, stageData);
 }
 
-void TargetType::DataConfig(const int& wCnt, const int& tCnt, 
+void TargetType::Draw(const int& wCnt, const int& tCnt, const vec2_target stageData)
+{
+	SetFontSize(40);
+	Vector2<int> drawPos;
+	int strWidth, strHeight;
+	std::string text;
+
+	/// 現在、設定している的の状態描画
+	text = "的IDの設定";
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, text.c_str(), strlen(text.c_str()));
+	DrawString((Stage::GetInstance().GetScreenSize().x / 4) - (strWidth / 2), 0,
+				text.c_str(), 0xffffff);
+
+	/// ウェーブ数の設定
+	text = "現在のウェーブ数 : " + std::to_string(wCnt);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, text.c_str(), strlen(text.c_str()));
+
+	drawPos.x = Stage::GetInstance().GetScreenSize().x -
+			   (Stage::GetInstance().GetScreenSize().x / 8) - (strWidth / 2);
+	drawPos.y = strHeight / 2;
+	
+	DrawString(drawPos.x, drawPos.y, text.c_str(), 0xffffff);
+}
+
+void TargetType::DataConfig(const int& wCnt, const int& tCnt,
 							const unique_input& input, vec2_target& stageData)
 {
 	// 的IDの最大値の取得

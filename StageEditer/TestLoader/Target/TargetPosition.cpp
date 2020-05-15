@@ -22,6 +22,10 @@ void TargetPosition::Update(int& wCnt, int& tCnt, const unique_input& input, vec
 	DataConfig(wCnt, tCnt, input, stageData);
 }
 
+void TargetPosition::Draw(const int& wCnt, const int& tCnt, const vec2_target stageData)
+{
+}
+
 void TargetPosition::DataConfig(const int& wCnt, const int& tCnt,
 								const unique_input& input, vec2_target& stageData)
 {

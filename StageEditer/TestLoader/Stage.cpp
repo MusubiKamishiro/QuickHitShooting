@@ -162,7 +162,7 @@ void Stage::EditUpdate()
 	}
 
 	/// ƒZ[ƒuˆ—
-	if (IsSave)
+	if (IsSave())
 	{
 		Save();
 	}
@@ -378,6 +378,11 @@ void Stage::Update()
 void Stage::ChagneState(TargetState* targetState)
 {
 	_targetState.reset(targetState);
+}
+
+Vector2<int> Stage::GetScreenSize() const
+{
+	return _screen;
 }
 
 void Stage::Draw()

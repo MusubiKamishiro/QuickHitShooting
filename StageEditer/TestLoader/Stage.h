@@ -48,6 +48,7 @@ public:
 	void Update();
 
 	void ChagneState(TargetState* targetState);
+	Vector2<int> GetScreenSize() const;
 private:
 	Stage();
 	~Stage();

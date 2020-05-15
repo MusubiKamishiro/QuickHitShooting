@@ -31,6 +31,10 @@ void TargetDispTime::Update(int& wCnt, int& tCnt,
 	DebugDraw(wCnt, tCnt, stageData);
 }
 
+void TargetDispTime::Draw(const int& wCnt, const int& tCnt, const vec2_target stageData)
+{
+}
+
 void TargetDispTime::DataConfig(const int& wCnt, const int& tCnt, 
 								const unique_input& input, vec2_target& stageData)
 {
