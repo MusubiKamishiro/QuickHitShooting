@@ -114,18 +114,14 @@ void GamePlayingScene::FadeoutUpdate(const Peripheral & p)
 
 void GamePlayingScene::WaitUpdate(const Peripheral & p)
 {
-	/*if (p.IsTrigger(MOUSE_INPUT_LEFT))
-	{
-		_updater = &GamePlayingScene::FadeoutUpdate;
-	}*/
-	Rect r;
-	r = Rect(100, 100, 200, 200);
-
 	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
+		_gun->Shot();
+		Vector2<int> pos = p.GetMousePos();
+
 		for (auto enemy : _enemies)
 		{
-			if (_gun->Shot() && _cd->IsCollision(p.GetMousePos(), enemy->GetRect()))
+			if (_cd->IsCollision(pos, enemy->GetRect()))
 			{
 				hitFlag = true;
 			}
