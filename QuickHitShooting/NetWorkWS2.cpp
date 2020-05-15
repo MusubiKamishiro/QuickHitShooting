@@ -18,12 +18,12 @@ void NetWorkWS2::InitializeServer()
 	listen(sock0, 5);
 }
 
-void NetWorkWS2::InitializeClient(int* ip)
+void NetWorkWS2::InitializeClient(const std::string& ip)
 {
 	//Initialize();
 	server.sin_family = AF_INET;
 	server.sin_port = htons(Port);
-	InetPton(server.sin_family,(char*)ip, &server.sin_addr.S_un.S_addr);
+	InetPton(server.sin_family,ip.c_str(), &server.sin_addr.S_un.S_addr);
 	if (server.sin_addr.S_un.S_addr == 0xffffff) {
 		assert(-1);
 	}
@@ -56,11 +56,12 @@ void NetWorkWS2::Terminate()
 	WSACleanup();
 }
 
-void NetWorkWS2::Initialize(int* ip)
+void NetWorkWS2::Initialize(const std::string& ip)
 {
 	WSAStartup(MAKEWORD(2, 0), &wsaData);
 	sock0 = socket(AF_INET, SOCK_STREAM, 0);
-	if (ip == nullptr)
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (ip != "")
 	{
 		InitializeClient(ip);
 	}

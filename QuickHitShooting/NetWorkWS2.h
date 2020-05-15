@@ -17,7 +17,7 @@ private:
 	void operator=(const NetWorkWS2&) {};
 
 	void InitializeServer();
-	void InitializeClient(int* ip);
+	void InitializeClient(const std::string& ip);
 
 	// ã§óLïœêî
 	WSADATA wsaData = {};
@@ -40,7 +40,7 @@ public:
 		return instance;
 	}
 	~NetWorkWS2();
-	void Initialize(int* ip = nullptr);
+	void Initialize(const std::string& ip = "");
 	void ReciveServer(SendDataWS2& data);
 	void SendClient(SendDataWS2& data);
 	void Terminate();
