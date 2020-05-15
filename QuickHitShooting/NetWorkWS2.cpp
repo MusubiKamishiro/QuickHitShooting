@@ -36,11 +36,11 @@ void NetWorkWS2::ReciveServer(SendDataWS2& data)
 		len = sizeof(client);
 		sock = accept(sock0, (sockaddr*)&client, &len);
 		send(sock, "HELLO", 5, 0);
+		SendDataWS2 returnData;
+		recv(sock, (char*)returnData.Buffer.c_str(), sizeof(returnData.Buffer), 0);
+		std::cout << returnData.Buffer << std::endl;
 		closesocket(sock);
 	}
-	SendDataWS2 sendData;
-	sendData.Buffer = "Success";
-	SendClient(sendData);
 }
 
 void NetWorkWS2::SendClient(SendDataWS2& data)
@@ -48,10 +48,11 @@ void NetWorkWS2::SendClient(SendDataWS2& data)
 	connect(sock, (sockaddr*)&server, sizeof(server));
 	int n = recv(sock, (char*)data.Buffer.c_str(), sizeof(data.Buffer),0);
 	std::cout << n << data.Buffer << std::endl;
-	closesocket(sock);
 	SendDataWS2 reciveData;
-	reciveData.Buffer = "Recive";
-	ReciveServer(reciveData);
+	len = sizeof(client);
+	sock = accept(sock0, (sockaddr*)&client, &len);
+	send(sock, "Success", 7, 0);
+	closesocket(sock);
 }
 
 void NetWorkWS2::Terminate()
