@@ -103,15 +103,16 @@ void Stage::WaveUpdate()
 	}
 	else {}
 
-	int strWidth, strHeight;
-	strWidth = strHeight = 0;
+	Vector2<int> strSize;
 
 	SetFontSize(80);
-	GetDrawStringSize(&strWidth, &strHeight, nullptr, "現在のウェーブ数", strlen("現在のウェーブ数"));
-	DrawString((_screen.x / 2) - (strWidth / 2), (_screen.y / 2) - strHeight, "現在のウェーブ数", 0xffffff);
+	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, "現在のウェーブ数", strlen("現在のウェーブ数"));
+	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) - strSize.y, "現在のウェーブ数", 0xffffff);
 
 	SetFontSize(140);
-	DrawFormatString((_screen.x / 2), (_screen.y / 2) + strHeight, 0x88ff88, "%d", _waveCnt);
+	GetDrawStringSize(&strSize.x, &strSize.y, nullptr,
+					   std::to_string(_waveCnt).c_str(), strlen(std::to_string(_waveCnt).c_str()));
+	DrawFormatString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) + (strSize.y / 2), 0x88ff88, "%d", _waveCnt);
 }
 
 void Stage::TargetUpdate()
@@ -134,15 +135,16 @@ void Stage::TargetUpdate()
 	}
 	else {}
 
-	int strWidth, strHeight;
-	strWidth = strHeight = 0;
+	Vector2<int> strSize;
 
 	SetFontSize(80);
-	GetDrawStringSize(&strWidth, &strHeight, nullptr, "出現する的の数", strlen("出現する的の数"));
-	DrawString((_screen.x / 2) - (strWidth / 2), (_screen.y / 2) - strHeight, "出現する的の数", 0xffffff);
+	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, "出現する的の数", strlen("出現する的の数"));
+	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) - strSize.y, "出現する的の数", 0xffffff);
 
 	SetFontSize(140);
-	DrawFormatString((_screen.x / 2), (_screen.y / 2) + strHeight, 0x88ff88, "%d", _targetCnt);
+	GetDrawStringSize(&strSize.x, &strSize.y, nullptr,
+					   std::to_string(_targetCnt).c_str(), strlen(std::to_string(_targetCnt).c_str()));
+	DrawFormatString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) + (strSize.y / 2), 0x88ff88, "%d", _targetCnt);
 }
 
 void Stage::EditUpdate()

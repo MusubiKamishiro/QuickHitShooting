@@ -1,5 +1,4 @@
 #include <DxLib.h>
-#include "../Stage.h"
 #include "TargetType.h"
 #include "TargetDispTime.h"
 
@@ -31,31 +30,40 @@ void TargetType::Update(int& wCnt, int& tCnt,
 
 	Draw(wCnt, tCnt, stageData);
 
-	DebugDraw(wCnt, tCnt, stageData);
+	//DebugDraw(wCnt, tCnt, stageData);
 }
 
 void TargetType::Draw(const int& wCnt, const int& tCnt, const vec2_target stageData)
 {
-	SetFontSize(40);
-	Vector2<int> drawPos;
-	int strWidth, strHeight;
-	std::string text;
-
-	/// 現在、設定している的の状態描画
-	text = "的IDの設定";
-	GetDrawStringSize(&strWidth, &strHeight, nullptr, text.c_str(), strlen(text.c_str()));
-	DrawString((Stage::GetInstance().GetScreenSize().x / 4) - (strWidth / 2), 0,
-				text.c_str(), 0xffffff);
-
-	/// ウェーブ数の設定
-	text = "現在のウェーブ数 : " + std::to_string(wCnt);
-	GetDrawStringSize(&strWidth, &strHeight, nullptr, text.c_str(), strlen(text.c_str()));
-
-	drawPos.x = Stage::GetInstance().GetScreenSize().x -
-			   (Stage::GetInstance().GetScreenSize().x / 8) - (strWidth / 2);
-	drawPos.y = strHeight / 2;
+	/// 設定中の状態描画
+	SetFontSize(60);
+	_text	  = "的IDの設定";
+	_drawPos.x = Stage::GetInstance().GetScreenSize().x / 9;
+	_drawPos.y = 0;
+	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x7fffd4);
 	
-	DrawString(drawPos.x, drawPos.y, text.c_str(), 0xffffff);
+	/// ウェーブ数の設定
+	_text = "現在のウェーブ数 : " + std::to_string(wCnt);
+	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
+	_drawPos.x = Stage::GetInstance().GetScreenSize().x - _strSize.x - (_strSize.x / 3);
+	_drawPos.y = 0;
+	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffff9e);
+
+	/// 現在のターゲットの表示
+	SetFontSize(100);
+	_text = "設定しているターゲット";
+	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
+	_drawPos.x = (Stage::GetInstance().GetScreenSize().x / 2) - (_strSize.x / 2);
+	_drawPos.y = (Stage::GetInstance().GetScreenSize().y / 5) - (_strSize.y / 2);
+	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffffff);
+
+	SetFontSize(150);
+	_text	  = std::to_string(stageData[wCnt][tCnt].type + 1) + " / " + 
+				std::to_string(stageData[wCnt].size());
+	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
+	_drawPos.x = (Stage::GetInstance().GetScreenSize().x / 2) - (_strSize.x / 2);
+	_drawPos.y = (Stage::GetInstance().GetScreenSize().y / 3) - (_strSize.y / 3);
+	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffffff);
 }
 
 void TargetType::DataConfig(const int& wCnt, const int& tCnt,

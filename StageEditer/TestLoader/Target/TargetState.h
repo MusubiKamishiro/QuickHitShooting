@@ -19,6 +19,9 @@ protected:
 	void ChangeWave(int& wCnt, const int& wCntMax, const unique_input& input);
 
 	void DebugDraw(const int& wCnt, const int& tCnt, vec2_target stageData);
+
+	Vector2<int> _drawPos, _strSize;
+	std::string _text;
 private:
 	
 	virtual void Draw(const int& wCnt, const int& tCnt,
