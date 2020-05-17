@@ -76,8 +76,8 @@ void Stage::Edit()
 			target.type			= 0;
 			target.appearTime	= 60;
 			target.dispTime		= 60;
-			target.pos.x		= _screen.x;
-			target.pos.y		= _screen.y;
+			target.pos.x		= _screen.x / 2;
+			target.pos.y		= _screen.y / 2;
 		}
 	}
 
