@@ -16,5 +16,10 @@ private:
 			  const vec2_target stageData) override;
 	void DataConfig(const int& wCnt, const int& tCnt, const unique_input& input,
 					vec2_target& stageData) override;
+
+	/// 的のID用テキスト(ID用の画像はゲームの的が確定してから差し替える)
+	const std::string _idText[static_cast<int>(TargetID::MAX)] = {
+		"Normal", "Special", "Deducation"
+	};
 };
 

@@ -18,8 +18,6 @@ protected:
 	// 設定するウェーブの変更
 	void ChangeWave(int& wCnt, const int& wCntMax, const unique_input& input);
 
-	void DebugDraw(const int& wCnt, const int& tCnt, vec2_target stageData);
-
 	Vector2<int> _drawPos, _strSize;
 	std::string _text;
 private:

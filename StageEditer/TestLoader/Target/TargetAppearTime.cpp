@@ -26,8 +26,6 @@ void TargetAppearTime::Update(int& wCnt, int& tCnt,
 	DataConfig(wCnt, tCnt, input, stageData);
 
 	DrawString(0, 0, "“I‚ªÁ‚¦‚é‚Ü‚Å‚ÌŠÔİ’è", 0xffffff);
-
-	DebugDraw(wCnt, tCnt, stageData);
 }
 
 void TargetAppearTime::Draw(const int& wCnt, const int& tCnt, const vec2_target stageData)
