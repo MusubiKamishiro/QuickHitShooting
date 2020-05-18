@@ -1,8 +1,10 @@
+#include <cmath>
 #include "TargetPosition.h"
 #include "TargetType.h"
 
-TargetPosition::TargetPosition()
+TargetPosition::TargetPosition() : _alphaMax(256)
 {
+	_alpha = 0;
 }
 
 TargetPosition::~TargetPosition()
@@ -60,21 +62,30 @@ void TargetPosition::Draw(const int& wCnt, const int& tCnt, const vec2_target st
 	_drawPos.y = _strSize.y;
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffffff);
 
-	/// ターゲット座標の表示
-	DrawBox(stageData[wCnt][tCnt].pos.x, stageData[wCnt][tCnt].pos.y,
-			stageData[wCnt][tCnt].pos.x + 50, stageData[wCnt][tCnt].pos.y + 50,
-			0xffff0f, true);
-
 	/// 全てのターゲットの出現時間の表示
 	bool configTarget = true;			/// 設定中の色
+	int thickSize	  = 6;
 	for (int i = 0; i < stageData[wCnt].size(); ++i)
 	{
 		configTarget = (i == tCnt ? true : false);
 		/// ターゲット座標の表示
-		DrawBox(stageData[wCnt][i].pos.x, stageData[wCnt][i].pos.y,
-				stageData[wCnt][i].pos.x + 50, stageData[wCnt][i].pos.y + 50,
-				0xffff0f, configTarget);
+		DrawBoxAA(stageData[wCnt][i].pos.x, stageData[wCnt][i].pos.y,
+				  stageData[wCnt][i].pos.x + 50, stageData[wCnt][i].pos.y + 50,
+				  _typeColor[stageData[wCnt][i].type], 
+				  configTarget, thickSize);
 	}
+
+	/// 設定中のターゲットの表示
+	_alpha = (_alpha + 8) % (_alphaMax * 2);
+	thickSize /= 2;
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, abs(_alpha - _alphaMax));
+
+	DrawBox(stageData[wCnt][tCnt].pos.x - thickSize, stageData[wCnt][tCnt].pos.y - thickSize,
+		stageData[wCnt][tCnt].pos.x + 50 + thickSize, stageData[wCnt][tCnt].pos.y + 50 + thickSize,
+		0xffffff, true);
+
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
 }
 
 void TargetPosition::DataConfig(const int& wCnt, const int& tCnt,
