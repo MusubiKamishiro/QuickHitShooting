@@ -117,6 +117,14 @@ void Stage::WaveUpdate()
 
 void Stage::TargetUpdate()
 {
+	/// ウェーブモードに移行する
+	if (_input->IsTrigger(KEY_INPUT_F1))
+	{
+		Wave();
+		return;
+	}
+
+	/// エディットモードに移行する
 	if (_input->IsTrigger(KEY_INPUT_SPACE))
 	{
 		Edit();
@@ -149,6 +157,8 @@ void Stage::TargetUpdate()
 
 void Stage::EditUpdate()
 {
+	/// ターゲット情報の更新
+	_targetState->Update(_nowWaveCnt, _nowTargetCnt, _input, _stageData);
 	/// ステージデータの初期化
 	if (IsReset())
 	{
@@ -168,9 +178,7 @@ void Stage::EditUpdate()
 	{
 		Save();
 	}
-	
-	/// ターゲット情報の更新
-	_targetState->Update(_nowWaveCnt, _nowTargetCnt, _input, _stageData);
+
 }
 
 bool Stage::IsReset()
@@ -293,7 +301,7 @@ bool Stage::Load()
 		_stageData.clear();
 		FILE* file;
 		/// フォルダーで指定したファイルを開く
-		if (fopen_s(&file, openFileName.lpstrFile, "rb") == 0)
+ 		if (fopen_s(&file, openFileName.lpstrFile, "rb") == 0)
 		{
 			/// ゲームの画面サイズからエディターの画面サイズの倍率を求めている
 			Vector2<double> rate = Vector2<double>((double)_screen.x / _gameScreen.x,
