@@ -199,8 +199,6 @@ std::shared_ptr<Enemy> GamePlayingScene::GetEnemyInfo(const TargetData& target)
 
 void GamePlayingScene::Update(const Peripheral& p)
 {
-	(this->*_updater)(p);
-
 	for (auto& enemy : _enemies)
 	{
 		enemy->Update();
@@ -215,6 +213,8 @@ void GamePlayingScene::Update(const Peripheral& p)
 
 	/// “G‚Ìíœ
 	_enemies.erase(result, _enemies.end());
+
+	(this->*_updater)(p);
 }
 
 void GamePlayingScene::Draw()
