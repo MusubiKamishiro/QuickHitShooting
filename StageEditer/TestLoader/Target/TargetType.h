@@ -19,7 +19,7 @@ private:
 
 	/// 的のID用テキスト(ID用の画像はゲームの的が確定してから差し替える)
 	const std::string _idText[static_cast<int>(TargetID::MAX)] = {
-		"Normal", "Special", "Deducation"
+		"通常", "特別", "減点"
 	};
 };
 

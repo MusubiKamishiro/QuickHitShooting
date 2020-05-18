@@ -36,7 +36,7 @@ using unique_state = std::unique_ptr<TargetState>;
 class Stage
 {
 public:
-	static Stage& GetInstance()
+	static Stage& Instance()
 	{
 		/// シングルトンの中身が空の時に生成する
 		if (!s_Instance)

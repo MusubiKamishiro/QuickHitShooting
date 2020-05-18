@@ -3,6 +3,6 @@
 
 int main()
 {
-	Stage::GetInstance().Update();
+	Stage::Instance().Update();
 	return 0;
 }

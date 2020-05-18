@@ -17,7 +17,7 @@ void TargetAppearTime::Update(int& wCnt, int& tCnt,
 	{
 		// ターゲット位置の初期化
 		tCnt = 0;
-		Stage::GetInstance().ChagneState(new TargetPosition());
+		Stage::Instance().ChagneState(new TargetPosition());
 		return;
 	}
 
@@ -54,23 +54,21 @@ void TargetAppearTime::Draw(const int& wCnt, const int& tCnt, const vec2_target 
 	SetFontSize(100);
 	_text = "targetCount";
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
-	_drawPos.x = (Stage::GetInstance().GetScreenSize().x / 2) - (_strSize.x / 2);
-	_drawPos.y = (Stage::GetInstance().GetScreenSize().y / 5) + (_strSize.y / 2);
+	_drawPos.x = (Stage::Instance().GetScreenSize().x / 2) - (_strSize.x / 2);
+	_drawPos.y = (Stage::Instance().GetScreenSize().y / 5) + (_strSize.y / 2);
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffffff);
 
-	SetFontSize(120);
 	_text = std::to_string(tCnt + 1) + " / " + std::to_string(stageData[wCnt].size());
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
-	_drawPos.x = (Stage::GetInstance().GetScreenSize().x / 2) - (_strSize.x / 2);
-	_drawPos.y = (Stage::GetInstance().GetScreenSize().y / 3) + (_strSize.y / 2);
+	_drawPos.x = (Stage::Instance().GetScreenSize().x / 2) - (_strSize.x / 2);
+	_drawPos.y = (Stage::Instance().GetScreenSize().y / 3) + (_strSize.y / 2);
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffffff);
 
 	/// ターゲットが出現してから消えるまでの時間表示
-	SetFontSize(100);
-	_text = "now Appear Time : " + std::to_string(stageData[wCnt][tCnt].appearTime);
+	_text	   = "now Appear Time : " + std::to_string(stageData[wCnt][tCnt].appearTime);
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
-	_drawPos.x = (Stage::GetInstance().GetScreenSize().x / 5);
-	_drawPos.y = Stage::GetInstance().GetScreenSize().y - (_strSize.y * 4);
+	_drawPos.x = (Stage::Instance().GetScreenSize().x / 5);
+	_drawPos.y = (Stage::Instance().GetScreenSize().y / 2) + _strSize.y;
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffffff);
 }
 

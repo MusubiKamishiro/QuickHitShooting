@@ -14,7 +14,7 @@ void TargetPosition::Update(int& wCnt, int& tCnt, const unique_input& input, vec
 	if (input->IsTrigger(KEY_INPUT_SPACE))
 	{
 		tCnt = 0;
-		Stage::GetInstance().ChagneState(new TargetType());
+		Stage::Instance().ChagneState(new TargetType());
 		return;
 	}
 	ChangeTarget(tCnt, (int)stageData[wCnt].size(), input);
@@ -36,26 +36,26 @@ void TargetPosition::Draw(const int& wCnt, const int& tCnt, const vec2_target st
 	/// ウェーブ数の表示
 	_text = "waveCount";
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
-	_drawPos.x = (Stage::GetInstance().GetScreenSize().x / 2) - (_strSize.x / 2);
+	_drawPos.x = (Stage::Instance().GetScreenSize().x / 2) - (_strSize.x / 2);
 	_drawPos.y = 0;
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffff9e);
 
 	_text = std::to_string(wCnt + 1) + " / " + std::to_string(stageData.size());
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
-	_drawPos.x = (Stage::GetInstance().GetScreenSize().x / 2) - (_strSize.x / 2);
+	_drawPos.x = (Stage::Instance().GetScreenSize().x / 2) - (_strSize.x / 2);
 	_drawPos.y = _strSize.y;
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffff9e);
 
 	/// ターゲット数の表示
 	_text = "targetCount";
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
-	_drawPos.x = Stage::GetInstance().GetScreenSize().x - (Stage::GetInstance().GetScreenSize().x / 10) - (_strSize.x / 2);
+	_drawPos.x = Stage::Instance().GetScreenSize().x - (Stage::Instance().GetScreenSize().x / 10) - (_strSize.x / 2);
 	_drawPos.y = 0;
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffffff);
 
 	_text = std::to_string(tCnt + 1) + " / " + std::to_string(stageData[wCnt].size());
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
-	_drawPos.x = Stage::GetInstance().GetScreenSize().x - (Stage::GetInstance().GetScreenSize().x / 10) - (_strSize.x / 2);
+	_drawPos.x = Stage::Instance().GetScreenSize().x - (Stage::Instance().GetScreenSize().x / 10) - (_strSize.x / 2);
 	_drawPos.y = _strSize.y;
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffffff);
 
