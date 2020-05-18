@@ -80,7 +80,7 @@ void TargetType::Draw(const int& wCnt, const int& tCnt, const vec2_target stageD
 	for (int i = 0; i < stageData[wCnt].size(); ++i)
 	{
 		configColor = (i == tCnt ? 0xffff00 : 0xffffff);
-		_text = std::to_string(i + 1) + " : " + _idText[stageData[wCnt][i].type];
+		_text	   = std::to_string(i + 1) + " : " + _idText[stageData[wCnt][i].type];
 		GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
 		_drawPos.x = Stage::Instance().GetScreenSize().x - _strSize.x;
 		_drawPos.y = (_strSize.y * i);

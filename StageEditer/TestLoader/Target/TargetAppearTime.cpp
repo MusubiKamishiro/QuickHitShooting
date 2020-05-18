@@ -17,6 +17,7 @@ void TargetAppearTime::Update(int& wCnt, int& tCnt,
 	{
 		// ターゲット位置の初期化
 		tCnt = 0;
+		wCnt = 0;
 		Stage::Instance().ChagneState(new TargetPosition());
 		return;
 	}
@@ -70,6 +71,20 @@ void TargetAppearTime::Draw(const int& wCnt, const int& tCnt, const vec2_target 
 	_drawPos.x = (Stage::Instance().GetScreenSize().x / 5);
 	_drawPos.y = (Stage::Instance().GetScreenSize().y / 2) + _strSize.y;
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffffff);
+
+	/// 全てのターゲットの出現してから消えるまでの時間表示
+	SetFontSize(60);
+	int configColor = 0;			/// 設定中の色
+	for (int i = 0; i < stageData[wCnt].size(); ++i)
+	{
+		configColor = (i == tCnt ? 0xffff00 : 0xffffff);
+		_text	   = std::to_string(i + 1) + " : " + std::to_string(stageData[wCnt][i].appearTime);
+		GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
+		_drawPos.x = Stage::Instance().GetScreenSize().x - _strSize.x;
+		_drawPos.y = (_strSize.y * i);
+
+		DrawString(_drawPos.x, _drawPos.y, _text.c_str(), configColor);
+	}
 }
 
 void TargetAppearTime::DataConfig(const int& wCnt, const int& tCnt, const unique_input& input, vec2_target& stageData)

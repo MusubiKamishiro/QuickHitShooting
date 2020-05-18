@@ -296,8 +296,8 @@ bool Stage::Load()
 		if (fopen_s(&file, openFileName.lpstrFile, "rb") == 0)
 		{
 			/// ゲームの画面サイズからエディターの画面サイズの倍率を求めている
-			Vector2<double> rate = Vector2<double>((double)_gameScreen.x / _screen.x,
-				(double)_gameScreen.y / _screen.y);
+			Vector2<double> rate = Vector2<double>((double)_screen.x / _gameScreen.x,
+												   (double)_screen.y / _gameScreen.y);
 
 			TargetData target;
 			std::vector<TargetData> targetData;

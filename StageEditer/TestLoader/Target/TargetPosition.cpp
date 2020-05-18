@@ -14,6 +14,7 @@ void TargetPosition::Update(int& wCnt, int& tCnt, const unique_input& input, vec
 	if (input->IsTrigger(KEY_INPUT_SPACE))
 	{
 		tCnt = 0;
+		wCnt = 0;
 		Stage::Instance().ChagneState(new TargetType());
 		return;
 	}
@@ -63,6 +64,17 @@ void TargetPosition::Draw(const int& wCnt, const int& tCnt, const vec2_target st
 	DrawBox(stageData[wCnt][tCnt].pos.x, stageData[wCnt][tCnt].pos.y,
 			stageData[wCnt][tCnt].pos.x + 50, stageData[wCnt][tCnt].pos.y + 50,
 			0xffff0f, true);
+
+	/// 全てのターゲットの出現時間の表示
+	bool configTarget = true;			/// 設定中の色
+	for (int i = 0; i < stageData[wCnt].size(); ++i)
+	{
+		configTarget = (i == tCnt ? true : false);
+		/// ターゲット座標の表示
+		DrawBox(stageData[wCnt][i].pos.x, stageData[wCnt][i].pos.y,
+				stageData[wCnt][i].pos.x + 50, stageData[wCnt][i].pos.y + 50,
+				0xffff0f, configTarget);
+	}
 }
 
 void TargetPosition::DataConfig(const int& wCnt, const int& tCnt,
