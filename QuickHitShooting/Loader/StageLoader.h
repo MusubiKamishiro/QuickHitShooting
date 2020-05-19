@@ -36,7 +36,7 @@ public:
 
 	/// アンロード
 	///@param path ファイルのパス
-	void UnLoad(const std::string& path)override;
+	void UnLoad(const std::string& path) override;
 };
 
 class StageData : public Data

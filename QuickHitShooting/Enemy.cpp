@@ -1,18 +1,7 @@
-#include <DxLib.h>
 #include "Enemy.h"
 
 Enemy::~Enemy()
 {
-}
-
-void Enemy::Draw()
-{
-	if (_dispTime <= 0)
-	{
-		DxLib::DrawBox(_rect.center.x - _rect.size.width / 2, _rect.center.y - _rect.size.height / 2,
-					   _rect.center.x + _rect.size.width / 2, _rect.center.y + _rect.size.height / 2, 
-						0x00ff00, true);
-	}
 }
 
 void Enemy::Update()
@@ -27,9 +16,17 @@ void Enemy::Update()
 	}
 }
 
+void Enemy::HitShot()
+{
+	if (_dispTime <= 0)
+	{
+		_appearTime = 0;
+	}
+}
+
 bool Enemy::Destroy()
 {
-	return (_appearTime <= 0);
+	return _appearTime <= 0;
 }
 
 Vector2<int> Enemy::GetPos() const
