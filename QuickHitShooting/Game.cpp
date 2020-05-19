@@ -102,7 +102,8 @@ void Game::Run()
 			if (nowInput && !oldInput) {
 				std::thread reciveThread([]() {
 					DxLib::DxLib_Init();
-					SendDataWS2 dataws2;
+					SendDataWS2 dataws2 = {};
+					dataws2.Buffer = "KUSOZAKO";
 					NetWorkWS2::Instance().Initialize("192.168.11.47");
 					NetWorkWS2::Instance().SendServer(dataws2);
 					});

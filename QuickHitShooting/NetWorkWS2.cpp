@@ -25,29 +25,29 @@ void NetWorkWS2::InitializeClient(const std::string& ip)
 	if (server.sin_addr.S_un.S_addr == 0xffffff) {
 		assert(-1);
 	}
-	dataBuffer.Buffer.resize(256);
 }
 
-void NetWorkWS2::SendServer(SendDataWS2& data)
+void NetWorkWS2::SendServer(SendDataWS2 data)
 {
 	while (true) {
 		len = sizeof(client);
 		sock = accept(sock0, (sockaddr*)&client, &len);
-		send(sock, (const char*)&data, sizeof(data), 0);
+		send(sock, (const char*)&data, sizeof(SendDataWS2), 0);
 		SendDataWS2 returnData = {};
-		returnData.Buffer.resize(10);
-		int n = recv(sock, (char*)returnData.Buffer.c_str(), sizeof(returnData.Buffer), 0);
-		std::cout << returnData.Buffer.c_str() << std::endl;
+		int n = recv(sock, (char*)&returnData, sizeof(SendDataWS2), 0);
+		std::cout << returnData.Buffer << std::endl;
 		closesocket(sock);
 	}
 }
 
-void NetWorkWS2::RecivedClient(SendDataWS2& data)
+void NetWorkWS2::RecivedClient(SendDataWS2 data)
 {
 	connect(sock, (sockaddr*)&server, sizeof(server));
-	int n = recv(sock, (char*)&data, sizeof(data),0);
+	int n = recv(sock, (char*)&data, sizeof(SendDataWS2),0);
 	std::cout << n << data.Buffer << std::endl;
-	send(sock, "Success", 7, 0);
+	SendDataWS2 sendData = {};
+	sendData.Buffer = "Success";
+	send(sock, (const char*)&sendData, 7, 0);
 	closesocket(sock);
 }
 
