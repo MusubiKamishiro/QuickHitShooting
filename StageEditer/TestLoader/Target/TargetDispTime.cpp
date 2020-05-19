@@ -91,11 +91,11 @@ void TargetDispTime::Draw(const int& wCnt, const int& tCnt, const vec2_target st
 void TargetDispTime::DataConfig(const int& wCnt, const int& tCnt, 
 								const unique_input& input, vec2_target& stageData)
 {
-	if (input->IsTrigger(KEY_INPUT_UP))
+	if (input->IsTrigger(KEY_INPUT_RIGHT) || input->IsTrigger(KEY_INPUT_D))
 	{
 		stageData[wCnt][tCnt].dispTime += 10;
 	}
-	else if (input->IsTrigger(KEY_INPUT_DOWN))
+	else if (input->IsTrigger(KEY_INPUT_LEFT) || input->IsTrigger(KEY_INPUT_A))
 	{
 		stageData[wCnt][tCnt].dispTime = (stageData[wCnt][tCnt].dispTime >= 10
 									   ?  stageData[wCnt][tCnt].dispTime - 10

@@ -95,12 +95,12 @@ void TargetType::DataConfig(const int& wCnt, const int& tCnt,
 	// 的IDの最大値の取得
 	char idMax = static_cast<char>(TargetID::MAX);
 
-	if (input->IsTrigger(KEY_INPUT_UP))
+	if (input->IsTrigger(KEY_INPUT_RIGHT) || input->IsTrigger(KEY_INPUT_D))
 	{
 		/// 的IDの加算
 		stageData[wCnt][tCnt].type = (stageData[wCnt][tCnt].type + 1) % idMax;
 	}
-	else if (input->IsTrigger(KEY_INPUT_DOWN))
+	else if (input->IsTrigger(KEY_INPUT_LEFT) || input->IsTrigger(KEY_INPUT_A))
 	{
 		/// 的IDの減算
 		stageData[wCnt][tCnt].type = ((stageData[wCnt][tCnt].type + idMax) - 1) % idMax;

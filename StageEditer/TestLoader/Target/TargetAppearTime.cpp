@@ -89,11 +89,11 @@ void TargetAppearTime::Draw(const int& wCnt, const int& tCnt, const vec2_target 
 
 void TargetAppearTime::DataConfig(const int& wCnt, const int& tCnt, const unique_input& input, vec2_target& stageData)
 {
-	if (input->IsTrigger(KEY_INPUT_UP))
+	if (input->IsTrigger(KEY_INPUT_RIGHT) || input->IsTrigger(KEY_INPUT_D))
 	{
 		stageData[wCnt][tCnt].appearTime += 10;
 	}
-	else if (input->IsTrigger(KEY_INPUT_DOWN))
+	else if (input->IsTrigger(KEY_INPUT_LEFT) || input->IsTrigger(KEY_INPUT_A))
 	{
 		stageData[wCnt][tCnt].appearTime = (stageData[wCnt][tCnt].appearTime >= 10
 										 ?  stageData[wCnt][tCnt].appearTime - 10
