@@ -20,7 +20,8 @@ void Enemy::HitShot()
 {
 	if (_dispTime <= 0)
 	{
-		_appearTime = 0;
+		_isAlive = false;
+		_appearTime = 60;
 	}
 }
 

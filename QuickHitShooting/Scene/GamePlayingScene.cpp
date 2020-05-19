@@ -69,6 +69,7 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState)
 
 	int cnt = stageCnt();
 
+	/// 全ステージを読み込む(仮の処理)
 	StageData stage;
 	for (int i = 0; i < cnt; ++i)
 	{
@@ -212,8 +213,6 @@ void GamePlayingScene::Update(const Peripheral& p)
 		enemy->Update();
 	}
 
-	/* 現状は、表示されてから一定時間たつと消えるようにしている */
-
 	/// 削除できる敵を検索している
 	auto result = std::remove_if(_enemies.begin(),
 								 _enemies.end(),
@@ -227,7 +226,7 @@ void GamePlayingScene::Update(const Peripheral& p)
 		++_waveCnt;
 		if (CreateEnemy())
 		{
-
+			/// 全てのウェーブを終えた時に入る処理
 		}
 	}
 

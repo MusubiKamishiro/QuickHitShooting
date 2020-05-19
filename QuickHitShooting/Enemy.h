@@ -11,6 +11,8 @@ protected:
 
 	int _dispTime;
 	int _appearTime;
+
+	bool _isAlive;		// true : ¶‘¶, false : €–S
 public:
 	virtual ~Enemy();
 
