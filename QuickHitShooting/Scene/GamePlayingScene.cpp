@@ -122,14 +122,16 @@ void GamePlayingScene::WaitUpdate(const Peripheral & p)
 {
 	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
-		_gun->Shot();
-		Vector2<int> pos = p.GetMousePos();
-
-		for (auto enemy : _enemies)
+		if (_gun->Shot())
 		{
-			if (_cd->IsCollision(pos, enemy->GetRect()))
+			Vector2<int> pos = p.GetMousePos();
+			for (auto enemy : _enemies)
 			{
-				hitFlag = true;
+				if (_cd->IsCollision(pos, enemy->GetRect()))
+				{
+					enemy->HitShot();
+					hitFlag = true;
+				}
 			}
 		}
 	}
@@ -161,19 +163,25 @@ void GamePlayingScene::TestDraw()
 	}
 }
 
-void GamePlayingScene::CreateEnemy()
+bool GamePlayingScene::CreateEnemy()
 {
 	/// 仮でステージデータを読み込んでいる
 	StageData stage;
 	Game::Instance().GetFileSystem()->Load("StageData/stage1.bin", stage);
 
-	auto data = stage.GetStageData()[_waveCnt];
-	for (auto target : data)
+	if (_waveCnt < stage.GetStageData().size())
 	{
-		/// 敵の生成
-		_enemies.push_back(GetEnemyInfo(target));
+		auto data = stage.GetStageData()[_waveCnt];
+		for (auto target : data)
+		{
+			/// 敵の生成
+			_enemies.push_back(GetEnemyInfo(target));
+		}
+		return true;
 	}
+	return false;
 }
+
 std::shared_ptr<Enemy> GamePlayingScene::GetEnemyInfo(const TargetData& target)
 {
 	if (target.type == 0)
@@ -213,6 +221,15 @@ void GamePlayingScene::Update(const Peripheral& p)
 
 	/// 敵の削除
 	_enemies.erase(result, _enemies.end());
+
+	if (_enemies.size() <= 0)
+	{
+		++_waveCnt;
+		if (CreateEnemy())
+		{
+
+		}
+	}
 
 	(this->*_updater)(p);
 }
