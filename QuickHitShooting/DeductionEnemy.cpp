@@ -28,7 +28,7 @@ void DeductionEnemy::Draw()
 	}
 }
 
-int DeductionEnemy::GetPoint() const
+int DeductionEnemy::GetScore() const
 {
 	return _point;
 }

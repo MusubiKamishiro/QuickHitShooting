@@ -18,9 +18,9 @@ void Enemy::Update()
 
 void Enemy::HitShot()
 {
-	if (_dispTime <= 0)
+	if (_dispTime <= 0 && _isAlive)
 	{
-		_isAlive = false;
+		_isAlive	= false;
 		_appearTime = 60;
 	}
 }

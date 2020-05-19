@@ -12,6 +12,6 @@ public:
 
 	void Draw() override;
 
-	int GetPoint() const override;
+	int GetScore() const override;
 };
 

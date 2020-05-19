@@ -22,10 +22,10 @@ public:
 	// ’e‚ª“–‚½‚Á‚½‚Ìˆ—
 	void HitShot();
 
-	// ‰¼‚Ì“Gíœ—pŠÖ”
+	// “G‚Ìíœ—p
 	bool Destroy();
 
-	virtual int GetPoint() const = 0;
+	virtual int GetScore() const = 0;
 	Vector2<int> GetPos() const;
 	Rect GetRect() const;
 };

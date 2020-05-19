@@ -28,7 +28,7 @@ void SpecialEnemy::Draw()
 	}
 }
 
-int SpecialEnemy::GetPoint() const
+int SpecialEnemy::GetScore() const
 {
 
 	return _point;

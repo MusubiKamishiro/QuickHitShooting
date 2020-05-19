@@ -28,7 +28,7 @@ void NormalEnemy::Draw()
 	}
 }
 
-int NormalEnemy::GetPoint() const
+int NormalEnemy::GetScore() const
 {
 	return _point;
 }
