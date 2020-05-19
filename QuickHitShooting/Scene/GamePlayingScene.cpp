@@ -7,11 +7,11 @@
 #include "../Peripheral.h"
 
 #include "../Game.h"
-
 #include "../Loader/FileSystem.h"
 #include "../Loader/ImageLoader.h"
 #include "../Loader/SoundLoader.h"
 #include "../Loader/StageLoader.h"
+#include "../Menu.h"
 
 #include "../Gun.h"
 #include "../Enemy.h"
@@ -20,15 +20,21 @@
 #include "../DeductionEnemy.h"
 #include "../CollisionDetector.h"
 
-GamePlayingScene::GamePlayingScene()
+GamePlayingScene::GamePlayingScene(const GunStatus& gunState)
 {
 	_pal = 0;
 	
 	_updater = &GamePlayingScene::FadeinUpdate;
 	_drawer  = &GamePlayingScene::TestDraw;
 
-	_gun.reset(new Gun());
+	_gun.reset(new Gun(gunState));
 	_cd.reset(new CollisionDetector());
+	_menu.reset(new Menu());
+
+	ImageData data;
+	Game::Instance().GetFileSystem()->Load("img/pause.png", data);
+	int i = data.GetHandle();
+	_menu->AddMenuList("pause", Vector2<int>(_scrSize.x - 25, 25), Size(50, 50), i);
 
 	hitFlag = false;
 
@@ -114,20 +120,15 @@ void GamePlayingScene::FadeoutUpdate(const Peripheral & p)
 
 void GamePlayingScene::WaitUpdate(const Peripheral & p)
 {
-	/*if (p.IsTrigger(MOUSE_INPUT_LEFT))
-	{
-		_updater = &GamePlayingScene::FadeoutUpdate;
-	}*/
-	Rect r;
-	r = Rect(100, 100, 200, 200);
-
 	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
-		for (auto& enemy : _enemies)
+		_gun->Shot();
+		Vector2<int> pos = p.GetMousePos();
+
+		for (auto enemy : _enemies)
 		{
-			if (_gun->Shot() && _cd->IsCollision(p.GetMousePos(), enemy->GetRect()))
+			if (_cd->IsCollision(pos, enemy->GetRect()))
 			{
-				enemy->HitShot();
 				hitFlag = true;
 			}
 		}
@@ -135,6 +136,12 @@ void GamePlayingScene::WaitUpdate(const Peripheral & p)
 	else if (p.IsTrigger(MOUSE_INPUT_RIGHT))
 	{
 		_gun->Reload();
+	}
+
+	//ポーズボタンを押したらポーズシーンに切り替え
+	if (_menu->CheckCrick("pause", p))
+	{
+		SceneManager::Instance().PushScene(std::make_unique<PauseScene>());
 	}
 }
 
@@ -146,6 +153,7 @@ void GamePlayingScene::TestDraw()
 	}
 
 	_gun->Draw();
+	_menu->Draw();
 
 	if (hitFlag)
 	{
@@ -153,23 +161,18 @@ void GamePlayingScene::TestDraw()
 	}
 }
 
-bool GamePlayingScene::CreateEnemy()
+void GamePlayingScene::CreateEnemy()
 {
 	/// 仮でステージデータを読み込んでいる
 	StageData stage;
 	Game::Instance().GetFileSystem()->Load("StageData/stage1.bin", stage);
 
-	if (_waveCnt < stage.GetStageData().size())
+	auto data = stage.GetStageData()[_waveCnt];
+	for (auto target : data)
 	{
-		auto data = stage.GetStageData()[_waveCnt];
-		for (auto target : data)
-		{
-			/// 敵の生成
-			_enemies.push_back(GetEnemyInfo(target));
-		}
-		return true;
+		/// 敵の生成
+		_enemies.push_back(GetEnemyInfo(target));
 	}
-	return false;
 }
 std::shared_ptr<Enemy> GamePlayingScene::GetEnemyInfo(const TargetData& target)
 {
@@ -196,8 +199,6 @@ std::shared_ptr<Enemy> GamePlayingScene::GetEnemyInfo(const TargetData& target)
 
 void GamePlayingScene::Update(const Peripheral& p)
 {
-	(this->*_updater)(p);
-
 	for (auto& enemy : _enemies)
 	{
 		enemy->Update();
@@ -213,14 +214,7 @@ void GamePlayingScene::Update(const Peripheral& p)
 	/// 敵の削除
 	_enemies.erase(result, _enemies.end());
 
-	if (_enemies.size() <= 0)
-	{
-		++_waveCnt;
-		if (!CreateEnemy())
-		{
-			/// 全ての的を表示し終わった時に入る
-		}
-	}
+	(this->*_updater)(p);
 }
 
 void GamePlayingScene::Draw()
