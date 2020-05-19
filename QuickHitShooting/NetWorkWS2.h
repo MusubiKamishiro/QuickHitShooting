@@ -5,7 +5,7 @@
 #pragma comment(lib,"ws2_32.lib")
 
 struct SendDataWS2 {
-	char* Buffer;
+	std::string Buffer;
 };
 
 class NetWorkWS2
@@ -40,8 +40,8 @@ public:
 	}
 	~NetWorkWS2();
 	void Initialize(const std::string& ip);
-	void SendServer(SendDataWS2 data);
-	void RecivedClient(SendDataWS2 data);
+	void SendServer(SendDataWS2& data);
+	void RecivedClient(SendDataWS2& data);
 	void Terminate();
 };
 
