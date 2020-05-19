@@ -21,6 +21,7 @@ void DeductionEnemy::Draw()
 {
 	if (_dispTime <= 0)
 	{
+		/// ƒqƒbƒgŽž‚Í•‚­“h‚è‚Â‚Ô‚·
 		int color = (_isAlive ? 0x0000ff : 0x000000);
 		DrawBox(_rect.center.x - _rect.size.width / 2, _rect.center.y - _rect.size.height / 2,
 				_rect.center.x + _rect.size.width / 2, _rect.center.y + _rect.size.height / 2,
