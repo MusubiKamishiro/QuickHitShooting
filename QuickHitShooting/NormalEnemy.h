@@ -3,9 +3,15 @@
 class NormalEnemy :
 	public Enemy
 {
+private:
+	const int _point;
 public:
 	NormalEnemy(const int& dispTime, const int& appearTime,
 				const Vector2<int>& pos);
 	~NormalEnemy();
+
+	void Draw() override;
+
+	int GetPoint() const override;
 };
 

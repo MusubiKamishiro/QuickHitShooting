@@ -3,13 +3,13 @@
 #include <memory>
 #include <vector>
 #include <windows.h>
+#include "Geometry.h"
 
 class Input;
 class TargetState;
 
 enum class TargetID
 {
-	NON,			// 何もいない
 	NORMAL,			// 通常の的
 	SPECIAL,		// 特別な的
 	DEDUCTION,		// 減点される的
@@ -22,11 +22,11 @@ struct TargetData
 	u_char type;			// 的の種類		(1番目のデータ)
 	u_int appearTime;		// 出現する時間 (2番目のデータ)
 	u_int dispTime;			// 表示する時間 (3番目のデータ)
-	int posX;				// 的の横座標	(4番目のデータ)
-	int posY;				// 的の縦座標	(5番目のデータ)
+
+	Vector2<int> pos;
 };
 
-using vec2_target = std::vector<std::vector<TargetData>>;
+using vec2_target  = std::vector<std::vector<TargetData>>;
 
 using unique_input = std::unique_ptr<Input>;
 
@@ -36,7 +36,7 @@ using unique_state = std::unique_ptr<TargetState>;
 class Stage
 {
 public:
-	static Stage& GetInstance()
+	static Stage& Instance()
 	{
 		/// シングルトンの中身が空の時に生成する
 		if (!s_Instance)
@@ -48,6 +48,7 @@ public:
 	void Update();
 
 	void ChagneState(TargetState* targetState);
+	Vector2<int> GetScreenSize() const;
 private:
 	Stage();
 	~Stage();
@@ -77,6 +78,10 @@ private:
 	bool Save();
 	bool Load();
 
+	bool IsReset();
+	bool IsSave();
+	bool IsLoad();
+
 	void Draw();
 
 	// ウェーブ数のカウント保存用
@@ -100,7 +105,8 @@ private:
 
 	static std::unique_ptr<Stage, EditerDeleter> s_Instance;
 
-	const int _screenX, _screenY;
+	const Vector2<int> _gameScreen;
+	const Vector2<int> _screen;
 	const int _targetCntMax;	// 的の最大数(現状、5個)
 
 	const char _waveEnd;

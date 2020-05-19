@@ -7,7 +7,8 @@
 
 std::unique_ptr<Stage, Stage::EditerDeleter> Stage::s_Instance(new Stage());
 
-Stage::Stage() : _targetCntMax(5), _screenX(1920), _screenY(1080),_waveEnd(55)
+Stage::Stage() : _targetCntMax(10), _screen(1920, 1080), 
+_gameScreen(1280, 720), _waveEnd(55)
 {
 	Init();
 	_input = std::make_unique<Input>();
@@ -21,7 +22,7 @@ Stage::~Stage()
 bool Stage::Init()
 {
 	ChangeWindowMode(true);
-	SetGraphMode(_screenX, _screenY, 32);
+	SetGraphMode(_screen.x, _screen.y, 32);
 	if (DxLib::DxLib_Init() == -1)
 	{
 		return false;
@@ -31,6 +32,7 @@ bool Stage::Init()
 	SetDrawScreen(DX_SCREEN_BACK);
 
 	Wave();
+
 	return false;
 }
 
@@ -63,19 +65,19 @@ void Stage::Edit()
 	_nowWaveCnt = _nowTargetCnt = 0;
 
 	/// ウェーブごとのターゲット数の設定
-	for (auto& stage : _stageData)
+	for (auto& wave : _stageData)
 	{
-		stage.reserve(_targetCnt);
-		stage.resize(_targetCnt);
+		wave.reserve(_targetCnt);
+		wave.resize(_targetCnt);
 
-		for (auto& target : stage)
+		for (auto& target : wave)
 		{
 			/// 的情報の初期化
 			target.type			= 0;
-			target.appearTime	= 0;
-			target.dispTime		= 0;
-			target.posX			= 0;
-			target.posY			= 0;
+			target.appearTime	= 60;
+			target.dispTime		= 60;
+			target.pos.x		= _screen.x / 2;
+			target.pos.y		= _screen.y / 2;
 		}
 	}
 
@@ -101,19 +103,28 @@ void Stage::WaveUpdate()
 	}
 	else {}
 
-	int strWidth, strHeight;
-	strWidth = strHeight = 0;
+	Vector2<int> strSize;
 
 	SetFontSize(80);
-	GetDrawStringSize(&strWidth, &strHeight, nullptr, "現在のウェーブ数", strlen("現在のウェーブ数"));
-	DrawString((_screenX / 2) - (strWidth / 2), (_screenY / 2) - strHeight, "現在のウェーブ数", 0xffffff);
+	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, "現在のウェーブ数", strlen("現在のウェーブ数"));
+	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) - strSize.y, "現在のウェーブ数", 0xffffff);
 
 	SetFontSize(140);
-	DrawFormatString((_screenX / 2), (_screenY / 2) + strHeight, 0x88ff88, "%d", _waveCnt);
+	GetDrawStringSize(&strSize.x, &strSize.y, nullptr,
+					   std::to_string(_waveCnt).c_str(), strlen(std::to_string(_waveCnt).c_str()));
+	DrawFormatString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) + (strSize.y / 2), 0x88ff88, "%d", _waveCnt);
 }
 
 void Stage::TargetUpdate()
 {
+	/// ウェーブモードに移行する
+	if (_input->IsTrigger(KEY_INPUT_F1))
+	{
+		Wave();
+		return;
+	}
+
+	/// エディットモードに移行する
 	if (_input->IsTrigger(KEY_INPUT_SPACE))
 	{
 		Edit();
@@ -122,26 +133,87 @@ void Stage::TargetUpdate()
 
 	if (_input->IsTrigger(KEY_INPUT_DOWN))
 	{
+		/// 的数の減算
 		_targetCnt = (_targetCnt > 3 ? _targetCnt - 1 : 3);
 	}
 	else if (_input->IsTrigger(KEY_INPUT_UP))
 	{
-		++_targetCnt = (_targetCnt < _targetCntMax ? _targetCnt + 1 : _targetCntMax);
+		/// 的数の加算
+		_targetCnt = (_targetCnt < _targetCntMax ? _targetCnt + 1 : _targetCntMax);
 	}
 	else {}
 
-	int strWidth, strHeight;
-	strWidth = strHeight = 0;
+	Vector2<int> strSize;
 
 	SetFontSize(80);
-	GetDrawStringSize(&strWidth, &strHeight, nullptr, "出現する的の数", strlen("出現する的の数"));
-	DrawString((_screenX / 2) - (strWidth / 2), (_screenY / 2) - strHeight, "出現する的の数", 0xffffff);
+	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, "出現する的の数", strlen("出現する的の数"));
+	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) - strSize.y, "出現する的の数", 0xffffff);
 
 	SetFontSize(140);
-	DrawFormatString((_screenX / 2), (_screenY / 2) + strHeight, 0x88ff88, "%d", _targetCnt);
+	GetDrawStringSize(&strSize.x, &strSize.y, nullptr,
+					   std::to_string(_targetCnt).c_str(), strlen(std::to_string(_targetCnt).c_str()));
+	DrawFormatString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) + (strSize.y / 2), 0x88ff88, "%d", _targetCnt);
 }
 
 void Stage::EditUpdate()
+{
+	/// ターゲット情報の更新
+	_targetState->Update(_nowWaveCnt, _nowTargetCnt, _input, _stageData);
+	/// ステージデータの初期化
+	if (IsReset())
+	{
+		Wave();
+		_stageData.clear();
+		return;
+	}
+
+	/// ロード処理
+	if (IsLoad())
+	{
+		Load();
+	}
+
+	/// セーブ処理
+	if (IsSave())
+	{
+		Save();
+	}
+
+}
+
+bool Stage::IsReset()
+{
+	if (_input->IsTrigger(KEY_INPUT_F1))
+	{
+		if (MessageBox(
+			GetMainWindowHandle(),
+			"ステージ情報を最初から設定しますか？",
+			"ステージデータの初期化",
+			MB_OKCANCEL) == IDOK)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Stage::IsSave()
+{
+	if (_input->IsTrigger(KEY_INPUT_F5))
+	{
+		if (MessageBox(
+			GetMainWindowHandle(),
+			"ステージデータをセーブしますか？",
+			"セーブの確認",
+			MB_OKCANCEL) == IDOK)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Stage::IsLoad()
 {
 	if (_input->IsTrigger(KEY_INPUT_F4))
 	{
@@ -151,21 +223,10 @@ void Stage::EditUpdate()
 			"ロードの確認",
 			MB_OKCANCEL) == IDOK)
 		{
-			Load();
+			return true;
 		}
 	}
-	if (_input->IsTrigger(KEY_INPUT_F5))
-	{
-		if (MessageBox(
-			GetMainWindowHandle(),
-			"ステージデータをセーブしますか？",
-			"セーブの確認",
-			MB_OKCANCEL) == IDOK)
-		{
-			Save();
-		}
-	}
-	_targetState->Update(_nowWaveCnt, _nowTargetCnt, _input, _stageData);
+	return false;
 }
 
 bool Stage::Save()
@@ -184,25 +245,40 @@ bool Stage::Save()
 	{
 		FILE* file;
 		/// フォルダーで指定したファイルを開く
-		fopen_s(&file, openFileName.lpstrFile, "wb");
-		for (auto wave : _stageData)
+		if (fopen_s(&file, openFileName.lpstrFile, "wb") == 0)
 		{
-			for (auto target : wave)
+			/// エディターの画面サイズからゲームの画面サイズの倍率を求めている
+			Vector2<double> rate = Vector2<double>((double)_gameScreen.x / _screen.x,
+												   (double)_gameScreen.y / _screen.y);
+
+			for (auto wave : _stageData)
 			{
-				/// ターゲット情報を書き込む
-				fwrite(&target.type, sizeof(target.type), 1, file);
-				fwrite(&target.dispTime, sizeof(target.dispTime), 1, file);
-				fwrite(&target.appearTime, sizeof(target.appearTime), 1, file);
-				fwrite(&target.posX, sizeof(target.posX), 1, file);
-				fwrite(&target.posY, sizeof(target.posY), 1, file);
+				for (auto target : wave)
+				{
+					/// ターゲット情報を書き込む
+					fwrite(&target.type, sizeof(target.type), 1, file);
+					fwrite(&target.dispTime, sizeof(target.dispTime), 1, file);
+					fwrite(&target.appearTime, sizeof(target.appearTime), 1, file);
+					target.pos.x *= rate.x;
+					fwrite(&target.pos.x, sizeof(target.pos.x), 1, file);
+					target.pos.y *= rate.y;
+					fwrite(&target.pos.y, sizeof(target.pos.y), 1, file);
+				}
+				/// ウェーブ情報のエンドポイントを書き込む
+				fwrite(&_waveEnd, sizeof(_waveEnd), 1, file);
 			}
-			/// ウェーブ情報のエンドポイントを書き込む
-			fwrite(&_waveEnd, sizeof(_waveEnd), 1, file);
+			/// eofの書き込み
+			char eof = -1;
+			fwrite(&eof, sizeof(eof), 1, file);
+			fclose(file);
 		}
-		/// eofの書き込み
-		char eof = -1;
-		fwrite(&eof, sizeof(eof), 1, file);
-		fclose(file);
+		else
+		{
+			MessageBox(GetMainWindowHandle(),
+				"ファイルが見つかりませんでした。",
+				"Not Found File",
+				MB_OK);
+		}
 	}
 	return true;
 }
@@ -225,59 +301,73 @@ bool Stage::Load()
 		_stageData.clear();
 		FILE* file;
 		/// フォルダーで指定したファイルを開く
-		fopen_s(&file, openFileName.lpstrFile, "rb");
-		
-		TargetData target;
-		std::vector<TargetData> targetData;
-		int bytePos	  = 0;
-		char checkVal = 0;
-
-		fseek(file, bytePos, SEEK_SET);
-		while (checkVal != -1)
+ 		if (fopen_s(&file, openFileName.lpstrFile, "rb") == 0)
 		{
-			/// 読み込むバイト番地を指定する
+			/// ゲームの画面サイズからエディターの画面サイズの倍率を求めている
+			Vector2<double> rate = Vector2<double>((double)_screen.x / _gameScreen.x,
+												   (double)_screen.y / _gameScreen.y);
+
+			TargetData target;
+			std::vector<TargetData> targetData;
+			int bytePos = 0;
+			char checkVal = 0;
+
 			fseek(file, bytePos, SEEK_SET);
-
-			{/* 的情報の読み込み */
-
-				/// 的の種別ID
-				fread(&target.type, sizeof(target.type), 1, file);
-				bytePos += sizeof(target.type);
-
-				/// 的の出現する時間
-				fread(&target.dispTime, sizeof(target.dispTime), 1, file);
-				bytePos += sizeof(target.dispTime);
-
-				/// 的が出現してから消えるまでの時間
-				fread(&target.appearTime, sizeof(target.appearTime), 1, file);
-				bytePos += sizeof(target.appearTime);
-
-				/// 的のX座標
-				fread(&target.posX, sizeof(target.posX), 1, file);
-				bytePos += sizeof(target.posX);
-
-				/// 的のY座標
-				fread(&target.posY, sizeof(target.posY), 1, file);
-				bytePos += sizeof(target.posY);
-			}
-
-			/// 的情報の登録
-			targetData.push_back(target);
-
-			/// ウェーブ数の末尾かの確認を行う
-			fread(&checkVal, sizeof(checkVal), 1, file);
-			if (checkVal == _waveEnd)
+			while (checkVal != -1)
 			{
-				/// 1ウェーブで出現する的情報の登録
-				bytePos += sizeof(checkVal);
-				_stageData.push_back(targetData);
-				targetData.clear();
-			}
+				/// 読み込むバイト番地を指定する
+				fseek(file, bytePos, SEEK_SET);
 
-			/// eofの確認を行うための読み込み
-			fread(&checkVal, sizeof(checkVal), 1, file);
+				{/* 的情報の読み込み */
+
+					/// 的の種別ID
+					fread(&target.type, sizeof(target.type), 1, file);
+					bytePos += sizeof(target.type);
+
+					/// 的の出現する時間
+					fread(&target.dispTime, sizeof(target.dispTime), 1, file);
+					bytePos += sizeof(target.dispTime);
+
+					/// 的が出現してから消えるまでの時間
+					fread(&target.appearTime, sizeof(target.appearTime), 1, file);
+					bytePos += sizeof(target.appearTime);
+
+					/// 的のX座標
+					fread(&target.pos.x, sizeof(target.pos.x), 1, file);
+					target.pos.x *= rate.x;
+					bytePos += sizeof(target.pos.x);
+
+					/// 的のY座標
+					fread(&target.pos.y, sizeof(target.pos.y), 1, file);
+					target.pos.y *= rate.y;
+					bytePos += sizeof(target.pos.y);
+				}
+
+				/// 的情報の登録
+				targetData.push_back(target);
+
+				/// ウェーブ数の末尾かの確認を行う
+				fread(&checkVal, sizeof(checkVal), 1, file);
+				if (checkVal == _waveEnd)
+				{
+					/// 1ウェーブで出現する的情報の登録
+					bytePos += sizeof(checkVal);
+					_stageData.push_back(targetData);
+					targetData.clear();
+				}
+
+				/// eofの確認を行うための読み込み
+				fread(&checkVal, sizeof(checkVal), 1, file);
+			}
+			fclose(file);
 		}
-		fclose(file);
+		else
+		{
+			MessageBox(GetMainWindowHandle(),
+				"ファイルが見つかりませんでした。",
+				"Not Found File",
+				MB_OK);
+		}
 	}
 	return true;
 }
@@ -298,6 +388,11 @@ void Stage::Update()
 void Stage::ChagneState(TargetState* targetState)
 {
 	_targetState.reset(targetState);
+}
+
+Vector2<int> Stage::GetScreenSize() const
+{
+	return _screen;
 }
 
 void Stage::Draw()

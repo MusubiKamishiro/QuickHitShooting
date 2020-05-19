@@ -11,17 +11,20 @@ protected:
 
 	int _dispTime;
 	int _appearTime;
-
 public:
 	virtual ~Enemy();
 
-	void Draw();
+	virtual void Draw() = 0;
 	void Update(); 
+
+	// ’e‚ª“–‚½‚Á‚½‚Ìˆ—
+	void HitShot();
 
 	// ‰¼‚Ì“Gíœ—pŠÖ”
 	bool Destroy();
 
-	Vector2<int> GetPos()const;
-	Rect GetRect()const;
+	virtual int GetPoint() const = 0;
+	Vector2<int> GetPos() const;
+	Rect GetRect() const;
 };
 
