@@ -7,11 +7,11 @@
 #include "../Peripheral.h"
 
 #include "../Game.h"
-
 #include "../Loader/FileSystem.h"
 #include "../Loader/ImageLoader.h"
 #include "../Loader/SoundLoader.h"
 #include "../Loader/StageLoader.h"
+#include "../Menu.h"
 
 #include "../Gun.h"
 #include "../Enemy.h"
@@ -20,15 +20,21 @@
 #include "../DeductionEnemy.h"
 #include "../CollisionDetector.h"
 
-GamePlayingScene::GamePlayingScene()
+GamePlayingScene::GamePlayingScene(const GunStatus& gunState)
 {
 	_pal = 0;
 	
 	_updater = &GamePlayingScene::FadeinUpdate;
 	_drawer  = &GamePlayingScene::TestDraw;
 
-	_gun.reset(new Gun());
+	_gun.reset(new Gun(gunState));
 	_cd.reset(new CollisionDetector());
+	_menu.reset(new Menu());
+
+	ImageData data;
+	Game::Instance().GetFileSystem()->Load("img/pause.png", data);
+	int i = data.GetHandle();
+	_menu->AddMenuList("pause", Vector2<int>(_scrSize.x - 25, 25), Size(50, 50), i);
 
 	hitFlag = false;
 
@@ -114,18 +120,14 @@ void GamePlayingScene::FadeoutUpdate(const Peripheral & p)
 
 void GamePlayingScene::WaitUpdate(const Peripheral & p)
 {
-	/*if (p.IsTrigger(MOUSE_INPUT_LEFT))
-	{
-		_updater = &GamePlayingScene::FadeoutUpdate;
-	}*/
-	Rect r;
-	r = Rect(100, 100, 200, 200);
-
 	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
+		_gun->Shot();
+		Vector2<int> pos = p.GetMousePos();
+
 		for (auto enemy : _enemies)
 		{
-			if (_gun->Shot() && _cd->IsCollision(p.GetMousePos(), enemy->GetRect()))
+			if (_cd->IsCollision(pos, enemy->GetRect()))
 			{
 				hitFlag = true;
 			}
@@ -134,6 +136,12 @@ void GamePlayingScene::WaitUpdate(const Peripheral & p)
 	else if (p.IsTrigger(MOUSE_INPUT_RIGHT))
 	{
 		_gun->Reload();
+	}
+
+	//ポーズボタンを押したらポーズシーンに切り替え
+	if (_menu->CheckCrick("pause", p))
+	{
+		SceneManager::Instance().PushScene(std::make_unique<PauseScene>());
 	}
 }
 
@@ -145,6 +153,7 @@ void GamePlayingScene::TestDraw()
 	}
 
 	_gun->Draw();
+	_menu->Draw();
 
 	if (hitFlag)
 	{
@@ -190,8 +199,6 @@ std::shared_ptr<Enemy> GamePlayingScene::GetEnemyInfo(const TargetData& target)
 
 void GamePlayingScene::Update(const Peripheral& p)
 {
-	(this->*_updater)(p);
-
 	for (auto& enemy : _enemies)
 	{
 		enemy->Update();
@@ -206,6 +213,8 @@ void GamePlayingScene::Update(const Peripheral& p)
 
 	/// 敵の削除
 	_enemies.erase(result, _enemies.end());
+
+	(this->*_updater)(p);
 }
 
 void GamePlayingScene::Draw()

@@ -8,8 +8,10 @@
 class Gun;
 class Enemy;
 class CollisionDetector;
+class Menu;
 
 struct TargetData;
+struct GunStatus;
 
 class GamePlayingScene : public Scene
 {
@@ -28,6 +30,7 @@ private:
 
 	std::shared_ptr<Gun> _gun;
 	std::shared_ptr<CollisionDetector> _cd;
+	std::shared_ptr<Menu> _menu;
 
 	/// ‰¼‚Å•¡”‚Ì“G‚ğoŒ»‚³‚¹‚Ä‚¢‚é
 	std::vector<std::shared_ptr<Enemy>> _enemies;
@@ -37,7 +40,7 @@ private:
 	bool hitFlag;
 
 public:
-	GamePlayingScene();
+	GamePlayingScene(const GunStatus& gunState);
 	~GamePlayingScene();
 
 	void Update(const Peripheral& p);
