@@ -22,7 +22,7 @@ private:
 	void (GamePlayingScene::*_drawer)();
 	void TestDraw();
 
-	void CreateEnemy();
+	bool CreateEnemy();
 	std::shared_ptr<Enemy> GetEnemyInfo(const TargetData& target);
 	
 
