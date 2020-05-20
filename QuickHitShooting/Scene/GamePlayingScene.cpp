@@ -224,9 +224,11 @@ void GamePlayingScene::Update(const Peripheral& p)
 	if (_enemies.size() <= 0)
 	{
 		++_waveCnt;
-		if (CreateEnemy())
+		/// 1ウェーブが終了した時、すぐに次のウェーブに出現する的の用意をしている。
+		if (!CreateEnemy())
 		{
 			/// 全てのウェーブを終えた時に入る処理
+			_updater = &GamePlayingScene::FadeoutUpdate;
 		}
 	}
 
