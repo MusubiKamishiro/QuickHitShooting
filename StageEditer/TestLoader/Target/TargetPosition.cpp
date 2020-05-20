@@ -20,10 +20,9 @@ void TargetPosition::Update(int& wCnt, int& tCnt, const unique_input& input, vec
 		Stage::Instance().ChagneState(new TargetType());
 		return;
 	}
-	ChangeTarget(tCnt, (int)stageData[wCnt].size(), input);
 	ChangeWave(wCnt, (int)stageData.size(), input);
+	ChangeTarget(tCnt, (int)stageData[wCnt].size(), input);
 	DataConfig(wCnt, tCnt, input, stageData);
-	
 	Draw(wCnt, tCnt, stageData);
 }
 

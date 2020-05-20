@@ -22,10 +22,9 @@ void TargetAppearTime::Update(int& wCnt, int& tCnt,
 		return;
 	}
 
-	ChangeTarget(tCnt, (int)stageData[wCnt].size(), input);
 	ChangeWave(wCnt, (int)stageData.size(), input);
+	ChangeTarget(tCnt, (int)stageData[wCnt].size(), input);
 	DataConfig(wCnt, tCnt, input, stageData);
-
 	Draw(wCnt, tCnt, stageData);
 }
 

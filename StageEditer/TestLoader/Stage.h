@@ -22,8 +22,7 @@ struct TargetData
 	u_char type;			// 的の種類		(1番目のデータ)
 	u_int appearTime;		// 出現する時間 (2番目のデータ)
 	u_int dispTime;			// 表示する時間 (3番目のデータ)
-
-	Vector2<int> pos;
+	Vector2<int> pos;		// 座標			(4番目のデータ)
 };
 
 using vec2_target  = std::vector<std::vector<TargetData>>;
@@ -47,7 +46,10 @@ public:
 	}
 	void Update();
 
+	// 設定する的情報の変更用
 	void ChagneState(TargetState* targetState);
+	
+	// エディターの画面サイズ取得用
 	Vector2<int> GetScreenSize() const;
 private:
 	Stage();
@@ -60,6 +62,8 @@ private:
 			delete pointer;
 		}
 	};
+
+	static std::unique_ptr<Stage, EditerDeleter> s_Instance;
 
 	bool Init();
 
@@ -78,17 +82,20 @@ private:
 	bool Save();
 	bool Load();
 
+	// ステージデータを初期化するかの確認用
 	bool IsReset();
+
+	// 読み込みを行うかの確認用
 	bool IsSave();
+
+	// 書き込みを行うかの確認用
 	bool IsLoad();
 
-	void Draw();
+	int _waveCnt;						// ウェーブ数のカウント保存用
+	int _configTarget;					// 設定中のターゲット
+	std::vector<int> _waveTargetCnt;	// 1ウェーブ中のターゲット数
 
-	// ウェーブ数のカウント保存用
-	int _waveCnt;
-	std::vector<int> _targetCnts;
-	int _targetCnt;
-
+	// ステージ設定で使用する情報
 	int _nowWaveCnt, _nowTargetCnt;
 
 	// ウェーブのデータ保持用変数
@@ -102,11 +109,9 @@ private:
 	// エディットモードの関数ポインター
 	void (Stage::* _nowMode)();
 
-	static std::unique_ptr<Stage, EditerDeleter> s_Instance;
+	const Vector2<int> _gameScreen;	// ゲームの画面サイズ
+	const Vector2<int> _screen;		// エディターの画面サイズ
+	const int _targetCntMax;		// 的の最大数
 
-	const Vector2<int> _gameScreen;
-	const Vector2<int> _screen;
-	const int _targetCntMax;	// 的の最大数(現状、5個)
-
-	const char _waveEnd;
+	const char _waveEnd;			// バイナリ上でウェーブの終了を確認するためのもの
 };

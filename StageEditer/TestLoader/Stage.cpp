@@ -48,11 +48,13 @@ void Stage::Target()
 {
 	_nowMode = &Stage::TargetUpdate;
 
-	_targetCnts.clear();
-	_targetCnts.reserve(_waveCnt);
-	_targetCnts.resize(_waveCnt);
+	/// ウェーブ数を取得している
+	_waveTargetCnt.clear();
+	_waveTargetCnt.reserve(_waveCnt);
+	_waveTargetCnt.resize(_waveCnt);
 
-	for (auto& tCnt : _targetCnts)
+	/// 1ウェーブごとの的数の初期化
+	for (auto& tCnt : _waveTargetCnt)
 	{
 		tCnt = 3;
 	}
@@ -64,33 +66,38 @@ void Stage::Edit()
 	_nowMode	 = &Stage::EditUpdate;
 	_targetState = std::make_unique<TargetType>();
 
-	/// 現在のウェーブ数の初期化
-	_nowWaveCnt = _nowTargetCnt = 0;
-
-	/// ウェーブ数の生成
+	/// ウェーブの生成
 	_stageData.reserve(_waveCnt);
 	_stageData.resize(_waveCnt);
 
+	/// ウェーブの最初の番地を指定する
 	auto wCnt = _stageData.begin();
 	for (; wCnt != _stageData.end(); ++wCnt)
 	{
+		/// 1ウェーブごとの的数の設定
 		auto cnt = wCnt - _stageData.begin();
-		(*wCnt).reserve(_targetCnts[cnt]);
-		(*wCnt).resize(_targetCnts[cnt]);
+		(*wCnt).reserve(_waveTargetCnt[cnt]);
+		(*wCnt).resize(_waveTargetCnt[cnt]);
+
+		/// 的情報の初期化
 		for (auto& target : (*wCnt))
 		{
-			/// 的情報の初期化
-			target.type = 0;
+			target.type		  = 0;
 			target.appearTime = 60;
-			target.dispTime = 60;
-			target.pos.x = _screen.x / 2;
-			target.pos.y = _screen.y / 2;
+			target.dispTime	  = 60;
+			target.pos.x	  = _screen.x / 2;
+			target.pos.y	  = _screen.y / 2;
 		}
 	}
+	_waveTargetCnt.clear();
+
+	/// エディターで使用する値の初期化
+	_nowWaveCnt = _nowTargetCnt = 0;
 }
 
 void Stage::WaveUpdate()
 {
+	/// ターゲットモードに移行する
 	if (_input->IsTrigger(KEY_INPUT_SPACE))
 	{
 		Target();
@@ -99,24 +106,27 @@ void Stage::WaveUpdate()
 
 	if (_input->IsTrigger(KEY_INPUT_UP))
 	{
+		/// ウェーブ数の減算
 		_waveCnt = (_waveCnt > 1 ? _waveCnt - 1 : 1);
 	}
 	else if (_input->IsTrigger(KEY_INPUT_DOWN))
 	{
+		/// ウェーブ数の加算
 		++_waveCnt;
 	}
 	else {}
 
 	Vector2<int> strSize;
-
+	std::string text;
 	SetFontSize(80);
-	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, "現在のウェーブ数", strlen("現在のウェーブ数"));
-	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) - strSize.y, "現在のウェーブ数", 0xffffff);
+	text = "現在のウェーブ数";
+	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
+	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) - strSize.y, text.c_str(), 0xffffff);
 
 	SetFontSize(140);
-	GetDrawStringSize(&strSize.x, &strSize.y, nullptr,
-					   std::to_string(_waveCnt).c_str(), strlen(std::to_string(_waveCnt).c_str()));
-	DrawFormatString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) + (strSize.y / 2), 0x88ff88, "%d", _waveCnt);
+	text = std::to_string(_waveCnt);
+	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
+	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) + (strSize.y / 2), text.c_str(), 0x88ff88);
 }
 
 void Stage::TargetUpdate()
@@ -138,25 +148,25 @@ void Stage::TargetUpdate()
 	if (_input->IsTrigger(KEY_INPUT_LEFT))
 	{
 		/// 的数の減算
-		_targetCnts[_targetCnt] = (_targetCnts[_targetCnt] > 3 ? _targetCnts[_targetCnt] - 1 : 3);
+		_waveTargetCnt[_configTarget] = (_waveTargetCnt[_configTarget] > 3 ? _waveTargetCnt[_configTarget] - 1 : 3);
 	}
 	else if (_input->IsTrigger(KEY_INPUT_RIGHT))
 	{
 		/// 的数の加算
-		_targetCnts[_targetCnt] = (_targetCnts[_targetCnt] < _targetCntMax ? _targetCnts[_targetCnt] + 1 : _targetCntMax);
+		_waveTargetCnt[_configTarget] = (_waveTargetCnt[_configTarget] < _targetCntMax ? _waveTargetCnt[_configTarget] + 1 : _targetCntMax);
 	}
 	else {}
 
-	/// 設定する的のk理科絵
+	/// 設定する的の切り替え
 	if (_input->IsTrigger(KEY_INPUT_UP))
 	{
-		int targetMax = _targetCnts.size();
-		_targetCnt	  = ((_targetCnt - 1) + targetMax) % targetMax;
+		int targetMax = _waveTargetCnt.size();
+		_configTarget = ((_configTarget - 1) + targetMax) % targetMax;
 	}
 	else if (_input->IsTrigger(KEY_INPUT_DOWN))
 	{
-		int targetMax = _targetCnts.size();
-		_targetCnt	  = (_targetCnt + 1) % targetMax;
+		int targetMax = _waveTargetCnt.size();
+		_configTarget = (_configTarget + 1) % targetMax;
 	}
 	else{}
 
@@ -169,11 +179,11 @@ void Stage::TargetUpdate()
 
 	/// 現在設定している的の表示
 	int nowTargetColor;
-	auto tCnt = _targetCnts.begin();
-	for (; tCnt != _targetCnts.end(); ++tCnt)
+	auto tCnt = _waveTargetCnt.begin();
+	for (; tCnt != _waveTargetCnt.end(); ++tCnt)
 	{
-		auto cnt = tCnt - _targetCnts.begin();
-		nowTargetColor = (_targetCnt == cnt ? 0xffff00 : 0xffffff);
+		auto cnt = tCnt - _waveTargetCnt.begin();
+		nowTargetColor = (_configTarget == cnt ? 0xffff00 : 0xffffff);
 		text = std::to_string(cnt + 1) + " : " + std::to_string((*tCnt));
 		GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
 		DrawString(_screen.x - strSize.x, strSize.y * cnt, text.c_str(), nowTargetColor);
@@ -181,7 +191,7 @@ void Stage::TargetUpdate()
 
 	/// 出現する的数の設定
 	SetFontSize(140);
-	text = std::to_string(_targetCnts[_targetCnt]);
+	text = std::to_string(_waveTargetCnt[_configTarget]);
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
 	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) + (strSize.y / 2), text.c_str(), 0x88ff88);
 }
@@ -209,7 +219,6 @@ void Stage::EditUpdate()
 	{
 		Save();
 	}
-
 }
 
 bool Stage::IsReset()
@@ -412,7 +421,6 @@ void Stage::Update()
 		ClsDrawScreen();
 		_input->Update();
 		(this->*_nowMode)();
-		Draw();
 
 		ScreenFlip();
 	}
@@ -426,9 +434,4 @@ void Stage::ChagneState(TargetState* targetState)
 Vector2<int> Stage::GetScreenSize() const
 {
 	return _screen;
-}
-
-void Stage::Draw()
-{
-	/// ステージエディタで必要な情報を描画する予定
 }
