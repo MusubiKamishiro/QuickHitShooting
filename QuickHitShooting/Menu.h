@@ -11,10 +11,11 @@ class CollisionDetector;
 // メニューに必要な情報
 struct MenuData
 {
-	MenuData() : rect(0, 0, 0, 0), img(-1) {};
-	MenuData(Rect rect, int img) : rect(rect), img(img) {};
+	MenuData() : rect(0, 0, 0, 0), img(-1), flag(false) {};
+	MenuData(Rect rect, int img) : rect(rect), img(img), flag(false) {};
 	Rect rect;		// 座標と幅高
 	int img;		// 画像
+	bool flag;		// カーソルがrect内に入ってるとtrue返す
 };
 
 class Menu
@@ -28,16 +29,20 @@ private:
 	// 当たり判定
 	std::shared_ptr<CollisionDetector> _cd;
 
+	int img;
+	int size;
+
 public:
 	Menu();
 	~Menu();
 
 	///メニューリストに追加
 	///@param name	メニュー名
-	///@param pos	画像の表示座標(中心)
+	///@param ltPos	画像を表示する左上座標
+	///@param rbPos	画像を表示する右下座標
 	///@param size	画像の幅高
 	///@param img	画像ハンドル
-	void AddMenuList(const std::string& name, const Vector2<int>& pos, const Size& size, const int& img);
+	void AddMenuList(const std::string& name, const Vector2<int>& ltPos, const Vector2<int>& rbPos, const int& img);
 
 	///引数のメニューをクリックしたかを確認する
 	///@param name	確認したいメニュー名

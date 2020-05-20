@@ -24,24 +24,18 @@ SelectScene::SelectScene()
 	_menu.reset(new Menu());
 	_gunState.name = "Gun1";
 	_gunState.maxBullets = 700;
-	_gunState.remainingBullets = _gunState.maxBullets;
 	_gunState.maxBulletsInMagazine = 10;
-	_gunState.BulletsInMagazine = _gunState.maxBulletsInMagazine;
-	AddGunMenu(_gunState, Vector2<int>(300, 600), Size(400, 200), img);
+	AddGunMenu(_gunState, Vector2<int>(150, 500), Vector2<int>(300, 700), img);
 
 	_gunState.name = "Gun2";
 	_gunState.maxBullets = 500;
-	_gunState.remainingBullets = _gunState.maxBullets;
 	_gunState.maxBulletsInMagazine = 10;
-	_gunState.BulletsInMagazine = _gunState.maxBulletsInMagazine;
-	AddGunMenu(_gunState, Vector2<int>(650, 600), Size(400, 200), img);
+	AddGunMenu(_gunState, Vector2<int>(400, 500), Vector2<int>(550, 700), img);
 
 	_gunState.name = "Gun3";
 	_gunState.maxBullets = 300;
-	_gunState.remainingBullets = _gunState.maxBullets;
 	_gunState.maxBulletsInMagazine = 40;
-	_gunState.BulletsInMagazine = _gunState.maxBulletsInMagazine;
-	AddGunMenu(_gunState, Vector2<int>(1000, 600), Size(400, 200), img);
+	AddGunMenu(_gunState, Vector2<int>(650, 500), Vector2<int>(800, 700), img);
 
 	_updater = &SelectScene::FadeinUpdate;
 }
@@ -67,7 +61,6 @@ void SelectScene::FadeoutUpdate(const Peripheral& p)
 {
 	if (_pal <= 0)
 	{
-		
 		SceneManager::Instance().ChangeScene(std::make_unique<GamePlayingScene>(_gunState));
 	}
 	else
@@ -87,11 +80,13 @@ void SelectScene::WaitUpdate(const Peripheral& p)
 			_updater = &SelectScene::FadeoutUpdate;
 		}
 	}
+	
+	_menu->Update(p);
 }
 
-void SelectScene::AddGunMenu(const GunStatus& gunstate, const Vector2<int>& pos, const Size& size, const int& img)
+void SelectScene::AddGunMenu(const GunStatus& gunstate, const Vector2<int>& ltPos, const Vector2<int>& rbPos, const int& img)
 {
-	_menu->AddMenuList(gunstate.name.c_str(), pos, size, img);
+	_menu->AddMenuList(gunstate.name.c_str(), ltPos, rbPos, img);
 	_gunStatus.push_back(gunstate);
 }
 
