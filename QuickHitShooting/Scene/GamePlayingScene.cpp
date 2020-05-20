@@ -34,7 +34,7 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState)
 	ImageData data;
 	Game::Instance().GetFileSystem()->Load("img/pause.png", data);
 	int i = data.GetHandle();
-	_menu->AddMenuList("pause", Vector2<int>(_scrSize.x - 25, 25), Size(50, 50), i);
+	_menu->AddMenuList("pause", Vector2<int>(_scrSize.x - 50, 0), Vector2<int>(_scrSize.x, 50), i);
 
 	hitFlag = false;
 
