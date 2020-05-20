@@ -6,6 +6,8 @@
 Gun::Gun(const GunStatus& gunState)
 {
 	_gun = gunState;
+	_gun.remainingBullets = gunState.maxBullets;
+	_gun.BulletsInMagazine = gunState.maxBulletsInMagazine;
 	_trimString.reset(new TrimString());
 }
 

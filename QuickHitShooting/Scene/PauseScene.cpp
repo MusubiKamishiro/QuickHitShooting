@@ -19,13 +19,13 @@ PauseScene::PauseScene()
 	ImageData data;
 	Game::Instance().GetFileSystem()->Load("img/sample01.png", data);
 	int i = data.GetHandle();
-	_menu->AddMenuList("BackGame", Vector2<int>(_scrSize.x/2, 150), Size(300, 150), i);
+	_menu->AddMenuList("BackGame", Vector2<int>(_scrSize.x/2 - 150, 50), Vector2<int>(_scrSize.x/2 + 150, 150), i);
 	Game::Instance().GetFileSystem()->Load("img/sample02.png", data);
 	i = data.GetHandle();
-	_menu->AddMenuList("ReTry", Vector2<int>(_scrSize.x / 2, 400), Size(300, 150), i);
+	_menu->AddMenuList("ReTry", Vector2<int>(_scrSize.x/2 - 150, 200), Vector2<int>(_scrSize.x/2 + 150, 300), i);
 	Game::Instance().GetFileSystem()->Load("img/sample03.png", data);
 	i = data.GetHandle();
-	_menu->AddMenuList("BackSelect", Vector2<int>(_scrSize.x / 2, 650), Size(300, 150), i);
+	_menu->AddMenuList("BackSelect", Vector2<int>(_scrSize.x/2 - 150, 350), Vector2<int>(_scrSize.x/2 + 150, 450), i);
 }
 
 PauseScene::~PauseScene()
@@ -68,6 +68,8 @@ void PauseScene::WaitUpdate(const Peripheral & p)
 
 void PauseScene::Update(const Peripheral& p)
 {
+	_menu->Update(p);
+
 	(this->*_updater)(p);
 }
 
