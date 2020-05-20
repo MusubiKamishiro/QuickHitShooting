@@ -47,12 +47,15 @@ void Stage::Wave()
 void Stage::Target()
 {
 	_nowMode = &Stage::TargetUpdate;
-	// ウェーブ数が0の時、ウェーブ数を1にする
-	_waveCnt = (_waveCnt == 0 ? 1 : _waveCnt);
-	_stageData.reserve(_waveCnt);
-	_stageData.resize(_waveCnt);
 
-	_targetCnt = 3;
+	_targetCnts.clear();
+	_targetCnts.reserve(_waveCnt);
+	_targetCnts.resize(_waveCnt);
+
+	for (auto& tCnt : _targetCnts)
+	{
+		tCnt = 3;
+	}
 }
 
 void Stage::Edit()
@@ -64,25 +67,26 @@ void Stage::Edit()
 	/// 現在のウェーブ数の初期化
 	_nowWaveCnt = _nowTargetCnt = 0;
 
-	/// ウェーブごとのターゲット数の設定
-	for (auto& wave : _stageData)
-	{
-		wave.reserve(_targetCnt);
-		wave.resize(_targetCnt);
+	/// ウェーブ数の生成
+	_stageData.reserve(_waveCnt);
+	_stageData.resize(_waveCnt);
 
-		for (auto& target : wave)
+	auto wCnt = _stageData.begin();
+	for (; wCnt != _stageData.end(); ++wCnt)
+	{
+		auto cnt = wCnt - _stageData.begin();
+		(*wCnt).reserve(_targetCnts[cnt]);
+		(*wCnt).resize(_targetCnts[cnt]);
+		for (auto& target : (*wCnt))
 		{
 			/// 的情報の初期化
-			target.type			= 0;
-			target.appearTime	= 60;
-			target.dispTime		= 60;
-			target.pos.x		= _screen.x / 2;
-			target.pos.y		= _screen.y / 2;
+			target.type = 0;
+			target.appearTime = 60;
+			target.dispTime = 60;
+			target.pos.x = _screen.x / 2;
+			target.pos.y = _screen.y / 2;
 		}
 	}
-
-	/// 文字サイズの初期化
-	SetFontSize(32);
 }
 
 void Stage::WaveUpdate()
@@ -93,11 +97,11 @@ void Stage::WaveUpdate()
 		return;
 	}
 
-	if (_input->IsTrigger(KEY_INPUT_DOWN))
+	if (_input->IsTrigger(KEY_INPUT_UP))
 	{
 		_waveCnt = (_waveCnt > 1 ? _waveCnt - 1 : 1);
 	}
-	else if (_input->IsTrigger(KEY_INPUT_UP))
+	else if (_input->IsTrigger(KEY_INPUT_DOWN))
 	{
 		++_waveCnt;
 	}
@@ -131,28 +135,55 @@ void Stage::TargetUpdate()
 		return;
 	}
 
-	if (_input->IsTrigger(KEY_INPUT_DOWN))
+	if (_input->IsTrigger(KEY_INPUT_LEFT))
 	{
 		/// 的数の減算
-		_targetCnt = (_targetCnt > 3 ? _targetCnt - 1 : 3);
+		_targetCnts[_targetCnt] = (_targetCnts[_targetCnt] > 3 ? _targetCnts[_targetCnt] - 1 : 3);
 	}
-	else if (_input->IsTrigger(KEY_INPUT_UP))
+	else if (_input->IsTrigger(KEY_INPUT_RIGHT))
 	{
 		/// 的数の加算
-		_targetCnt = (_targetCnt < _targetCntMax ? _targetCnt + 1 : _targetCntMax);
+		_targetCnts[_targetCnt] = (_targetCnts[_targetCnt] < _targetCntMax ? _targetCnts[_targetCnt] + 1 : _targetCntMax);
 	}
 	else {}
 
+	/// 設定する的のk理科絵
+	if (_input->IsTrigger(KEY_INPUT_UP))
+	{
+		int targetMax = _targetCnts.size();
+		_targetCnt	  = ((_targetCnt - 1) + targetMax) % targetMax;
+	}
+	else if (_input->IsTrigger(KEY_INPUT_DOWN))
+	{
+		int targetMax = _targetCnts.size();
+		_targetCnt	  = (_targetCnt + 1) % targetMax;
+	}
+	else{}
+
 	Vector2<int> strSize;
-
+	std::string text;
 	SetFontSize(80);
-	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, "出現する的の数", strlen("出現する的の数"));
-	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) - strSize.y, "出現する的の数", 0xffffff);
+	text = "出現する的の数";
+	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
+	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) - strSize.y, text.c_str(), 0xffffff);
 
+	/// 現在設定している的の表示
+	int nowTargetColor;
+	auto tCnt = _targetCnts.begin();
+	for (; tCnt != _targetCnts.end(); ++tCnt)
+	{
+		auto cnt = tCnt - _targetCnts.begin();
+		nowTargetColor = (_targetCnt == cnt ? 0xffff00 : 0xffffff);
+		text = std::to_string(cnt + 1) + " : " + std::to_string((*tCnt));
+		GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
+		DrawString(_screen.x - strSize.x, strSize.y * cnt, text.c_str(), nowTargetColor);
+	}
+
+	/// 出現する的数の設定
 	SetFontSize(140);
-	GetDrawStringSize(&strSize.x, &strSize.y, nullptr,
-					   std::to_string(_targetCnt).c_str(), strlen(std::to_string(_targetCnt).c_str()));
-	DrawFormatString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) + (strSize.y / 2), 0x88ff88, "%d", _targetCnt);
+	text = std::to_string(_targetCnts[_targetCnt]);
+	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
+	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) + (strSize.y / 2), text.c_str(), 0x88ff88);
 }
 
 void Stage::EditUpdate()
@@ -232,6 +263,7 @@ bool Stage::IsLoad()
 bool Stage::Save()
 {
 	// ファイルフォルダーを開いて書き込むための初期化
+	OPENFILENAME openFileName;
 	char fileSize[MAX_PATH] = "";											// ファイル名のサイズと最後に\0を入れる
 	ZeroMemory(&openFileName, sizeof(openFileName));						// 構造体の初期化
 	openFileName.lStructSize = sizeof(OPENFILENAME);						// 構造体の大きさ
@@ -286,6 +318,7 @@ bool Stage::Save()
 bool Stage::Load()
 {
 	// ファイルフォルダーを開いて読み込むための初期化
+	OPENFILENAME openFileName;
 	char fileSize[MAX_PATH]	 = "";											// ファイル名のサイズと最後に\0を入れる
 	ZeroMemory(&openFileName, sizeof(openFileName));						// 構造体の初期化
 	openFileName.lStructSize = sizeof(OPENFILENAME);						// 構造体の大きさ

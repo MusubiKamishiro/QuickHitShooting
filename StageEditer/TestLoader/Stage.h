@@ -86,11 +86,10 @@ private:
 
 	// ウェーブ数のカウント保存用
 	int _waveCnt;
+	std::vector<int> _targetCnts;
 	int _targetCnt;
 
 	int _nowWaveCnt, _nowTargetCnt;
-
-	OPENFILENAME openFileName;
 
 	// ウェーブのデータ保持用変数
 	vec2_target _stageData;
