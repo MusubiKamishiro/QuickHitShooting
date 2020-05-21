@@ -67,6 +67,11 @@ void NetWorkWS2::RecivedClient(SendDataWS2& data)
 
 void NetWorkWS2::RecivedClient(TargetData& data)
 {
+	connect(sock, (sockaddr*)&server, sizeof(server));
+	int n = recv(sock, (char*)&data, sizeof(data), 0);
+	std::string sendData = "Success";
+	send(sock, sendData.c_str(), sendData.length(), 0);
+	closesocket(sock);
 }
 
 void NetWorkWS2::Terminate()

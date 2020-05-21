@@ -5,7 +5,6 @@
 #include "Scene/SceneManager.h"
 #include "Loader/FileSystem.h"
 #include "FrameFixity/FrameFixity.h"
-//#include "NetWork.h"
 #include <iostream>
 #include <thread>
 
@@ -101,7 +100,7 @@ void Game::Run()
 				});
 			updateThread.join();
 
-			if (nowInput && !oldInput) {
+			/*if (nowInput && !oldInput) {
 				std::thread reciveThread([]() {
 					DxLib::DxLib_Init();
 					SendDataWS2 dataws2 = {};
@@ -113,7 +112,7 @@ void Game::Run()
 			}
 
 			oldInput = nowInput;
-			nowInput = CheckHitKey(KEY_INPUT_S);
+			nowInput = CheckHitKey(KEY_INPUT_S);*/
 
 #ifdef _DEBUG
 			DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);

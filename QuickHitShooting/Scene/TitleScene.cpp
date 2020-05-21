@@ -1,3 +1,4 @@
+#include "../NetWorkWS2.h"
 #include <DxLib.h>
 #include "TitleScene.h"
 #include "SelectScene.h"
@@ -9,6 +10,13 @@
 #include "../Loader/ImageLoader.h"
 #include "../Loader/SoundLoader.h"
 #include "../TrimString.h"
+
+#include <thread>
+
+namespace {
+	int nowInput = 0;
+	int oldInput = 0;
+}
 
 void TitleScene::FadeinUpdate(const Peripheral & p)
 {
@@ -77,6 +85,19 @@ TitleScene::~TitleScene()
 void TitleScene::Update(const Peripheral& p)
 {
 	(this->*_updater)(p);
+	if (nowInput && !oldInput) {
+		std::thread reciveThread([]() {
+			DxLib::DxLib_Init();
+			SendDataWS2 dataws2 = {};
+			dataws2.Buffer = "KUSOZAKO";
+			NetWorkWS2::Instance().Initialize("192.168.11.47");
+			NetWorkWS2::Instance().SendServer(dataws2);
+			});
+		reciveThread.detach();
+	}
+
+	oldInput = nowInput;
+	nowInput = CheckHitKey(KEY_INPUT_S);
 }
 
 void TitleScene::Draw()
