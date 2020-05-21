@@ -12,6 +12,7 @@
 #include "../Loader/SoundLoader.h"
 #include "../Loader/StageLoader.h"
 #include "../Menu.h"
+#include "../TrimString.h"
 
 #include "../Gun.h"
 #include "../Enemy.h"
@@ -30,6 +31,7 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState)
 	_gun.reset(new Gun(gunState));
 	_cd.reset(new CollisionDetector());
 	_menu.reset(new Menu());
+	_trimString.reset(new TrimString());
 
 	ImageData data;
 	Game::Instance().GetFileSystem()->Load("img/pause.png", data);
@@ -39,6 +41,7 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState)
 	hitFlag = false;
 
 	_waveCnt = 0;
+	_score = 0;
 	/// ステージ読み込み(いずれセレクトシーンに移動する予定)
 
 	auto stageCnt = []()
@@ -111,7 +114,7 @@ void GamePlayingScene::FadeoutUpdate(const Peripheral & p)
 {
 	if (_pal <= 0)
 	{
-		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>());
+		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>(_score));
 	}
 	else
 	{
@@ -119,9 +122,14 @@ void GamePlayingScene::FadeoutUpdate(const Peripheral & p)
 	}
 }
 
-void GamePlayingScene::WaitUpdate(const Peripheral & p)
+void GamePlayingScene::WaitUpdate(const Peripheral& p)
 {
-	if (p.IsTrigger(MOUSE_INPUT_LEFT))
+	//ポーズボタンを押したらポーズシーンに切り替え
+	if (_menu->CheckClick("pause", p))
+	{
+		SceneManager::Instance().PushScene(std::make_unique<PauseScene>());
+	}
+	else if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
 		if (_gun->Shot())
 		{
@@ -140,16 +148,14 @@ void GamePlayingScene::WaitUpdate(const Peripheral & p)
 	{
 		_gun->Reload();
 	}
-
-	//ポーズボタンを押したらポーズシーンに切り替え
-	if (_menu->CheckCrick("pause", p))
-	{
-		SceneManager::Instance().PushScene(std::make_unique<PauseScene>());
-	}
 }
 
 void GamePlayingScene::TestDraw()
 {
+	_trimString->ChangeFontSize(40);
+	DxLib::DrawFormatString(_trimString->GetStringCenterPosx("00000"), 0, 0x000000, "%05d", _score);
+	DxLib::DrawFormatString(0, 0, 0x000000, "WAVE %d", (_waveCnt + 1));
+
 	for (auto& enemy : _enemies)
 	{
 		enemy->Draw();

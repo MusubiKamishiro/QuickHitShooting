@@ -73,7 +73,7 @@ void SelectScene::WaitUpdate(const Peripheral& p)
 {
 	for (int i = 0; i < _gunStatus.size(); ++i)
 	{
-		if (_menu->CheckCrick(_gunStatus[i].name.c_str(), p))
+		if (_menu->CheckClick(_gunStatus[i].name.c_str(), p))
 		{
 			_gunState = _gunStatus[i];
 			

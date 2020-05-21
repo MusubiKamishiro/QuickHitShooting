@@ -30,7 +30,7 @@ void Menu::AddMenuList(const std::string& name, const Vector2<int>& ltPos, const
 	_menuTable.emplace(name, md);
 }
 
-bool Menu::CheckCrick(const std::string& name, const Peripheral& p)
+bool Menu::CheckClick(const std::string& name, const Peripheral& p)
 {
 	if (p.IsTrigger(MOUSE_INPUT_LEFT) && _cd->IsCollision(p.GetMousePos(), _menuTable[name.c_str()].rect))
 	{
