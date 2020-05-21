@@ -10,7 +10,6 @@
 #include "../Loader/FileSystem.h"
 #include "../Loader/ImageLoader.h"
 #include "../Loader/SoundLoader.h"
-#include "../Loader/StageLoader.h"
 #include "../Menu.h"
 #include "../TrimString.h"
 
@@ -21,7 +20,7 @@
 #include "../DeductionEnemy.h"
 #include "../CollisionDetector.h"
 
-GamePlayingScene::GamePlayingScene(const GunStatus& gunState)
+GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const StageData& stageData)
 {
 	_pal = 0;
 	
@@ -33,6 +32,9 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState)
 	_menu.reset(new Menu());
 	_trimString.reset(new TrimString());
 
+	/// ステージの読み込み
+	_stageData = stageData;
+
 	ImageData data;
 	Game::Instance().GetFileSystem()->Load("img/pause.png", data);
 	int i = data.GetHandle();
@@ -42,53 +44,7 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState)
 
 	_waveCnt = 0;
 	_score = 0;
-	/// ステージ読み込み(いずれセレクトシーンに移動する予定)
-
-	auto stageCnt = []()
-	{
-		int cnt = 0;
-		HANDLE handle;
-		WIN32_FIND_DATA findData;
-		std::string searchName = "../StageData/*.bin";
-		handle = FindFirstFile(searchName.c_str(), &findData);
-
-		do {
-			if (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-			{
-				cnt++;
-			}
-		} while (FindNextFile(handle, &findData));
-		FindClose(handle);
-
-		if (cnt == 0)
-		{
-			MessageBox(GetMainWindowHandle(),
-				"ステージデータが見つかりませんでした。",
-				"Not Found StageData",
-				MB_OK);
-		}
-		return cnt;
-	};
-
-	int cnt = stageCnt();
-
-	/// 全ステージを読み込む(仮の処理)
-	StageData stage;
-	for (int i = 0; i < cnt; ++i)
-	{
-		TargetData debug;
-		std::string stageNum = std::to_string(i + 1);
-		Game::Instance().GetFileSystem()->Load("StageData/stage" + stageNum + ".bin", stage);
-
-		for (auto wave : stage.GetStageData())
-		{
-			for (auto target : wave)
-			{
-				debug = target;
-			}
-		}
-	}
-
+	
 	/// 敵の仮生成
 	CreateEnemy();
 }
@@ -173,12 +129,10 @@ void GamePlayingScene::TestDraw()
 bool GamePlayingScene::CreateEnemy()
 {
 	/// 仮でステージデータを読み込んでいる
-	StageData stage;
-	Game::Instance().GetFileSystem()->Load("StageData/stage1.bin", stage);
 
-	if (_waveCnt < stage.GetStageData().size())
+	if (_waveCnt < _stageData.GetStageData().size())
 	{
-		auto data = stage.GetStageData()[_waveCnt];
+		auto data = _stageData.GetStageData()[_waveCnt];
 		for (auto target : data)
 		{
 			/// 敵の生成

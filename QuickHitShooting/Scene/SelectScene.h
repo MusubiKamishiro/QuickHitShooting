@@ -5,6 +5,8 @@
 #include "Scene.h"
 #include "../Gun.h"
 
+#include "../Loader/StageLoader.h"
+
 class TrimString;
 class Menu;
 
@@ -20,16 +22,24 @@ private:
 	std::unique_ptr<TrimString> _trimString;
 	std::shared_ptr<Menu> _menu;
 	GunStatus _gunState;
+	StageData _stageData;
 
 	std::vector<GunStatus> _gunStatus;
-	
+	std::vector<StageData> _stageDatas;
+
 	///銃のメニューの追加
 	///@param GunState	銃のステータス
 	///@param ltPos		画像を表示する左上座標
 	///@param rbPos		画像を表示する右下座標
 	///@param img		画像のハンドル
 	void AddGunMenu(const GunStatus& gunstate, const Vector2<int>& ltPos, const Vector2<int>& rbPos, const int& img);
+	void AddStageMenu(const std::string& stageName, const Vector2<int>& ltPos, const Vector2<int>& rbPos, const int& img);
 
+	// ステージ用のメニューボックスの表示
+	void CreateStageMenu();
+
+	// ステージパス取得用関数
+	std::string GetStagePath(const int& num) const;
 public:
 	SelectScene();
 	~SelectScene();
