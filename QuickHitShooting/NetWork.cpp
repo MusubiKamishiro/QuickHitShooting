@@ -1,6 +1,17 @@
 #include "NetWork.h"
-#include <thread>
 #include <iostream>
+#include <thread>
+
+namespace {
+	SendData* dataBuffer = new SendData();		// データバッファ
+	IPDATA Ip = {};		// IPアドレス
+	int NetHandle;		// ネットワークハンドル
+	int LostNetHandle = 0;		// 切断されたネットワークのハンドル
+	int DataLength = 0;		// 受信データ量保存変数
+	int Port = 2222;		// 接続ポート番号
+	int waitTime = 0;
+	bool isProc = false;
+}
 
 NetWork::NetWork() {
 }
@@ -42,27 +53,29 @@ void NetWork::Send(SendData* data)
 	}
 }
 
-SendData NetWork::Recive()
+void NetWork::Recive(SendData& data)
 {
 	// 接続待ち状態にする
-	PreparationListenNetWork(Port);
-	NetHandle = -1;
+	if (isProc) {
+		auto res = PreparationListenNetWork(Port);
+		isProc = true;
+	}
+	
 	while (!ProcessMessage() && CheckHitKey(KEY_INPUT_ESCAPE) == 0) {
 		// 接続があるまで待機
 		NetHandle = GetNewAcceptNetWork();
 		if (NetHandle != -1) break;
 	}
-
+	
 	if (NetHandle != -1) {
 		// 接続待ち状態を解除する
-		StopListenNetWork();
+		//StopListenNetWork();
 		// 相手のIPアドレスを取得する
 		GetNetWorkIP(NetHandle, &Ip);
 		while (!ProcessMessage()) {
 			// 相手からデータを送られてくるまで待機
 			if (GetNetWorkDataLength(NetHandle) != 0)break;
 		}
-
 		// 送られてきたデータの大きさを取得
 		DataLength = GetNetWorkDataLength(NetHandle);
 		// 送られてきたデータを取得
@@ -79,11 +92,16 @@ SendData NetWork::Recive()
 				if (LostNetHandle == NetHandle) break;
 			}
 		}
-		return *dataBuffer;
+		data = *dataBuffer;
+
 	}
 	else {
-		return SendData{};
+		data = SendData{};
 	}
+	NetHandle = 0;
+	LostNetHandle = 0;
+	DataLength = 0;
+	dataBuffer = new SendData();
 }
 
 NetWork::~NetWork()

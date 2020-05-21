@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="シーン ファイル">
+      <UniqueIdentifier>{f81eb67e-e3dc-4ab1-9311-b2fe2af7d18d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="シーン ファイル\ソース ファイル">
+      <UniqueIdentifier>{d199bd61-db94-4a8d-836c-a311910c9133}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="シーン ファイル\ヘッダー ファイル">
+      <UniqueIdentifier>{d5039114-10e3-4a50-94da-34a7cef8f069}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Loader">
+      <UniqueIdentifier>{58296a2b-096d-4db9-b801-57955e2378eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Loader\ソース ファイル">
+      <UniqueIdentifier>{82f2b4d7-adb0-48f3-a7af-a1ac63c043cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Loader\ヘッダー ファイル">
+      <UniqueIdentifier>{71c95e1c-78aa-4fd3-a502-f279c7d95341}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Game.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Geometry.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Peripheral.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="TrimString.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameFixity\FrameFixity.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\GamePlayingScene.cpp">
+      <Filter>シーン ファイル\ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\TitleScene.cpp">
+      <Filter>シーン ファイル\ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\SelectScene.cpp">
+      <Filter>シーン ファイル\ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\SceneManager.cpp">
+      <Filter>シーン ファイル\ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\Scene.cpp">
+      <Filter>シーン ファイル\ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\ResultScene.cpp">
+      <Filter>シーン ファイル\ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\PauseScene.cpp">
+      <Filter>シーン ファイル\ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Loader\FileSystem.cpp">
+      <Filter>Loader\ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Loader\Loader.cpp">
+      <Filter>Loader\ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Loader\SoundLoader.cpp">
+      <Filter>Loader\ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Loader\ImageLoader.cpp">
+      <Filter>Loader\ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="NetWork.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Gun.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionDetector.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="NetWorkWS2.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Game.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Peripheral.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="TrimString.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameFixity\FrameFixity.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\GamePlayingScene.h">
+      <Filter>シーン ファイル\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\PauseScene.h">
+      <Filter>シーン ファイル\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\ResultScene.h">
+      <Filter>シーン ファイル\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\Scene.h">
+      <Filter>シーン ファイル\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\SceneManager.h">
+      <Filter>シーン ファイル\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\SelectScene.h">
+      <Filter>シーン ファイル\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\TitleScene.h">
+      <Filter>シーン ファイル\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Loader\SoundLoader.h">
+      <Filter>Loader\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Loader\ImageLoader.h">
+      <Filter>Loader\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Loader\FileSystem.h">
+      <Filter>Loader\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Loader\Loader.h">
+      <Filter>Loader\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="NetWork.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Gun.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionDetector.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="NetWorkWS2.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,16 +1,19 @@
 #include "Game.h"
+#include "NetWorkWS2.h"
 #include <DxLib.h>
 #include "Peripheral.h"
 #include "Scene/SceneManager.h"
 #include "Loader/FileSystem.h"
 #include "FrameFixity/FrameFixity.h"
-#include "NetWork.h"
+//#include "NetWork.h"
+#include <iostream>
+#include <thread>
 
-/// デバッグ用のインクルード
 #include "Loader/StageLoader.h"
 
 namespace {
-	std::vector<int> ip = { 192,168,56,1 };
+	int nowInput = 0;
+	int oldInput = 0;
 }
 
 Game::Game() : _screenSize(1280, 720)
@@ -42,8 +45,6 @@ void Game::Initialize()
 //	}
 //#endif // _DEBUG
 
-	DxLib::ChangeWindowMode(true);
-
 	// 画面サイズの設定
 	DxLib::SetGraphMode(_screenSize.x, _screenSize.y, 32);
 
@@ -64,13 +65,11 @@ void Game::Initialize()
 
 	_peripheral.reset(new Peripheral());
 	_fileSystem.reset(new FileSystem());
-	// NetWork::Instance().Connect(ip);
-
 }
 
 void Game::Run()
 {
-	auto& scenes	= SceneManager::Instance();
+	auto& scenes = SceneManager::Instance();
 	FrameFixity& ff = FrameFixity::Instance();
 	ff.FFInitialize();
 
@@ -95,18 +94,33 @@ void Game::Run()
 				break;
 			}
 
-			_peripheral->Update();
-			scenes.Update(*_peripheral);
+			std::thread updateThread([&]() {
+				_peripheral->Update();
+				scenes.Update(*_peripheral);
+				scenes.Draw();
+				});
+			updateThread.join();
 
-			scenes.Draw();
+			if (nowInput && !oldInput) {
+				std::thread reciveThread([]() {
+					DxLib::DxLib_Init();
+					SendDataWS2 dataws2 = {};
+					dataws2.Buffer = "KUSOZAKO";
+					NetWorkWS2::Instance().Initialize("192.168.11.47");
+					NetWorkWS2::Instance().SendServer(dataws2);
+					});
+				reciveThread.detach();
+			}
 
+			oldInput = nowInput;
+			nowInput = CheckHitKey(KEY_INPUT_S);
 
 #ifdef _DEBUG
 			DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
 			_peripheral->DebugDraw();
 #endif // _DEBUG
-			DxLib::ScreenFlip();
 
+			DxLib::ScreenFlip();
 		}
 	}
 
