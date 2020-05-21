@@ -5,7 +5,6 @@
 #include "Scene/SceneManager.h"
 #include "Loader/FileSystem.h"
 #include "FrameFixity/FrameFixity.h"
-//#include "NetWork.h"
 #include <iostream>
 #include <thread>
 
@@ -30,20 +29,20 @@ Game::~Game()
 
 void Game::Initialize()
 {
-//#ifdef _DEBUG
-//	DxLib::ChangeWindowMode(true);
-//#else
-//	int ans = MessageBox(DxLib::GetMainWindowHandle(), "フルスクリーンで表示しますか？", "画面の大きさどうしようか", MB_YESNO | MB_ICONQUESTION);
-//
-//	if (ans == IDYES)
-//	{
-//		DxLib::ChangeWindowMode(false);
-//	}
-//	else
-//	{
-//		DxLib::ChangeWindowMode(true);
-//	}
-//#endif // _DEBUG
+#ifdef _DEBUG
+	DxLib::ChangeWindowMode(true);
+#else
+	int ans = MessageBox(DxLib::GetMainWindowHandle(), "フルスクリーンで表示しますか？", "画面の大きさどうしようか", MB_YESNO | MB_ICONQUESTION);
+
+	if (ans == IDYES)
+	{
+		DxLib::ChangeWindowMode(false);
+	}
+	else
+	{
+		DxLib::ChangeWindowMode(true);
+	}
+#endif // _DEBUG
 
 	// 画面サイズの設定
 	DxLib::SetGraphMode(_screenSize.x, _screenSize.y, 32);
@@ -94,14 +93,18 @@ void Game::Run()
 				break;
 			}
 
-			std::thread updateThread([&]() {
+			_peripheral->Update();
+			scenes.Update(*_peripheral);
+			scenes.Draw();
+
+			/*std::thread updateThread([&]() {
 				_peripheral->Update();
 				scenes.Update(*_peripheral);
 				scenes.Draw();
 				});
-			updateThread.join();
+			updateThread.join();*/
 
-			if (nowInput && !oldInput) {
+			/*if (nowInput && !oldInput) {
 				std::thread reciveThread([]() {
 					DxLib::DxLib_Init();
 					SendDataWS2 dataws2 = {};
@@ -113,7 +116,7 @@ void Game::Run()
 			}
 
 			oldInput = nowInput;
-			nowInput = CheckHitKey(KEY_INPUT_S);
+			nowInput = CheckHitKey(KEY_INPUT_S);*/
 
 #ifdef _DEBUG
 			DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
