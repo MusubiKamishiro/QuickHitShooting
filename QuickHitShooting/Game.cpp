@@ -9,6 +9,8 @@
 #include <iostream>
 #include <thread>
 
+#include "Loader/StageLoader.h"
+
 namespace {
 	int nowInput = 0;
 	int oldInput = 0;
@@ -28,20 +30,20 @@ Game::~Game()
 
 void Game::Initialize()
 {
-#ifdef _DEBUG
-	DxLib::ChangeWindowMode(true);
-#else
-	int ans = MessageBox(DxLib::GetMainWindowHandle(), "フルスクリーンで表示しますか？", "画面の大きさどうしようか", MB_YESNO | MB_ICONQUESTION);
-
-	if (ans == IDYES)
-	{
-		DxLib::ChangeWindowMode(false);
-	}
-	else
-	{
-		DxLib::ChangeWindowMode(true);
-	}
-#endif // _DEBUG
+//#ifdef _DEBUG
+//	DxLib::ChangeWindowMode(true);
+//#else
+//	int ans = MessageBox(DxLib::GetMainWindowHandle(), "フルスクリーンで表示しますか？", "画面の大きさどうしようか", MB_YESNO | MB_ICONQUESTION);
+//
+//	if (ans == IDYES)
+//	{
+//		DxLib::ChangeWindowMode(false);
+//	}
+//	else
+//	{
+//		DxLib::ChangeWindowMode(true);
+//	}
+//#endif // _DEBUG
 
 	// 画面サイズの設定
 	DxLib::SetGraphMode(_screenSize.x, _screenSize.y, 32);

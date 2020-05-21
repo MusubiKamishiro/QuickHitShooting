@@ -11,6 +11,7 @@ class FileSystem
 private:
 	std::unique_ptr<Loader> imageLoader;
 	std::unique_ptr<Loader> soundLoader;
+	std::unique_ptr<Loader> stageLoader;
 
 	std::map<std::string, std::shared_ptr<Loader>> loaders;
 
@@ -22,6 +23,6 @@ public:
 	FileSystem();
 	~FileSystem();
 
-	int Load(const std::string& filePath);
+	bool Load(const std::string& filePath, Data& data);
 };
 

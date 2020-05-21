@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Target">
+      <UniqueIdentifier>{dbdce42b-c6f0-4f94-b1f6-c65c416c9626}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Target\ヘッダーファイル">
+      <UniqueIdentifier>{7ae0bf39-4258-48f2-87be-e38df976beda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Target\ソースファイル">
+      <UniqueIdentifier>{e071a8a9-cdff-41ac-8b33-fefa3da73fdb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Stage.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Geometry.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Target\TargetAppearTime.cpp">
+      <Filter>Target\ソースファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Target\TargetDispTime.cpp">
+      <Filter>Target\ソースファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Target\TargetPosition.cpp">
+      <Filter>Target\ソースファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Target\TargetState.cpp">
+      <Filter>Target\ソースファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Target\TargetType.cpp">
+      <Filter>Target\ソースファイル</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Input.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Stage.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Target\TargetAppearTime.h">
+      <Filter>Target\ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Target\TargetDispTime.h">
+      <Filter>Target\ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Target\TargetPosition.h">
+      <Filter>Target\ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Target\TargetState.h">
+      <Filter>Target\ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Target\TargetType.h">
+      <Filter>Target\ヘッダーファイル</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

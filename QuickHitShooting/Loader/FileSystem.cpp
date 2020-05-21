@@ -2,6 +2,7 @@
 #include "Loader.h"
 #include "ImageLoader.h"
 #include "SoundLoader.h"
+#include "StageLoader.h"
 
 
 FileSystem::FileSystem()
@@ -11,6 +12,7 @@ FileSystem::FileSystem()
 
 	loaders["bmp"] = loaders["png"] = loaders["jpg"] = std::make_shared<ImageLoader>();
 	loaders["mp3"] = loaders["wav"] = std::make_shared<SoundLoader>();
+	loaders["bin"] = std::make_shared<StageLoader>();
 }
 
 
@@ -24,8 +26,8 @@ std::string FileSystem::GetExtension(const std::string& path)
 	return path.substr(idx, path.length() - idx);
 }
 
-int FileSystem::Load(const std::string& filePath)
+bool FileSystem::Load(const std::string& filePath, Data& data)
 {
 	auto ext = GetExtension(filePath.c_str());
-	return loaders[ext]->Load(filePath.c_str());
+	return loaders[ext]->Load(filePath.c_str(), data);
 }

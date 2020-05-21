@@ -4,16 +4,29 @@
 class Enemy
 {
 private:
-	Vector2<int> pos;
-	Rect rect;
 
+protected:
+	Vector2<int> _pos;
+	Rect _rect;
+
+	int _dispTime;
+	int _appearTime;
+
+	bool _isAlive;		// true : ¶‘¶, false : €–S
 public:
-	Enemy();
-	~Enemy();
+	virtual ~Enemy();
 
-	void Draw();
+	virtual void Draw() = 0;
+	void Update(); 
 
-	Vector2<int> GetPos()const;
-	Rect GetRect()const;
+	// ’e‚ª“–‚½‚Á‚½‚Ìˆ—
+	void HitShot();
+
+	// “G‚Ìíœ—p
+	bool Destroy();
+
+	virtual int GetScore() const = 0;
+	Vector2<int> GetPos() const;
+	Rect GetRect() const;
 };
 

@@ -1,6 +1,8 @@
 #pragma once
+#include <memory>
 #include "Scene.h"
 
+class Menu;
 
 class PauseScene : public Scene
 {
@@ -10,6 +12,8 @@ private:
 	void FadeinUpdate(const Peripheral& p);
 	void FadeoutUpdate(const Peripheral& p);
 	void WaitUpdate(const Peripheral& p);
+
+	std::shared_ptr<Menu> _menu;
 
 public:
 	PauseScene();
