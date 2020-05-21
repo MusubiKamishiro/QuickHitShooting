@@ -45,7 +45,7 @@ void ResultScene::WaitUpdate(const Peripheral & p)
 	}
 }
 
-ResultScene::ResultScene()
+ResultScene::ResultScene(const int& score)
 {
 	_pal = 0;
 	_trimString = std::make_unique<TrimString>();

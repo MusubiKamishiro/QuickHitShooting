@@ -47,7 +47,7 @@ public:
 	///引数のメニューをクリックしたかを確認する
 	///@param name	確認したいメニュー名
 	///@retval true	押した, false 押してない
-	bool CheckCrick(const std::string& name, const Peripheral& p);
+	bool CheckClick(const std::string& name, const Peripheral& p);
 
 	void Update(const Peripheral &p);
 	

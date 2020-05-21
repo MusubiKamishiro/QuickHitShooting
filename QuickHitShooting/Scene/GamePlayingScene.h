@@ -9,6 +9,7 @@ class Gun;
 class Enemy;
 class CollisionDetector;
 class Menu;
+class TrimString;
 
 struct TargetData;
 struct GunStatus;
@@ -31,11 +32,13 @@ private:
 	std::shared_ptr<Gun> _gun;
 	std::shared_ptr<CollisionDetector> _cd;
 	std::shared_ptr<Menu> _menu;
+	std::shared_ptr<TrimString> _trimString;
 
 	/// 仮で複数の敵を出現させている
 	std::vector<std::shared_ptr<Enemy>> _enemies;
 
-	int _waveCnt;
+	int _waveCnt;	// ウェーブカウント
+	int _score;		// 獲得スコア
 
 	bool hitFlag;
 

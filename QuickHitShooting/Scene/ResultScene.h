@@ -25,7 +25,7 @@ private:
 	std::unique_ptr<TrimString> _trimString;
 
 public:
-	ResultScene();
+	ResultScene(const int& score);
 	~ResultScene();
 
 	void Update(const Peripheral& p);

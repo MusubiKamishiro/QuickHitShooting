@@ -52,15 +52,15 @@ void PauseScene::FadeoutUpdate(const Peripheral & p)
 
 void PauseScene::WaitUpdate(const Peripheral & p)
 {
-	if (_menu->CheckCrick("BackGame", p))
+	if (_menu->CheckClick("BackGame", p))
 	{
 		SceneManager::Instance().PopScene();
 	}
-	else if (_menu->CheckCrick("ReTry", p))
+	else if (_menu->CheckClick("ReTry", p))
 	{
 		
 	}
-	else if (_menu->CheckCrick("BackSelect", p))
+	else if (_menu->CheckClick("BackSelect", p))
 	{
 		_updater = &PauseScene::FadeoutUpdate;
 	}
