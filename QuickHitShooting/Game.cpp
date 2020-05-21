@@ -93,12 +93,16 @@ void Game::Run()
 				break;
 			}
 
-			std::thread updateThread([&]() {
+			_peripheral->Update();
+			scenes.Update(*_peripheral);
+			scenes.Draw();
+
+			/*std::thread updateThread([&]() {
 				_peripheral->Update();
 				scenes.Update(*_peripheral);
 				scenes.Draw();
 				});
-			updateThread.join();
+			updateThread.join();*/
 
 			/*if (nowInput && !oldInput) {
 				std::thread reciveThread([]() {

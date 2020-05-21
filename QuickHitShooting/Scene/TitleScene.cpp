@@ -84,7 +84,10 @@ TitleScene::~TitleScene()
 
 void TitleScene::Update(const Peripheral& p)
 {
-	(this->*_updater)(p);
+	std::thread updateThread([&]() {
+		(this->*_updater)(p);
+		});
+	updateThread.join();
 	if (nowInput && !oldInput) {
 		std::thread reciveThread([]() {
 			DxLib::DxLib_Init();
@@ -104,9 +107,10 @@ void TitleScene::Draw()
 {
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, _pal);
 	DxLib::DrawBox(0, 0, _scrSize.x, _scrSize.y, 0xffffff, true);
-
-	(this->*_drawer)();
-
+	std::thread drawThread([&]() {
+		(this->*_drawer)();
+		});
+	drawThread.join();
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, std::abs(_pal - 255));
 	DxLib::DrawBox(0, 0, _scrSize.x, _scrSize.y, 0x000000, true);
 }
