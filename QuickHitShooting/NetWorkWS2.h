@@ -6,6 +6,7 @@
 
 struct SendDataWS2 {
 	std::string Buffer;
+	int data;
 };
 
 class NetWorkWS2
