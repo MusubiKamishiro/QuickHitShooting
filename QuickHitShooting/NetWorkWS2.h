@@ -1,6 +1,7 @@
 #pragma once
 #include <WinSock2.h>
 #include <string>
+#include "Loader/StageLoader.h"
 
 #pragma comment(lib,"ws2_32.lib")
 
@@ -42,7 +43,9 @@ public:
 	~NetWorkWS2();
 	void Initialize(const std::string& ip);
 	void SendServer(SendDataWS2& data);
+	void SendServer(TargetData& data);
 	void RecivedClient(SendDataWS2& data);
+	void RecivedClient(TargetData& data);
 	void Terminate();
 };
 

@@ -1,3 +1,4 @@
+#include "../NetWorkWS2.h"		// ネットワーククラス
 #include <DxLib.h>
 #include "TitleScene.h"
 #include "SelectScene.h"
@@ -9,6 +10,13 @@
 #include "../Loader/ImageLoader.h"
 #include "../Loader/SoundLoader.h"
 #include "../TrimString.h"
+
+#include <thread>		// スレッド処理に必要
+
+namespace {
+	int nowInput = 0;
+	int oldInput = 0;
+}
 
 void TitleScene::FadeinUpdate(const Peripheral & p)
 {
@@ -76,16 +84,42 @@ TitleScene::~TitleScene()
 
 void TitleScene::Update(const Peripheral& p)
 {
-	(this->*_updater)(p);
+	//##############################################################
+	// 入力処理スレッド分け
+	std::thread updateThread([&]() {
+		(this->*_updater)(p);
+		});
+	updateThread.join();
+	//##############################################################
+
+	//##############################################################
+	// ネットワーク通信呼び出し（仮）
+	if (nowInput && !oldInput) {
+		std::thread reciveThread([]() {
+			DxLib::DxLib_Init();
+			SendDataWS2 dataws2 = {};
+			dataws2.Buffer = "KUSOZAKO";
+			NetWorkWS2::Instance().Initialize("192.168.11.47");
+			NetWorkWS2::Instance().SendServer(dataws2);
+			});
+		reciveThread.detach();
+	}
+	oldInput = nowInput;
+	nowInput = CheckHitKey(KEY_INPUT_S);
+	//##############################################################
 }
 
 void TitleScene::Draw()
 {
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, _pal);
 	DxLib::DrawBox(0, 0, _scrSize.x, _scrSize.y, 0xffffff, true);
-
-	(this->*_drawer)();
-
+	//#########################################
+	// 描画処理スレッド分け
+	std::thread drawThread([&]() {
+		(this->*_drawer)();
+		});
+	drawThread.join();
+	//########################################
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, std::abs(_pal - 255));
 	DxLib::DrawBox(0, 0, _scrSize.x, _scrSize.y, 0x000000, true);
 }
