@@ -162,6 +162,7 @@
     <ClCompile Include="Loader\ImageLoader.cpp" />
     <ClCompile Include="Loader\Loader.cpp" />
     <ClCompile Include="Loader\SoundLoader.cpp" />
+    <ClCompile Include="Loader\StageLoader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NetWork.cpp" />
     <ClCompile Include="NetWorkWS2.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="Loader\ImageLoader.h" />
     <ClInclude Include="Loader\Loader.h" />
     <ClInclude Include="Loader\SoundLoader.h" />
+    <ClInclude Include="Loader\StageLoader.h" />
     <ClInclude Include="NetWork.h" />
     <ClInclude Include="NetWorkWS2.h" />
     <ClInclude Include="Peripheral.h" />

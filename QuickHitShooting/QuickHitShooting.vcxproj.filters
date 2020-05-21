@@ -99,6 +99,9 @@
     <ClCompile Include="NetWorkWS2.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Loader\StageLoader.cpp">
+      <Filter>Loader\ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -163,6 +166,9 @@
     </ClInclude>
     <ClInclude Include="NetWorkWS2.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Loader\StageLoader.h">
+      <Filter>Loader\ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

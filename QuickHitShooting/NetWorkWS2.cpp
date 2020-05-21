@@ -34,10 +34,23 @@ void NetWorkWS2::SendServer(SendDataWS2& data)
 		sock = accept(sock0, (sockaddr*)&client, &len);
 		const char* p = (const char*)&data;
 		send(sock, p, sizeof(data), 0);
-		SendDataWS2 returnData = {};
-		returnData.Buffer.resize(256);
-		int n = recv(sock, (char*)returnData.Buffer.c_str(), 256, 0);
-		std::cout << returnData.Buffer.c_str() << std::endl;
+		std::string returnData = "";
+		int n = recv(sock, (char*)returnData.c_str(), 256, 0);
+		std::cout << returnData.c_str() << std::endl;
+		closesocket(sock);
+	}
+}
+
+void NetWorkWS2::SendServer(TargetData& data)
+{
+	while (true) {
+		len = sizeof(client);
+		sock = accept(sock0, (sockaddr*)&client, &len);
+		const char* p = (const char*)&data;
+		send(sock, p, sizeof(data), 0);
+		std::string returnData = "";
+		int n = recv(sock, (char*)returnData.c_str(), 256, 0);
+		std::cout << returnData.c_str() << std::endl;
 		closesocket(sock);
 	}
 }
@@ -47,10 +60,13 @@ void NetWorkWS2::RecivedClient(SendDataWS2& data)
 	connect(sock, (sockaddr*)&server, sizeof(server));
 	int n = recv(sock, (char*)&data, sizeof(data),0);
 	std::cout << n << data.Buffer << std::endl;
-	SendDataWS2 sendData = {};
-	sendData.Buffer = "Success";
-	send(sock, (const char*)sendData.Buffer.c_str(), sendData.Buffer.length(), 0);
+	std::string sendData = "Success";
+	send(sock, sendData.c_str(), sendData.length(), 0);
 	closesocket(sock);
+}
+
+void NetWorkWS2::RecivedClient(TargetData& data)
+{
 }
 
 void NetWorkWS2::Terminate()
