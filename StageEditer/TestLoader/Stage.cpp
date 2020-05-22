@@ -293,6 +293,7 @@ bool Stage::Save()
 		/// フォルダーで指定したファイルを開く
 		if (fopen_s(&file, openFileName.lpstrFile, "wb") == 0)
 		{
+			_stageInfo.targetData.clear();
 			/// ステージデータの書き込み
 			for (int i = 0; i < _stageInfo.scores.size(); ++i)
 			{
@@ -359,7 +360,7 @@ bool Stage::Load()
 			for (int i = 0; i < _stageInfo.scores.size(); ++i)
 			{
 				fread(&_stageInfo.scores[i], sizeof(int), 1, file);
-				fread(&_stageInfo.names[i], (sizeof(char) * 3), 1, file);
+				fread((char*)_stageInfo.names[i].c_str(), (sizeof(char) * 3), 1, file);
 			}
 
 			/// ゲームの画面サイズからエディターの画面サイズの倍率を求めている
