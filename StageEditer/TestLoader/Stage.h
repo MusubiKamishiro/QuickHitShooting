@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <vector>
+#include <array>
 #include <windows.h>
 #include "Geometry.h"
 
@@ -25,12 +26,20 @@ struct TargetData
 	Vector2<int> pos;		// 座標			(4番目のデータ)
 };
 
-using vec2_target  = std::vector<std::vector<TargetData>>;
+using vec2_target = std::vector<std::vector<TargetData>>;
 
 using unique_input = std::unique_ptr<Input>;
 
 // 的の状態遷移用ポインター
 using unique_state = std::unique_ptr<TargetState>;
+
+struct StageInfo
+{
+	// ウェーブのデータ保持用変数
+	vec2_target targetData;
+	std::array<int, 3> scores;
+	std::array<std::string, 3> names;
+};
 
 class Stage
 {
@@ -98,13 +107,12 @@ private:
 	// ステージ設定で使用する情報
 	int _nowWaveCnt, _nowTargetCnt;
 
-	// ウェーブのデータ保持用変数
-	vec2_target _stageData;
-
 	// 入力関係のポインター
 	unique_input _input;
 
 	unique_state _targetState;
+
+	StageInfo _stageInfo;
 
 	// エディットモードの関数ポインター
 	void (Stage::* _nowMode)();

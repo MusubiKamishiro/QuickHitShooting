@@ -16,7 +16,7 @@ _gameScreen(1280, 720), _waveEnd(55)
 
 Stage::~Stage()
 {
-	_stageData.clear();
+	_stageInfo.targetData.clear();
 }
 
 bool Stage::Init()
@@ -41,7 +41,7 @@ void Stage::Wave()
 	_nowMode = &Stage::WaveUpdate;
 	_waveCnt = 1;
 
-	_stageData.clear();
+	_stageInfo.targetData.clear();
 }
 
 void Stage::Target()
@@ -67,15 +67,15 @@ void Stage::Edit()
 	_targetState = std::make_unique<TargetType>();
 
 	/// ウェーブの生成
-	_stageData.reserve(_waveCnt);
-	_stageData.resize(_waveCnt);
+	_stageInfo.targetData.reserve(_waveCnt);
+	_stageInfo.targetData.resize(_waveCnt);
 
 	/// ウェーブの最初の番地を指定する
-	auto wCnt = _stageData.begin();
-	for (; wCnt != _stageData.end(); ++wCnt)
+	auto wCnt = _stageInfo.targetData.begin();
+	for (; wCnt != _stageInfo.targetData.end(); ++wCnt)
 	{
 		/// 1ウェーブごとの的数の設定
-		auto cnt = wCnt - _stageData.begin();
+		auto cnt = wCnt - _stageInfo.targetData.begin();
 		(*wCnt).reserve(_waveTargetCnt[cnt]);
 		(*wCnt).resize(_waveTargetCnt[cnt]);
 
@@ -199,12 +199,12 @@ void Stage::TargetUpdate()
 void Stage::EditUpdate()
 {
 	/// ターゲット情報の更新
-	_targetState->Update(_nowWaveCnt, _nowTargetCnt, _input, _stageData);
+	_targetState->Update(_nowWaveCnt, _nowTargetCnt, _input, _stageInfo.targetData);
 	/// ステージデータの初期化
 	if (IsReset())
 	{
 		Wave();
-		_stageData.clear();
+		_stageInfo.targetData.clear();
 		return;
 	}
 
@@ -292,7 +292,7 @@ bool Stage::Save()
 			Vector2<double> rate = Vector2<double>((double)_gameScreen.x / _screen.x,
 												   (double)_gameScreen.y / _screen.y);
 
-			for (auto wave : _stageData)
+			for (auto wave : _stageInfo.targetData)
 			{
 				for (auto target : wave)
 				{
@@ -340,7 +340,7 @@ bool Stage::Load()
 	if (GetSaveFileName(&openFileName) == true)
 	{
 		// とりあえずデータの初期化を行う
-		_stageData.clear();
+		_stageInfo.targetData.clear();
 		FILE* file;
 		/// フォルダーで指定したファイルを開く
  		if (fopen_s(&file, openFileName.lpstrFile, "rb") == 0)
@@ -394,7 +394,7 @@ bool Stage::Load()
 				{
 					/// 1ウェーブで出現する的情報の登録
 					bytePos += sizeof(checkVal);
-					_stageData.push_back(targetData);
+					_stageInfo.targetData.push_back(targetData);
 					targetData.clear();
 				}
 
