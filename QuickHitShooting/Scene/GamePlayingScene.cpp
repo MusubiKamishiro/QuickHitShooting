@@ -37,8 +37,12 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState)
 	Game::Instance().GetFileSystem()->Load("img/pause.png", data);
 	int i = data.GetHandle();
 	_menu->AddMenuList("pause", Vector2<int>(_scrSize.x - 50, 0), Vector2<int>(_scrSize.x, 50), i);
+	_menu->AddMenuList("test", Vector2<int>(0, 0), Vector2<int>(50, 50), i);
 
-	hitFlag = false;
+	_hitFlag = false;
+
+	_hitCount = 0.0f;
+	_shotCount = 0.0f;
 
 	_waveCnt = 0;
 	_score = 0;
@@ -114,7 +118,14 @@ void GamePlayingScene::FadeoutUpdate(const Peripheral & p)
 {
 	if (_pal <= 0)
 	{
-		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>(_score));
+		ResultData r;
+		r.score = _score;
+		r.hitRate = ((_hitCount / _shotCount) * 100);
+		r.ranking[0] = std::make_pair("ÉÄÉXÉr", 765283);
+		r.ranking[1] = std::make_pair("miyabi", 346315);
+		r.ranking[2] = std::make_pair("ÇËÇŒÅ[", 72);
+
+		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>(r));
 	}
 	else
 	{
@@ -133,13 +144,17 @@ void GamePlayingScene::WaitUpdate(const Peripheral& p)
 	{
 		if (_gun->Shot())
 		{
+			++_shotCount;
+
 			Vector2<int> pos = p.GetMousePos();
 			for (auto enemy : _enemies)
 			{
 				if (_cd->IsCollision(pos, enemy->GetRect()))
 				{
 					enemy->HitShot();
-					hitFlag = true;
+					_hitFlag = true;
+					++_hitCount;
+					_score += 100;
 				}
 			}
 		}
@@ -164,7 +179,7 @@ void GamePlayingScene::TestDraw()
 	_gun->Draw();
 	_menu->Draw();
 
-	if (hitFlag)
+	if (_hitFlag)
 	{
 		DxLib::DrawString(500, 0, "Hit", 0xff0000);
 	}
@@ -214,6 +229,13 @@ std::shared_ptr<Enemy> GamePlayingScene::GetEnemyInfo(const TargetData& target)
 
 void GamePlayingScene::Update(const Peripheral& p)
 {
+	//
+	if (_menu->CheckClick("test", p))
+	{
+		_updater = &GamePlayingScene::FadeoutUpdate;
+	}
+	//
+
 	for (auto& enemy : _enemies)
 	{
 		enemy->Update();

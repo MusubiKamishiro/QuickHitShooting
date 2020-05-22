@@ -40,7 +40,10 @@ private:
 	int _waveCnt;	// ウェーブカウント
 	int _score;		// 獲得スコア
 
-	bool hitFlag;
+	float _hitCount;
+	float _shotCount;
+
+	bool _hitFlag;
 
 public:
 	GamePlayingScene(const GunStatus& gunState);

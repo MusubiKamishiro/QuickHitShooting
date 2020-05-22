@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include <memory>
 #include <array>
+#include <string>
 #include "../Geometry.h"
 #include "../Gun.h"
 
@@ -10,9 +11,9 @@ class TrimString;
 //リザルト情報
 struct ResultData
 {
+	std::array<std::pair<std::string, int>, 3> ranking;	// ランキング
 	int score;					// 獲得スコア
-	std::array<int, 3> ranking;	// ランキング
-	int hitRate;				// 命中率
+	float hitRate;				// 命中率
 	GunStatus gunStatus;		// 銃種
 };
 
@@ -28,11 +29,10 @@ private:
 
 	ResultData _resultData;
 
-
 	std::unique_ptr<TrimString> _trimString;
 
 public:
-	ResultScene(const int& score);
+	ResultScene(const ResultData& resultData);
 	~ResultScene();
 
 	void Update(const Peripheral& p);
