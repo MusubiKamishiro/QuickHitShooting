@@ -330,14 +330,6 @@ bool Stage::Save()
 			/// ファイルを閉じる
 			fclose(file);
 		}
-		else
-		{
-			MessageBox(GetMainWindowHandle(),
-				"ファイルが見つかりませんでした。",
-				"Not Found File",
-				MB_OK);
-		}
-		
 	}
 	return true;
 }
@@ -358,11 +350,11 @@ bool Stage::Load()
 	if (GetSaveFileName(&openFileName) == true)
 	{
 		// とりあえずデータの初期化を行う
-		_stageInfo.targetData.clear();
 		FILE* file;
 		/// フォルダーで指定したファイルを開く
 		if (fopen_s(&file, openFileName.lpstrFile, "rb") == 0)
 		{
+			_stageInfo.targetData.clear();
 			/// スコアデータの読み込み
 			for (int i = 0; i < _stageInfo.scores.size(); ++i)
 			{
@@ -378,12 +370,13 @@ bool Stage::Load()
 			std::vector<TargetData> targetData;
 
 			int waveCnt, targetCnt;
+			/// ウェーブ数の読み込み
 			fread(&waveCnt, sizeof(int), 1, file);
 
 			for (int w = 0; w < waveCnt; ++w)
 			{
 				fread(&targetCnt, sizeof(int), 1, file);
-
+				targetData.resize(targetCnt);
 				for (int t = 0; t < targetCnt; ++t)
 				{
 					fread(&target.type,		  sizeof(unsigned char), 1, file);
@@ -394,21 +387,15 @@ bool Stage::Load()
 					fread(&target.pos.y, sizeof(int), 1, file);
 					target.pos.y *= rate.y;
 
-					targetData.push_back(target);
+					targetData[t] = target;
 				}
 				_stageInfo.targetData.push_back(targetData);
 				targetData.clear();
+				std::vector<TargetData>().swap(targetData);
 			}
+
 			fclose(file);
 		}
-		else
-		{
-			MessageBox(GetMainWindowHandle(),
-				"ファイルが見つかりませんでした。",
-				"Not Found File",
-				MB_OK);
-		}
-
 	}
 	return true;
 }
