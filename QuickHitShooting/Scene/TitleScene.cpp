@@ -1,4 +1,4 @@
-#include "../NetWorkWS2.h"		// ネットワーククラス
+#include "../NetWorkWS2.h"		// ネットワーククラス　DxLibより先に呼び出す必要あり
 #include <DxLib.h>
 #include "TitleScene.h"
 #include "SelectScene.h"
