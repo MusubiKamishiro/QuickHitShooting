@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <DxLib.h>
 #include "Input.h"
 #include "Stage.h"
@@ -209,7 +208,7 @@ void Stage::EditUpdate()
 	/// ステージデータの初期化
 	if (IsReset())
 	{
-		Target();
+		Wave();
 		_stageInfo.targetData.clear();
 		return;
 	}
@@ -283,9 +282,9 @@ bool Stage::Save()
 	ZeroMemory(&openFileName, sizeof(openFileName));						// 構造体の初期化
 	openFileName.lStructSize = sizeof(OPENFILENAME);						// 構造体の大きさ
 	openFileName.lpstrFilter = TEXT("binファイル(*.bin)\0*.bin\0\0");		// 形式の選択
-	openFileName.lpstrFile	 = fileSize;										// 開くファイル名の長さ
+	openFileName.lpstrFile	 = fileSize;									// 開くファイル名の長さ
 	openFileName.lpstrInitialDir = ("../");									// 開くフォルダの指定
-	openFileName.nMaxFile = MAX_PATH;										// 開くファイルの大きさ
+	openFileName.nMaxFile	 = MAX_PATH;									// 開くファイルの大きさ
 	openFileName.lpstrDefExt = (".bin");									// 保存するときのファイル形式
 
 	if (GetSaveFileName(&openFileName) == true)
@@ -328,6 +327,8 @@ bool Stage::Save()
 					fwrite(&registPos.y, sizeof(int), 1, file);
 				}
 			}
+			/// ファイルを閉じる
+			fclose(file);
 		}
 		else
 		{
@@ -336,8 +337,7 @@ bool Stage::Save()
 				"Not Found File",
 				MB_OK);
 		}
-		/// ファイルを閉じる
-		fclose(file);
+		
 	}
 	return true;
 }
@@ -399,6 +399,7 @@ bool Stage::Load()
 				_stageInfo.targetData.push_back(targetData);
 				targetData.clear();
 			}
+			fclose(file);
 		}
 		else
 		{
@@ -407,7 +408,7 @@ bool Stage::Load()
 				"Not Found File",
 				MB_OK);
 		}
-		fclose(file);
+
 	}
 	return true;
 }

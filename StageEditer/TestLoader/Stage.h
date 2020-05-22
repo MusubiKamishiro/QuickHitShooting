@@ -3,7 +3,6 @@
 #include <memory>
 #include <vector>
 #include <array>
-#include <windows.h>
 #include "Geometry.h"
 
 class Input;
@@ -20,10 +19,10 @@ enum class TargetID
 // 的の情報
 struct TargetData
 {
-	u_char type;			// 的の種類		(1番目のデータ)
-	u_int appearTime;		// 出現する時間 (2番目のデータ)
-	u_int dispTime;			// 表示する時間 (3番目のデータ)
-	Vector2<int> pos;		// 座標			(4番目のデータ)
+	unsigned char type;			// 的の種類		(1番目のデータ)
+	unsigned int appearTime;	// 出現する時間 (2番目のデータ)
+	unsigned int dispTime;		// 表示する時間 (3番目のデータ)
+	Vector2<int> pos;			// 座標			(4番目のデータ)
 };
 
 using vec2_target = std::vector<std::vector<TargetData>>;
