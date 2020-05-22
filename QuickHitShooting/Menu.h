@@ -11,9 +11,11 @@ class CollisionDetector;
 // メニューに必要な情報
 struct MenuData
 {
-	MenuData() : rect(0, 0, 0, 0), img(-1), flag(false) {};
-	MenuData(Rect rect, int img) : rect(rect), img(img), flag(false) {};
+	MenuData() : rect(0, 0, 0, 0), useRect(0, 0, 0, 0), img(-1), flag(false) {};
+	MenuData(Rect rect, int img) : rect(rect), useRect(rect), img(img), flag(false) {};
+	MenuData(Rect rect, Rect userect, int img) : rect(userect), img(img), flag(false) {};
 	Rect rect;		// 座標と幅高
+	Rect useRect;	// 画像ないの使用する範囲
 	int img;		// 画像
 	bool flag;		// カーソルがrect内に入ってるとtrue返す
 };

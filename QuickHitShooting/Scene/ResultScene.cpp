@@ -11,6 +11,18 @@
 #include "../TrimString.h"
 
 
+ResultScene::ResultScene(const int& score)
+{
+	_pal = 0;
+	_trimString = std::make_unique<TrimString>();
+
+	_updater = &ResultScene::FadeinUpdate;
+}
+
+ResultScene::~ResultScene()
+{
+}
+
 void ResultScene::FadeinUpdate(const Peripheral & p)
 {
 	if (_pal >= 255)
@@ -28,7 +40,6 @@ void ResultScene::FadeoutUpdate(const Peripheral & p)
 {
 	if (_pal <= 0)
 	{
-		DxLib::StopSoundMem(_bgm);
 		SceneManager::Instance().ChangeScene(std::make_unique<TitleScene>());
 	}
 	else
@@ -45,25 +56,9 @@ void ResultScene::WaitUpdate(const Peripheral & p)
 	}
 }
 
-ResultScene::ResultScene(const int& score)
-{
-	_pal = 0;
-	_trimString = std::make_unique<TrimString>();
-
-	_updater = &ResultScene::FadeinUpdate;
-}
-
-
-ResultScene::~ResultScene()
-{
-}
-
 void ResultScene::Update(const Peripheral& p)
 {
-	if (!DxLib::CheckSoundMem(_bgm))
-	{
-		DxLib::PlaySoundMem(_bgm, DX_PLAYTYPE_LOOP);
-	}
+
 
 	(this->*_updater)(p);
 }
@@ -72,6 +67,7 @@ void ResultScene::Draw()
 {
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, _pal);
 	DxLib::DrawBox(0, 0, _scrSize.x, _scrSize.y, 0xffffff, true);
+	
 	_trimString->ChangeFontSize(100);
 
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, std::abs(_pal - 255));

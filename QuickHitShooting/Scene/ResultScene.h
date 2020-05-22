@@ -1,9 +1,21 @@
 #pragma once
 #include "Scene.h"
 #include <memory>
+#include <array>
 #include "../Geometry.h"
+#include "../Gun.h"
 
 class TrimString;
+
+//リザルト情報
+struct ResultData
+{
+	int score;					// 獲得スコア
+	std::array<int, 3> ranking;	// ランキング
+	int hitRate;				// 命中率
+	GunStatus gunStatus;		// 銃種
+};
+
 
 class ResultScene : public Scene
 {
@@ -14,13 +26,8 @@ private:
 	void FadeoutUpdate(const Peripheral& p);
 	void WaitUpdate(const Peripheral& p);
 
-	Vector2<int> _center;
+	ResultData _resultData;
 
-	int _bgm;
-
-	int _rpImg;
-	int _lpImg;
-	int _frameImg;
 
 	std::unique_ptr<TrimString> _trimString;
 

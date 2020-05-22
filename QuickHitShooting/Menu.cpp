@@ -68,8 +68,7 @@ void Menu::Draw()
 			DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 192);
 		}
 
-		//DxLib::DrawGraph(md.rect.Left(), md.rect.Top(), md.img, true);
-		DxLib::DrawExtendGraph(md.rect.Left(), md.rect.Top(), md.rect.Right(), md.rect.Bottom(), md.img, true);
+		DxLib::DrawExtendGraph(md.useRect.Left(), md.useRect.Top(), md.useRect.Right(), md.useRect.Bottom(), md.img, true);
 
 		DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
 	}
