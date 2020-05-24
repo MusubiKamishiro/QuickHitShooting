@@ -5,6 +5,8 @@
 #include "Scene.h"
 #include "../Geometry.h"
 
+#include "../Loader/StageLoader.h"
+
 class Gun;
 class Enemy;
 class CollisionDetector;
@@ -37,6 +39,8 @@ private:
 	/// 仮で複数の敵を出現させている
 	std::vector<std::shared_ptr<Enemy>> _enemies;
 
+	StageData _stageData;
+
 	int _waveCnt;	// ウェーブカウント
 	int _score;		// 獲得スコア
 
@@ -46,7 +50,7 @@ private:
 	bool _hitFlag;
 
 public:
-	GamePlayingScene(const GunStatus& gunState);
+	GamePlayingScene(const GunStatus& gunState, const StageData& stageData);
 	~GamePlayingScene();
 
 	void Update(const Peripheral& p);

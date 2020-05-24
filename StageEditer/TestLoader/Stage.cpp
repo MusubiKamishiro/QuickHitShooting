@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <DxLib.h>
 #include "Input.h"
 #include "Stage.h"
@@ -16,7 +15,6 @@ _gameScreen(1280, 720), _waveEnd(55)
 
 Stage::~Stage()
 {
-	_stageData.clear();
 }
 
 bool Stage::Init()
@@ -41,7 +39,7 @@ void Stage::Wave()
 	_nowMode = &Stage::WaveUpdate;
 	_waveCnt = 1;
 
-	_stageData.clear();
+	_stageInfo.targetData.clear();
 }
 
 void Stage::Target()
@@ -67,15 +65,22 @@ void Stage::Edit()
 	_targetState = std::make_unique<TargetType>();
 
 	/// ウェーブの生成
-	_stageData.reserve(_waveCnt);
-	_stageData.resize(_waveCnt);
+	_stageInfo.targetData.reserve(_waveCnt);
+	_stageInfo.targetData.resize(_waveCnt);
 
-	/// ウェーブの最初の番地を指定する
-	auto wCnt = _stageData.begin();
-	for (; wCnt != _stageData.end(); ++wCnt)
+	/// スコアデータの初期化
+	for (int i = 0; i < _stageInfo.scores.size(); ++i)
+	{
+		_stageInfo.scores[i] = 0;
+		_stageInfo.names[i]  = "AAA";
+	}
+
+	/// ステージデータの初期化
+	auto wCnt = _stageInfo.targetData.begin();
+	for (; wCnt != _stageInfo.targetData.end(); ++wCnt)
 	{
 		/// 1ウェーブごとの的数の設定
-		auto cnt = wCnt - _stageData.begin();
+		auto cnt = wCnt - _stageInfo.targetData.begin();
 		(*wCnt).reserve(_waveTargetCnt[cnt]);
 		(*wCnt).resize(_waveTargetCnt[cnt]);
 
@@ -199,12 +204,12 @@ void Stage::TargetUpdate()
 void Stage::EditUpdate()
 {
 	/// ターゲット情報の更新
-	_targetState->Update(_nowWaveCnt, _nowTargetCnt, _input, _stageData);
+	_targetState->Update(_nowWaveCnt, _nowTargetCnt, _input, _stageInfo.targetData);
 	/// ステージデータの初期化
 	if (IsReset())
 	{
 		Wave();
-		_stageData.clear();
+		_stageInfo.targetData.clear();
 		return;
 	}
 
@@ -277,7 +282,7 @@ bool Stage::Save()
 	ZeroMemory(&openFileName, sizeof(openFileName));						// 構造体の初期化
 	openFileName.lStructSize = sizeof(OPENFILENAME);						// 構造体の大きさ
 	openFileName.lpstrFilter = TEXT("binファイル(*.bin)\0*.bin\0\0");		// 形式の選択
-	openFileName.lpstrFile   = fileSize;									// 開くファイル名の長さ
+	openFileName.lpstrFile	 = fileSize;									// 開くファイル名の長さ
 	openFileName.lpstrInitialDir = ("../");									// 開くフォルダの指定
 	openFileName.nMaxFile	 = MAX_PATH;									// 開くファイルの大きさ
 	openFileName.lpstrDefExt = (".bin");									// 保存するときのファイル形式
@@ -288,37 +293,43 @@ bool Stage::Save()
 		/// フォルダーで指定したファイルを開く
 		if (fopen_s(&file, openFileName.lpstrFile, "wb") == 0)
 		{
+			_stageInfo.targetData.clear();
+			/// ステージデータの書き込み
+			for (int i = 0; i < _stageInfo.scores.size(); ++i)
+			{
+				fwrite(&_stageInfo.scores[i], sizeof(int), 1, file);
+				fwrite(&_stageInfo.names[i], (sizeof(char) * 3), 1, file);
+			}
 			/// エディターの画面サイズからゲームの画面サイズの倍率を求めている
 			Vector2<double> rate = Vector2<double>((double)_gameScreen.x / _screen.x,
 												   (double)_gameScreen.y / _screen.y);
 
-			for (auto wave : _stageData)
+			Vector2<int> registPos;
+			int targetCnt = 0;
+
+			/// 書き込むウェーブ数の設定
+			int waveCnt = _stageInfo.targetData.size();
+			fwrite(&waveCnt, sizeof(int), 1, file);
+
+			for (int w = 0; w < waveCnt; ++w)
 			{
-				for (auto target : wave)
+				/// 書き込むターゲット数の設定
+				targetCnt = _stageInfo.targetData[w].size();
+				fwrite(&targetCnt, sizeof(int), 1, file);
+				for (int t = 0; t < targetCnt; ++t)
 				{
-					/// ターゲット情報を書き込む
-					fwrite(&target.type, sizeof(target.type), 1, file);
-					fwrite(&target.dispTime, sizeof(target.dispTime), 1, file);
-					fwrite(&target.appearTime, sizeof(target.appearTime), 1, file);
-					target.pos.x *= rate.x;
-					fwrite(&target.pos.x, sizeof(target.pos.x), 1, file);
-					target.pos.y *= rate.y;
-					fwrite(&target.pos.y, sizeof(target.pos.y), 1, file);
+					/// ターゲットデータの書き込み
+					fwrite(&_stageInfo.targetData[w][t].type,		 sizeof(unsigned char), 1, file);
+					fwrite(&_stageInfo.targetData[w][t].dispTime,	 sizeof(unsigned int), 1, file);
+					fwrite(&_stageInfo.targetData[w][t].appearTime,  sizeof(unsigned int), 1, file);
+					registPos.x = (_stageInfo.targetData[w][t].pos.x * rate.x);
+					fwrite(&registPos.x, sizeof(int), 1, file);
+					registPos.y = (_stageInfo.targetData[w][t].pos.y * rate.x);
+					fwrite(&registPos.y, sizeof(int), 1, file);
 				}
-				/// ウェーブ情報のエンドポイントを書き込む
-				fwrite(&_waveEnd, sizeof(_waveEnd), 1, file);
 			}
-			/// eofの書き込み
-			char eof = -1;
-			fwrite(&eof, sizeof(eof), 1, file);
+			/// ファイルを閉じる
 			fclose(file);
-		}
-		else
-		{
-			MessageBox(GetMainWindowHandle(),
-				"ファイルが見つかりませんでした。",
-				"Not Found File",
-				MB_OK);
 		}
 	}
 	return true;
@@ -328,7 +339,7 @@ bool Stage::Load()
 {
 	// ファイルフォルダーを開いて読み込むための初期化
 	OPENFILENAME openFileName;
-	char fileSize[MAX_PATH]	 = "";											// ファイル名のサイズと最後に\0を入れる
+	char fileSize[MAX_PATH] = "";											// ファイル名のサイズと最後に\0を入れる
 	ZeroMemory(&openFileName, sizeof(openFileName));						// 構造体の初期化
 	openFileName.lStructSize = sizeof(OPENFILENAME);						// 構造体の大きさ
 	openFileName.lpstrFilter = TEXT("binファイル(*.bin)\0*.bin\0\0");		// 形式の選択
@@ -340,75 +351,51 @@ bool Stage::Load()
 	if (GetSaveFileName(&openFileName) == true)
 	{
 		// とりあえずデータの初期化を行う
-		_stageData.clear();
 		FILE* file;
 		/// フォルダーで指定したファイルを開く
- 		if (fopen_s(&file, openFileName.lpstrFile, "rb") == 0)
+		if (fopen_s(&file, openFileName.lpstrFile, "rb") == 0)
 		{
+			_stageInfo.targetData.clear();
+			/// スコアデータの読み込み
+			for (int i = 0; i < _stageInfo.scores.size(); ++i)
+			{
+				fread(&_stageInfo.scores[i], sizeof(int), 1, file);
+				fread((char*)_stageInfo.names[i].c_str(), (sizeof(char) * 3), 1, file);
+			}
+
 			/// ゲームの画面サイズからエディターの画面サイズの倍率を求めている
 			Vector2<double> rate = Vector2<double>((double)_screen.x / _gameScreen.x,
 												   (double)_screen.y / _gameScreen.y);
 
 			TargetData target;
 			std::vector<TargetData> targetData;
-			int bytePos = 0;
-			char checkVal = 0;
 
-			fseek(file, bytePos, SEEK_SET);
-			while (checkVal != -1)
+			int waveCnt, targetCnt;
+			/// ウェーブ数の読み込み
+			fread(&waveCnt, sizeof(int), 1, file);
+
+			for (int w = 0; w < waveCnt; ++w)
 			{
-				/// 読み込むバイト番地を指定する
-				fseek(file, bytePos, SEEK_SET);
-
-				{/* 的情報の読み込み */
-
-					/// 的の種別ID
-					fread(&target.type, sizeof(target.type), 1, file);
-					bytePos += sizeof(target.type);
-
-					/// 的の出現する時間
-					fread(&target.dispTime, sizeof(target.dispTime), 1, file);
-					bytePos += sizeof(target.dispTime);
-
-					/// 的が出現してから消えるまでの時間
-					fread(&target.appearTime, sizeof(target.appearTime), 1, file);
-					bytePos += sizeof(target.appearTime);
-
-					/// 的のX座標
-					fread(&target.pos.x, sizeof(target.pos.x), 1, file);
-					target.pos.x *= rate.x;
-					bytePos += sizeof(target.pos.x);
-
-					/// 的のY座標
-					fread(&target.pos.y, sizeof(target.pos.y), 1, file);
-					target.pos.y *= rate.y;
-					bytePos += sizeof(target.pos.y);
-				}
-
-				/// 的情報の登録
-				targetData.push_back(target);
-
-				/// ウェーブ数の末尾かの確認を行う
-				fread(&checkVal, sizeof(checkVal), 1, file);
-				if (checkVal == _waveEnd)
+				fread(&targetCnt, sizeof(int), 1, file);
+				targetData.resize(targetCnt);
+				for (int t = 0; t < targetCnt; ++t)
 				{
-					/// 1ウェーブで出現する的情報の登録
-					bytePos += sizeof(checkVal);
-					_stageData.push_back(targetData);
-					targetData.clear();
-				}
+					fread(&target.type,		  sizeof(unsigned char), 1, file);
+					fread(&target.dispTime,   sizeof(unsigned int), 1, file);
+					fread(&target.appearTime, sizeof(unsigned int), 1, file);
+					fread(&target.pos.x, sizeof(int), 1, file);
+					target.pos.x *= rate.x;
+					fread(&target.pos.y, sizeof(int), 1, file);
+					target.pos.y *= rate.y;
 
-				/// eofの確認を行うための読み込み
-				fread(&checkVal, sizeof(checkVal), 1, file);
+					targetData[t] = target;
+				}
+				_stageInfo.targetData.push_back(targetData);
+				targetData.clear();
+				std::vector<TargetData>().swap(targetData);
 			}
+
 			fclose(file);
-		}
-		else
-		{
-			MessageBox(GetMainWindowHandle(),
-				"ファイルが見つかりませんでした。",
-				"Not Found File",
-				MB_OK);
 		}
 	}
 	return true;
