@@ -25,7 +25,7 @@ struct TargetData
 	Vector2<int> pos;			// 座標			(4番目のデータ)
 };
 
-using vec2_target = std::vector<std::vector<TargetData>>;
+using vec_target = std::vector<TargetData>;
 
 using unique_input = std::unique_ptr<Input>;
 
@@ -35,7 +35,7 @@ using unique_state = std::unique_ptr<TargetState>;
 struct StageInfo
 {
 	// ウェーブのデータ保持用変数
-	vec2_target targetData;
+	std::vector<vec_target> targetData;
 	std::array<int, 3> scores;
 	std::array<std::string, 3> names;
 };

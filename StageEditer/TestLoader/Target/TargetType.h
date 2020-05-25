@@ -10,12 +10,12 @@ public:
 	~TargetType();
 	
 	void Update(int& wCnt, int& tCnt, 
-				const unique_input& input, vec2_target& stageData) override;
+				const unique_input& input, std::vector<vec_target>& stageData) override;
 private:
 	void Draw(const int& wCnt, const int& tCnt,
-			  const vec2_target stageData) override;
+			  const std::vector<vec_target> stageData) override;
 	void DataConfig(const int& wCnt, const int& tCnt, const unique_input& input,
-					vec2_target& stageData) override;
+					std::vector<vec_target>& stageData) override;
 
 	/// 的のID用テキスト(ID用の画像はゲームの的が確定してから差し替える)
 	const std::string _idText[static_cast<int>(TargetID::MAX)] = {
