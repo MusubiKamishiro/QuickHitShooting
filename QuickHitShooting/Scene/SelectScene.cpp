@@ -11,7 +11,6 @@
 #include "../Loader/ImageLoader.h"
 #include "../Menu.h"
 
-
 SelectScene::SelectScene()
 {
 	_pal = 0;
@@ -22,22 +21,34 @@ SelectScene::SelectScene()
 	int img = data.GetHandle();
 
 	_menu.reset(new Menu());
-	_gunState.name = "Gun1";
+	_gunState.name		 = "Gun1";
 	_gunState.maxBullets = 700;
 	_gunState.maxBulletsInMagazine = 10;
 	AddGunMenu(_gunState, Vector2<int>(150, 500), Vector2<int>(300, 700), img);
 
-	_gunState.name = "Gun2";
+	_gunState.name		 = "Gun2";
 	_gunState.maxBullets = 500;
 	_gunState.maxBulletsInMagazine = 10;
 	AddGunMenu(_gunState, Vector2<int>(400, 500), Vector2<int>(550, 700), img);
 
-	_gunState.name = "Gun3";
+	_gunState.name		 = "Gun3";
 	_gunState.maxBullets = 300;
 	_gunState.maxBulletsInMagazine = 40;
 	AddGunMenu(_gunState, Vector2<int>(650, 500), Vector2<int>(800, 700), img);
 
-	CreateStageMenu();
+	Vector2<int> btnSize = Vector2<int>(150, 150);
+	
+	/// 左矢印ボタンの表示
+	Game::Instance().GetFileSystem()->Load("img/leftArrow.png", data);
+	img = data.GetHandle();
+	AddMenu("left", Vector2<int>(100, 400), Vector2<int>(100 + btnSize.x, 400 + btnSize.y), img);
+
+	/// 右矢印ボタンの表示
+	Game::Instance().GetFileSystem()->Load("img/rightArrow.png", data);
+	img = data.GetHandle();
+	AddMenu("right", Vector2<int>(1000, 400), Vector2<int>(1000 + btnSize.x, 400 + btnSize.y), img);
+
+	StageInit();
 
 	_updater = &SelectScene::FadeinUpdate;
 }
@@ -78,27 +89,27 @@ void SelectScene::WaitUpdate(const Peripheral& p)
 		if (_menu->CheckClick(_gunStatus[i].name.c_str(), p))
 		{
 			_gunState = _gunStatus[i];
-			
-			// _updater = &SelectScene::FadeoutUpdate;
-		}
-	}
-
-	std::string stagePath;
-	for (int i = 0; i < _stageDatas.size(); ++i)
-	{
-		/// 押したメニューボタンのステージ情報を取得
-		stagePath = GetStagePath(i + 1);
-		if (_menu->CheckClick(stagePath.c_str(), p))
-		{
-			_stageData = _stageDatas[i];
+			_stageData = GetStageData(_stageCnt);
 			_updater = &SelectScene::FadeoutUpdate;
 		}
 	}
+
+	/// ステージ選択を行うためのメニュー
+	if (_menu->CheckClick("right", p))
+	{
+		_stageCnt = (_stageCnt + 1) % _stageCntMax;
+	}
+	else if (_menu->CheckClick("left", p))
+	{
+		_stageCnt = ((_stageCnt + _stageCntMax) - 1) % _stageCntMax;
+	}
+	else{}
+
 	_menu->Update(p);
 }
 
 
-void SelectScene::CreateStageMenu()
+void SelectScene::StageInit()
 {
 	/// フォルダーの中にあるステージ数を取得するもの
 	auto stageCnt = []()
@@ -107,7 +118,7 @@ void SelectScene::CreateStageMenu()
 		HANDLE handle;
 		WIN32_FIND_DATA findData;
 		std::string searchName = "StageData/*.bin";
-		handle = FindFirstFile(searchName.c_str(), &findData);
+		handle  = FindFirstFile(searchName.c_str(), &findData);
 		int cnt = 0;
 
 		do {
@@ -131,33 +142,26 @@ void SelectScene::CreateStageMenu()
 		}
 		return cnt;
 	};
+	/// ステージカウントの初期化
+	_stageCnt	 = 0;
+	_stageCntMax = stageCnt();
 
-	/// 仮のステージメニューの画像取得
-	ImageData data;
-	Game::Instance().GetFileSystem()->Load("img/StageBox.png", data);
-	int img = data.GetHandle();
-
-	/// メニュー用の座標設定に使用するもの
-	Vector2<int> menuPos;
-	Vector2<int> menuSize	= Vector2<int>(180, 180);
-	Vector2<int> menuOffset = Vector2<int>(100, 100);
-
-	int cnt = stageCnt();
+	/// 全ステージの読み込みを行う
 	StageData stage;
-	for (int i = 0; i < cnt; ++i)
+	for (int i = 0; i < _stageCntMax; ++i)
 	{
-		/// ステージデータ用のメニューボックスの生成
 		std::string stagePath = GetStagePath(i + 1);
 		Game::Instance().GetFileSystem()->Load(stagePath.c_str(), stage);
-		_stageDatas.push_back(stage);
-
-		/// メニューの座標設定
-		menuPos.x = menuOffset.x + ((i % 5) * 40) + ((i % 5) * menuSize.x);
-		menuPos.y = menuOffset.y + ((i / 5) * 40) + ((i / 5) * menuSize.y);
-
-		/// メニューの追加
-		AddStageMenu(stagePath.c_str(), menuPos, menuPos + menuSize, img);
 	}
+}
+
+StageData SelectScene::GetStageData(const int& num)
+{
+	std::string stagePath = GetStagePath(num + 1);
+	StageData stage;
+	Game::Instance().GetFileSystem()->Load(stagePath.c_str(), stage);
+
+	return stage;
 }
 
 std::string SelectScene::GetStagePath(const int& num) const
@@ -165,16 +169,15 @@ std::string SelectScene::GetStagePath(const int& num) const
 	return "StageData/stage" + std::to_string(num) + ".bin";
 }
 
+void SelectScene::AddMenu(const std::string& path, const Vector2<int>& ltPos, const Vector2<int>& rbPos, const int& img)
+{
+	_menu->AddMenuList(path.c_str(), ltPos, rbPos, img);
+}
 
 void SelectScene::AddGunMenu(const GunStatus& gunstate, const Vector2<int>& ltPos, const Vector2<int>& rbPos, const int& img)
 {
 	_menu->AddMenuList(gunstate.name.c_str(), ltPos, rbPos, img);
 	_gunStatus.push_back(gunstate);
-}
-
-void SelectScene::AddStageMenu(const std::string& stageName, const Vector2<int>& ltPos, const Vector2<int>& rbPos, const int& img)
-{
-	_menu->AddMenuList(stageName.c_str(), ltPos, rbPos, img);
 }
 
 void SelectScene::Update(const Peripheral& p)
@@ -190,7 +193,17 @@ void SelectScene::Draw()
 	_trimString->ChangeFontSize(50);
 	DxLib::DrawString(0, 0, "セレクトシーン", 0xff0000);
 	_menu->Draw();
+
+	_trimString->ChangeFontSize(150);
+	std::string text = "Stage" + std::to_string(_stageCnt + 1);
+	int strWidth, strHeight;
+	strWidth = _trimString->GetStringCenterPosx(text.c_str());
+	DrawString(Game::Instance().GetScreenSize().x / 2 - strWidth / 2, 
+			   Game::Instance().GetScreenSize().y / 2,
+			   text.c_str(), 0x00ff00);
 	
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, std::abs(_pal - 255));
 	DxLib::DrawBox(0, 0, _scrSize.x, _scrSize.y, 0x000000, true);
+
+
 }
