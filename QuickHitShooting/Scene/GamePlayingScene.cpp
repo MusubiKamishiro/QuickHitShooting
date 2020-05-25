@@ -145,7 +145,7 @@ bool GamePlayingScene::CreateEnemy()
 {
 	/// 仮でステージデータを読み込んでいる
 
-	if (_waveCnt < _stageData.GetStageData().targetData.size())
+	if (_waveCnt < (int)_stageData.GetStageData().targetData.size())
 	{
 		auto data = _stageData.GetStageData().targetData[_waveCnt];
 		for (auto target : data)
