@@ -110,7 +110,7 @@ void GamePlayingScene::WaitUpdate(const Peripheral& p)
 					enemy->HitShot();
 					_hitFlag = true;
 					++_hitCount;
-					_score += 100;
+					_score += enemy->GetScore();
 				}
 			}
 		}
