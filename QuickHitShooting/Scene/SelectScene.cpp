@@ -220,34 +220,34 @@ void SelectScene::Draw()
 		return name;
 	};
 
-	auto d1 = GetScoreDight(6, _dightMax);
-	auto d2 = GetScoreDight(56, _dightMax);
-	auto d3 = GetScoreDight(456, _dightMax);
-	auto d4 = GetScoreDight(3456, _dightMax);
-	auto d5 = GetScoreDight(23456, _dightMax);
-	auto d6 = GetScoreDight(123456, _dightMax);
-	auto d7 = GetScoreDight(1123456, _dightMax);
-
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, _pal);
 	DxLib::DrawBox(0, 0, _scrSize.x, _scrSize.y, 0xffffff, true);
 
 	_menu->Draw();
 
-	_trimString->ChangeFontSize(60);
-	int strWidth, strHeight;
-	std::string text = "000000";
+	_trimString->ChangeFontSize(70);
+	std::string text;
+	Vector2<int> strSize;
 
-	for (int i = 0; i < _stageDatas[_stageCnt].GetStageData().names.size(); ++i)
+	/// スコアの間隔(debug用)
+	int space = 400;
+	
+	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, "000000", strlen("000000"));
+	auto score = _stageDatas[_stageCnt].GetStageData().scores;
+	for (int i = 0; i < score.size(); ++i)
 	{
-		
+		text	 = GetScoreDight(score[i], _dightMax);
+
+		DrawString(200 + (space * i) - (strSize.x / 2), 150 - strSize.y / 2,
+				  text.c_str(), 0xff0000);
 	}
 
 	_trimString->ChangeFontSize(150);
 	text = "Stage" + std::to_string(_stageCnt + 1);
 
-	GetDrawStringSize(&strWidth, &strHeight, nullptr, text.c_str(), strlen(text.c_str()));
-	DrawString(Game::Instance().GetScreenSize().x / 2 - strWidth / 2, 
-			   Game::Instance().GetScreenSize().y - (strHeight + (strHeight / 2)),
+	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
+	DrawString(Game::Instance().GetScreenSize().x / 2 - strSize.x / 2, 
+			   Game::Instance().GetScreenSize().y - (strSize.y + (strSize.y / 2)),
 			   text.c_str(), 0x00ff00);
 	
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, std::abs(_pal - 255));
