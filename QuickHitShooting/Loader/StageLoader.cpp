@@ -22,23 +22,27 @@ bool StageLoader::Load(const std::string& path, Data& data)
 		{
 			StageInfo stageInfo;
 			/// スコアデータの読み込み
-			for (int i = 0; i < stageInfo.scores.size(); ++i)
+			for (unsigned int i = 0; i < stageInfo.scores.size(); ++i)
 			{
 				fread(&stageInfo.scores[i], sizeof(int), 1, file);
 				fread((char*)stageInfo.names[i].c_str(), (sizeof(char) * 3), 1, file);
 			}
 
-			TargetData target;
-			std::vector<TargetData> targetData;
-
+			/// ステージデータの読み込み時に使用するもの
 			int waveCnt, targetCnt;
+			TargetData target;
+			vec_target targetData;
+
 			/// ウェーブ数の読み込み
 			fread(&waveCnt, sizeof(int), 1, file);
 
 			for (int w = 0; w < waveCnt; ++w)
 			{
+				/// 的数の読み込み
 				fread(&targetCnt, sizeof(int), 1, file);
 				targetData.resize(targetCnt);
+
+				/// 的情報の読み込み
 				for (int t = 0; t < targetCnt; ++t)
 				{
 					fread(&target.type,			sizeof(unsigned char), 1, file);
@@ -50,18 +54,22 @@ bool StageLoader::Load(const std::string& path, Data& data)
 					targetData[t] = target;
 				}
 				stageInfo.targetData.push_back(targetData);
+
+				/// 的情報を開放する
 				targetData.clear();
 				std::vector<TargetData>().swap(targetData);
 			}
 			fclose(file);
-			_table[path] = stageInfo;
-			stage._stageData = _table[path];
+
+			/// ステージデータの登録
+			_table[path]	 = stageInfo;
 			
+			/// ステージデータを開放する
 			stageInfo.targetData.clear();
-			vec2_target().swap(stageInfo.targetData);
+			std::vector<vec_target>().swap(stageInfo.targetData);
 		}
 	}
-	// 見つかったらデータを返す
+	/// パスが見つかったらデータを返す。
 	stage._stageData = _table[path];
 
 	return true;
@@ -69,6 +77,8 @@ bool StageLoader::Load(const std::string& path, Data& data)
 
 void StageLoader::UnLoad(const std::string& path)
 {
+	/// 登録物の削除
+	_table.erase(path);
 }
 
 bool StageData::IsAvailable()

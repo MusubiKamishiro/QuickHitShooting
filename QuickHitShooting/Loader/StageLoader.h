@@ -5,21 +5,22 @@
 #include <vector>
 #include <array>
 
+// 的情報
 struct TargetData
 {
-	unsigned char type;
-	unsigned int  dispTime;
-	unsigned int  appearTime;
-	Vector2<int>  pos;
+	unsigned char type;			// ID
+	unsigned int  dispTime;		// 表示時間
+	unsigned int  appearTime;	// 表示してから消えるまでの時間
+	Vector2<int>  pos;			// 座標
 };
-
-using vec2_target = std::vector<std::vector<TargetData>>;
+// 的情報の可変長配列
+using vec_target = std::vector<TargetData>;
 
 struct StageInfo
 {
 	std::array<int, 3> scores;
 	std::array<std::string, 3> names;
-	vec2_target targetData;
+	std::vector<vec_target> targetData;
 };
 
 class StageLoader : public Loader
