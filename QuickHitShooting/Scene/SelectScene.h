@@ -15,18 +15,21 @@ class SelectScene : public Scene
 private:
 	void (SelectScene::*_updater)(const Peripheral& p);
 
-	void FadeinUpdate(const Peripheral& p);
+	void FadeinUpdate(const Peripheral& p);	
 	void FadeoutUpdate(const Peripheral& p);
 	void WaitUpdate(const Peripheral& p);
 
 	std::unique_ptr<TrimString> _trimString;
 	std::shared_ptr<Menu> _menu;
+
 	GunStatus _gunState;
-	StageData _stageData;
+	std::vector<StageData> _stageDatas;
 
 	int _stageCnt, _stageCntMax;
 
 	std::vector<GunStatus> _gunStatus;
+
+	const int _dightMax;		// スコアの桁数最大値(とりあえず6桁)
 
 	///銃のメニューの追加
 	///@param GunState	銃のステータス
@@ -40,7 +43,6 @@ private:
 	void StageInit();
 
 	StageData GetStageData(const int& num);
-
 
 	// ステージパス取得用関数
 	std::string GetStagePath(const int& num) const;

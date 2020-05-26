@@ -11,7 +11,7 @@
 #include "../Loader/ImageLoader.h"
 #include "../Menu.h"
 
-SelectScene::SelectScene()
+SelectScene::SelectScene() : _dightMax(6)
 {
 	_pal = 0;
 	_trimString = std::make_unique<TrimString>();
@@ -62,58 +62,6 @@ SelectScene::~SelectScene()
 {
 }
 
-void SelectScene::FadeinUpdate(const Peripheral& p)
-{
-	if (_pal >= 255)
-	{
-		_pal = 255;
-		_updater = &SelectScene::WaitUpdate;
-	}
-	else
-	{
-		_pal += 20;
-	}
-}
-
-void SelectScene::FadeoutUpdate(const Peripheral& p)
-{
-	if (_pal <= 0)
-	{
-		SceneManager::Instance().ChangeScene(std::make_unique<GamePlayingScene>(_gunState, _stageData));
-	}
-	else
-	{
-		_pal -= 20;
-	}
-}
-
-void SelectScene::WaitUpdate(const Peripheral& p)
-{
-	for (int i = 0; i < _gunStatus.size(); ++i)
-	{
-		if (_menu->CheckClick(_gunStatus[i].name.c_str(), p))
-		{
-			_gunState = _gunStatus[i];
-			_stageData = GetStageData(_stageCnt);
-			_updater = &SelectScene::FadeoutUpdate;
-		}
-	}
-
-	/// ステージ選択を行うためのメニュー
-	if (_menu->CheckClick("right", p))
-	{
-		_stageCnt = (_stageCnt + 1) % _stageCntMax;
-	}
-	else if (_menu->CheckClick("left", p))
-	{
-		_stageCnt = ((_stageCnt + _stageCntMax) - 1) % _stageCntMax;
-	}
-	else{}
-
-	_menu->Update(p);
-}
-
-
 void SelectScene::StageInit()
 {
 	/// フォルダーの中にあるステージ数を取得するもの
@@ -123,7 +71,7 @@ void SelectScene::StageInit()
 		HANDLE handle;
 		WIN32_FIND_DATA findData;
 		std::string searchName = "StageData/*.bin";
-		handle  = FindFirstFile(searchName.c_str(), &findData);
+		handle = FindFirstFile(searchName.c_str(), &findData);
 		int cnt = 0;
 
 		do {
@@ -148,15 +96,19 @@ void SelectScene::StageInit()
 		return cnt;
 	};
 	/// ステージカウントの初期化
-	_stageCnt	 = 0;
+	_stageCnt = 0;
 	_stageCntMax = stageCnt();
 
 	/// 全ステージの読み込みを行う
 	StageData stage;
+	_stageDatas.resize(_stageCntMax);
 	for (int i = 0; i < _stageCntMax; ++i)
 	{
 		std::string stagePath = GetStagePath(i + 1);
 		Game::Instance().GetFileSystem()->Load(stagePath.c_str(), stage);
+
+		/// ステージデータの登録
+		_stageDatas[i] = stage;
 	}
 }
 
@@ -167,6 +119,56 @@ StageData SelectScene::GetStageData(const int& num)
 	Game::Instance().GetFileSystem()->Load(stagePath.c_str(), stage);
 
 	return stage;
+}
+
+void SelectScene::FadeinUpdate(const Peripheral& p)
+{
+	if (_pal >= 255)
+	{
+		_pal = 255;
+		_updater = &SelectScene::WaitUpdate;
+	}
+	else
+	{
+		_pal += 20;
+	}
+}
+
+void SelectScene::FadeoutUpdate(const Peripheral& p)
+{
+	if (_pal <= 0)
+	{
+		SceneManager::Instance().ChangeScene(std::make_unique<GamePlayingScene>(_gunState, _stageDatas[_stageCnt]));
+	}
+	else
+	{
+		_pal -= 20;
+	}
+}
+
+void SelectScene::WaitUpdate(const Peripheral& p)
+{
+	for (int i = 0; i < _gunStatus.size(); ++i)
+	{
+		if (_menu->CheckClick(_gunStatus[i].name.c_str(), p))
+		{
+			_gunState = _gunStatus[i];
+			_updater = &SelectScene::FadeoutUpdate;
+		}
+	}
+
+	/// ステージ選択を行うためのメニュー
+	if (_menu->CheckClick("right", p))
+	{
+		_stageCnt = (_stageCnt + 1) % _stageCntMax;
+	}
+	else if (_menu->CheckClick("left", p))
+	{
+		_stageCnt = ((_stageCnt + _stageCntMax) - 1) % _stageCntMax;
+	}
+	else{}
+
+	_menu->Update(p);
 }
 
 std::string SelectScene::GetStagePath(const int& num) const
@@ -192,16 +194,57 @@ void SelectScene::Update(const Peripheral& p)
 
 void SelectScene::Draw()
 {
+	/// 6桁表示のスコアの文字列を取得するもの
+	auto GetScoreDight = [](const int& score, const int& max)
+	{
+		int divNum = 1;
+		int divCnt = 0;
+		std::string name;
+
+		/// スコアの桁数を求めている
+		while ((score / divNum) >= 1)
+		{
+			++divCnt;
+			divNum *= 10;
+		}
+
+		/// スコアが6桁以下の時、0で埋める処理
+		if (divCnt <= max)
+		{
+			for (int i = 0; i < (max - divCnt); ++i)
+			{
+				name += "0";
+			}
+		}
+		name += std::to_string(score);
+		return name;
+	};
+
+	auto d1 = GetScoreDight(6, _dightMax);
+	auto d2 = GetScoreDight(56, _dightMax);
+	auto d3 = GetScoreDight(456, _dightMax);
+	auto d4 = GetScoreDight(3456, _dightMax);
+	auto d5 = GetScoreDight(23456, _dightMax);
+	auto d6 = GetScoreDight(123456, _dightMax);
+	auto d7 = GetScoreDight(1123456, _dightMax);
+
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, _pal);
 	DxLib::DrawBox(0, 0, _scrSize.x, _scrSize.y, 0xffffff, true);
-	
-	/*_trimString->ChangeFontSize(50);
-	DxLib::DrawString(0, 0, "セレクトシーン", 0xff0000);*/
+
 	_menu->Draw();
 
-	_trimString->ChangeFontSize(150);
-	std::string text = "Stage" + std::to_string(_stageCnt + 1);
+	_trimString->ChangeFontSize(60);
 	int strWidth, strHeight;
+	std::string text = "000000";
+
+	for (int i = 0; i < _stageDatas[_stageCnt].GetStageData().names.size(); ++i)
+	{
+		
+	}
+
+	_trimString->ChangeFontSize(150);
+	text = "Stage" + std::to_string(_stageCnt + 1);
+
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, text.c_str(), strlen(text.c_str()));
 	DrawString(Game::Instance().GetScreenSize().x / 2 - strWidth / 2, 
 			   Game::Instance().GetScreenSize().y - (strHeight + (strHeight / 2)),
