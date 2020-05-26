@@ -16,37 +16,42 @@ SelectScene::SelectScene()
 	_pal = 0;
 	_trimString = std::make_unique<TrimString>();
 
+	Vector2<int> screen  = Game::Instance().GetScreenSize();
+	Vector2<int> btnSize = Vector2<int>(400, 200);
+
 	ImageData data;
 	Game::Instance().GetFileSystem()->Load("img/gun.png", data);
+
 	int img = data.GetHandle();
 
 	_menu.reset(new Menu());
 	_gunState.name		 = "Gun1";
 	_gunState.maxBullets = 700;
 	_gunState.maxBulletsInMagazine = 10;
-	AddGunMenu(_gunState, Vector2<int>(150, 500), Vector2<int>(300, 700), img);
+	AddGunMenu(_gunState, Vector2<int>(30, 200), Vector2<int>(30 + btnSize.x, 200 + btnSize.y), img);
 
 	_gunState.name		 = "Gun2";
 	_gunState.maxBullets = 500;
 	_gunState.maxBulletsInMagazine = 10;
-	AddGunMenu(_gunState, Vector2<int>(400, 500), Vector2<int>(550, 700), img);
+	AddGunMenu(_gunState, Vector2<int>(430, 200), Vector2<int>(430 + btnSize.x, 200 + btnSize.y), img);
 
 	_gunState.name		 = "Gun3";
 	_gunState.maxBullets = 300;
 	_gunState.maxBulletsInMagazine = 40;
-	AddGunMenu(_gunState, Vector2<int>(650, 500), Vector2<int>(800, 700), img);
+	AddGunMenu(_gunState, Vector2<int>(830, 200), Vector2<int>(830 + btnSize.x, 200 + btnSize.y), img);
 
-	Vector2<int> btnSize = Vector2<int>(150, 150);
-	
+	btnSize = Vector2<int>(150, 150);
 	/// 左矢印ボタンの表示
 	Game::Instance().GetFileSystem()->Load("img/leftArrow.png", data);
 	img = data.GetHandle();
-	AddMenu("left", Vector2<int>(100, 400), Vector2<int>(100 + btnSize.x, 400 + btnSize.y), img);
+	AddMenu("left", Vector2<int>(btnSize.x, (screen.y / 2) + btnSize.y), 
+				    Vector2<int>((btnSize.x * 2), (screen.y / 2) + (btnSize.y * 2)), img);
 
 	/// 右矢印ボタンの表示
 	Game::Instance().GetFileSystem()->Load("img/rightArrow.png", data);
 	img = data.GetHandle();
-	AddMenu("right", Vector2<int>(1000, 400), Vector2<int>(1000 + btnSize.x, 400 + btnSize.y), img);
+	AddMenu("right", Vector2<int>(screen.x - (btnSize.x * 2), (screen.y / 2) + btnSize.y),
+					 Vector2<int>(screen.x - btnSize.x, (screen.y / 2) + (btnSize.y * 2)), img);
 
 	StageInit();
 
@@ -190,16 +195,16 @@ void SelectScene::Draw()
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, _pal);
 	DxLib::DrawBox(0, 0, _scrSize.x, _scrSize.y, 0xffffff, true);
 	
-	_trimString->ChangeFontSize(50);
-	DxLib::DrawString(0, 0, "セレクトシーン", 0xff0000);
+	/*_trimString->ChangeFontSize(50);
+	DxLib::DrawString(0, 0, "セレクトシーン", 0xff0000);*/
 	_menu->Draw();
 
 	_trimString->ChangeFontSize(150);
 	std::string text = "Stage" + std::to_string(_stageCnt + 1);
 	int strWidth, strHeight;
-	strWidth = _trimString->GetStringCenterPosx(text.c_str());
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, text.c_str(), strlen(text.c_str()));
 	DrawString(Game::Instance().GetScreenSize().x / 2 - strWidth / 2, 
-			   Game::Instance().GetScreenSize().y / 2,
+			   Game::Instance().GetScreenSize().y - (strHeight + (strHeight / 2)),
 			   text.c_str(), 0x00ff00);
 	
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, std::abs(_pal - 255));
