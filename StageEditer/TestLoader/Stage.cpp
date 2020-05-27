@@ -293,12 +293,18 @@ bool Stage::Save()
 		/// フォルダーで指定したファイルを開く
 		if (fopen_s(&file, openFileName.lpstrFile, "wb") == 0)
 		{
-			_stageInfo.targetData.clear();
 			/// ステージデータの書き込み
+
+			char name[3];
 			for (int i = 0; i < _stageInfo.scores.size(); ++i)
 			{
 				fwrite(&_stageInfo.scores[i], sizeof(int), 1, file);
-				fwrite(&_stageInfo.names[i], (sizeof(char) * 3), 1, file);
+				/// 文字の取得を行っている
+				for (int c = 0; c < sizeof(name) / sizeof(name[0]); ++c)
+				{
+					name[c] = _stageInfo.names[i][c];
+				}
+				fwrite(name, (sizeof(char) * 3), 1, file);
 			}
 			/// エディターの画面サイズからゲームの画面サイズの倍率を求めている
 			Vector2<double> rate = Vector2<double>((double)_gameScreen.x / _screen.x,
