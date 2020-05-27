@@ -95,6 +95,22 @@ void NetWorkWS2::RecivedClient(TargetData& data)
 	closesocket(sock);
 }
 
+void NetWorkWS2::RealTimeServer(SendDataWS2& data)
+{
+	std::thread realTimeServerThread([&]() {
+		len = sizeof(client);
+		sock = accept(sock0, (sockaddr*)&client, &len);
+		const char* p = (const char*)&data;
+		while (true) {
+			send(sock, p, sizeof(data), 0);
+			std::string returnData = "";
+			int n = recv(sock, (char*)returnData.c_str(), 256, 0);
+			std::cout << returnData.c_str() << std::endl;
+		}
+		closesocket(sock);
+		});
+}
+
 // リアルタイム通信サーバーの処理
 void NetWorkWS2::RealTimeServer(TargetData& data)
 {
@@ -107,6 +123,18 @@ void NetWorkWS2::RealTimeServer(TargetData& data)
 			std::string returnData = "";
 			int n = recv(sock, (char*)returnData.c_str(), 256, 0);
 			std::cout << returnData.c_str() << std::endl;
+		}
+		closesocket(sock);
+		});
+}
+
+void NetWorkWS2::RealTimeClient(SendDataWS2& data)
+{
+	std::thread realTimeClientThread([&]() {
+		connect(sock, (sockaddr*)&server, sizeof(server));
+		while (true) {
+			int n = recv(sock, (char*)&data, sizeof(data), 0);
+			send(sock, "Success", 7, 0);
 		}
 		closesocket(sock);
 		});

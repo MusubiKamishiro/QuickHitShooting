@@ -70,8 +70,10 @@ public:
 
 	// リアルタイム用関数
 	// サーバー側処理関数
+	void RealTimeServer(SendDataWS2& data);
 	void RealTimeServer(TargetData& data);
 	// クライアント側処理関数
+	void RealTimeClient(SendDataWS2& data);
 	void RealTimeClient(TargetData& data);
 
 	// ネットワーク機能の後処理
