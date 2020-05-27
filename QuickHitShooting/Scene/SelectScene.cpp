@@ -248,8 +248,7 @@ void SelectScene::Draw()
 	auto name = _stageDatas[_stageCnt].GetStageData().names;
 	for (int i = 0; i < name.size(); ++i)
 	{
-		//text = name[i];
-		text = std::to_string(i + 1) + "ˆÊ " + "AAA";
+		text = std::to_string(i + 1) + "ˆÊ " + name[i];
 		DrawString(200 + (space * i) - (strSize.x / 2), 80 - (strSize.y / 2),
 			text.c_str(), 0xff0000);
 	}
