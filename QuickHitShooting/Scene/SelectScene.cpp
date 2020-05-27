@@ -11,7 +11,7 @@
 #include "../Loader/ImageLoader.h"
 #include "../Menu.h"
 
-SelectScene::SelectScene() : _dightMax(6)
+SelectScene::SelectScene() : _dightMax(5)
 {
 	_pal = 0;
 	_trimString = std::make_unique<TrimString>();
@@ -232,16 +232,27 @@ void SelectScene::Draw()
 	/// スコアの間隔(debug用)
 	int space = 400;
 	
+	/// スコア表示
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, "000000", strlen("000000"));
 	auto score = _stageDatas[_stageCnt].GetStageData().scores;
 	for (int i = 0; i < score.size(); ++i)
 	{
-		text	 = GetScoreDight(score[i], _dightMax);
+		text = GetScoreDight(score[i], _dightMax);
 
 		DrawString(200 + (space * i) - (strSize.x / 2), 150 - strSize.y / 2,
-				  text.c_str(), 0xff0000);
+				  text.c_str(), 0x000000);
 	}
 
+	text = std::to_string(0) + "位 " + "AAA";
+	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
+	auto name = _stageDatas[_stageCnt].GetStageData().names;
+	for (int i = 0; i < name.size(); ++i)
+	{
+		//text = name[i];
+		text = std::to_string(i + 1) + "位 " + "AAA";
+		DrawString(200 + (space * i) - (strSize.x / 2), 80 - (strSize.y / 2),
+			text.c_str(), 0xff0000);
+	}
 	_trimString->ChangeFontSize(150);
 	text = "Stage" + std::to_string(_stageCnt + 1);
 
