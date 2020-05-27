@@ -13,21 +13,19 @@
 #include "../TrimString.h"
 
 
-constexpr int maxDigit = 6;	// スコアの最大桁数
+constexpr int _maxScoreDigit = 6;	// スコアの最大桁数
+constexpr int _maxHitRateDigit = 5;	// 命中率の最大桁数
 
 ResultScene::ResultScene(const ResultData& resultData)
 {
 	_pal = 0;
 	_time = 0;
-	_nowDigit = 0;
-	_scoreDigit = 0;
 	_trimString = std::make_unique<TrimString>();
-	_num.clear();
 
 	_resultData = resultData;
-	_resultScore = 0;
 
-	CheckScore(_resultData.score);
+	CheckDigit(_score, _resultData.score, _maxScoreDigit);
+	CheckDigit(_hitRate, _resultData.hitRate * 100, _maxHitRateDigit);
 
 	_updater = &ResultScene::FadeinUpdate;
 }
@@ -45,7 +43,7 @@ void ResultScene::FadeinUpdate(const Peripheral & p)
 	}
 	else
 	{
-		_pal +=20;
+		_pal += 20;
 	}
 }
 
@@ -63,35 +61,39 @@ void ResultScene::FadeoutUpdate(const Peripheral & p)
 
 void ResultScene::ScoreUpdate(const Peripheral& p)
 {
-	if (p.IsTrigger(MOUSE_INPUT_LEFT) || (_nowDigit >= _scoreDigit) || (_nowDigit == maxDigit))
+	if (p.IsTrigger(MOUSE_INPUT_LEFT) || (_score.nowDigit >= _score.digit) || (_score.nowDigit == _maxScoreDigit))
 	{
-		_resultScore = _resultData.score;
+		_score.num = _resultData.score;
+
+		_updater = &ResultScene::HitRateUpdate;
+	}
+	else
+	{
+		_score.num = RandomCountUp(_maxScoreDigit, _score);
+	}
+
+	if (++_time % 60 == 0)
+	{
+		++_score.nowDigit;
+	}
+}
+
+void ResultScene::HitRateUpdate(const Peripheral& p)
+{
+	if (p.IsTrigger(MOUSE_INPUT_LEFT) || (_hitRate.nowDigit >= _hitRate.digit) || (_hitRate.nowDigit == _maxHitRateDigit))
+	{
+		_hitRate.num = _resultData.hitRate;
 
 		_updater = &ResultScene::WaitUpdate;
 	}
 	else
 	{
-		_resultScore = 0;
-		for (unsigned int i = 0; i < maxDigit; ++i)
-		{
-			_resultScore *= 10;
-
-			if ((maxDigit - _nowDigit) <= i)
-			{
-				_resultScore += _num[maxDigit - (i + 1)];
-			}
-			else
-			{
-				std::random_device seed;
-				std::mt19937 engine(seed());
-				_resultScore += engine() % 10;
-			}
-		}
+		_hitRate.num = (RandomCountUp(_maxHitRateDigit - 1, _hitRate) / 100);
 	}
 
 	if (++_time % 60 == 0)
 	{
-		++_nowDigit;
+		++_hitRate.nowDigit;
 	}
 }
 
@@ -100,21 +102,44 @@ void ResultScene::WaitUpdate(const Peripheral & p)
 	
 }
 
-void ResultScene::CheckScore(const int& inscore)
+void ResultScene::CheckDigit(NumData& numData, const int& num, const int& maxDigit)
 {
-	int score = inscore;
+	int score = num;
 	while (score != 0)
 	{
 		int sscore = score / 10;
-		_num.push_back(score - sscore * 10);
+		numData.digitNums.push_back(score - sscore * 10);
 		score = sscore;
-		++_scoreDigit;
+		++numData.digit;
 	}
 
-	while(_num.size() < maxDigit)
+	while(_score.digitNums.size() < maxDigit)
 	{
-		_num.push_back(0);
+		_score.digitNums.push_back(0);
 	}
+}
+
+float ResultScene::RandomCountUp(const unsigned int& maxDigit, const NumData& numData)
+{
+	float num = 0.f;
+
+	for (unsigned int i = 0; i < maxDigit; ++i)
+	{
+		num *= 10;
+
+		if ((maxDigit - numData.nowDigit) <= i)
+		{
+			num += numData.digitNums[maxDigit - (i + 1)];
+		}
+		else
+		{
+			std::random_device seed;
+			std::mt19937 engine(seed());
+			num += engine() % 10;
+		}
+	}
+
+	return num;
 }
 
 void ResultScene::Update(const Peripheral& p)
@@ -130,9 +155,10 @@ void ResultScene::Draw()
 	DxLib::DrawBox(0, 0, _scrSize.x, _scrSize.y, 0xffffff, true);
 	
 	_trimString->ChangeFontSize(50);
-	std::string s = "score %" + std::to_string(maxDigit) + "d";
-	DxLib::DrawFormatString(0, 300, 0x000000, s.c_str(), _resultScore);
-	DxLib::DrawFormatString(0, 400, 0x000000, "命中率 %.2f", _resultData.hitRate);
+	std::string s = "score %" + std::to_string(_maxScoreDigit) + "d";
+	DxLib::DrawFormatString(0, 300, 0x000000, s.c_str(), static_cast<int>(_score.num));
+	s = "命中率 %" + std::to_string(_maxHitRateDigit) + ".2f";
+	DxLib::DrawFormatString(0, 400, 0x000000, s.c_str(), _hitRate.num);
 	DxLib::DrawFormatString(700, 300, 0x000000, "1位 %s %d", _resultData.ranking[0].first.c_str(), _resultData.ranking[0].second);
 	DxLib::DrawFormatString(700, 400, 0x000000, "2位 %s %d", _resultData.ranking[1].first.c_str(), _resultData.ranking[1].second);
 	DxLib::DrawFormatString(700, 500, 0x000000, "3位 %s %d", _resultData.ranking[2].first.c_str(), _resultData.ranking[2].second);
