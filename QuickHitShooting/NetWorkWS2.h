@@ -67,6 +67,13 @@ public:
 	// 引数に送るデータを渡します。
 	void RecivedClient(SendDataWS2& data);
 	void RecivedClient(TargetData& data);
+
+	// リアルタイム用関数
+	// サーバー側処理関数
+	void RealTimeServer(TargetData& data);
+	// クライアント側処理関数
+	void RealTimeClient(TargetData& data);
+
 	// ネットワーク機能の後処理
 	void Terminate();
 };
