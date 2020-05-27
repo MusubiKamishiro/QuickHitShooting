@@ -16,42 +16,54 @@ SelectScene::SelectScene() : _dightMax(5)
 	_pal = 0;
 	_trimString = std::make_unique<TrimString>();
 
+	/// スクリーンサイズの取得
 	Vector2<int> screen  = Game::Instance().GetScreenSize();
-	Vector2<int> btnSize = Vector2<int>(400, 200);
+	Vector2<int> btnSize = Vector2<int>(300, 150);
 
+	/// 画像情報の取得
 	ImageData data;
-	Game::Instance().GetFileSystem()->Load("img/gun.png", data);
-
+	Game::Instance().GetFileSystem()->Load("img/gun1.png", data);
 	int img = data.GetHandle();
 
+	int space = 95;
+	/// 銃のメニュー登録
 	_menu.reset(new Menu());
 	_gunState.name		 = "Gun1";
 	_gunState.maxBullets = 700;
 	_gunState.maxBulletsInMagazine = 10;
-	AddGunMenu(_gunState, Vector2<int>(30, 200), Vector2<int>(30 + btnSize.x, 200 + btnSize.y), img);
+	AddGunMenu(_gunState, Vector2<int>(space, screen.y - btnSize.y), 
+						  Vector2<int>(space + btnSize.x, screen.y), img);
+
+	Game::Instance().GetFileSystem()->Load("img/gun2.png", data);
+	img = data.GetHandle();
 
 	_gunState.name		 = "Gun2";
 	_gunState.maxBullets = 500;
 	_gunState.maxBulletsInMagazine = 10;
-	AddGunMenu(_gunState, Vector2<int>(430, 200), Vector2<int>(430 + btnSize.x, 200 + btnSize.y), img);
+	AddGunMenu(_gunState, Vector2<int>((screen.x / 2) - (btnSize.x / 2), screen.y - btnSize.y), 
+						  Vector2<int>((screen.x / 2) + (btnSize.x / 2), screen.y), img);
+
+	Game::Instance().GetFileSystem()->Load("img/gun3.png", data);
+	img = data.GetHandle();
 
 	_gunState.name		 = "Gun3";
 	_gunState.maxBullets = 300;
 	_gunState.maxBulletsInMagazine = 40;
-	AddGunMenu(_gunState, Vector2<int>(830, 200), Vector2<int>(830 + btnSize.x, 200 + btnSize.y), img);
+	AddGunMenu(_gunState, Vector2<int>(screen.x - space - btnSize.x, screen.y - btnSize.y), 
+						  Vector2<int>(screen.x - space, screen.y), img);
 
 	btnSize = Vector2<int>(150, 150);
 	/// 左矢印ボタンの表示
 	Game::Instance().GetFileSystem()->Load("img/leftArrow.png", data);
 	img = data.GetHandle();
-	AddMenu("left", Vector2<int>(btnSize.x, (screen.y / 2) + btnSize.y), 
-				    Vector2<int>((btnSize.x * 2), (screen.y / 2) + (btnSize.y * 2)), img);
+	AddMenu("left", Vector2<int>(btnSize.x, (screen.y / 2) - (btnSize.y / 2)), 
+				    Vector2<int>((btnSize.x * 2), (screen.y / 2) + (btnSize.y / 2)), img);
 
 	/// 右矢印ボタンの表示
 	Game::Instance().GetFileSystem()->Load("img/rightArrow.png", data);
 	img = data.GetHandle();
-	AddMenu("right", Vector2<int>(screen.x - (btnSize.x * 2), (screen.y / 2) + btnSize.y),
-					 Vector2<int>(screen.x - btnSize.x, (screen.y / 2) + (btnSize.y * 2)), img);
+	AddMenu("right", Vector2<int>(screen.x - (btnSize.x * 2), (screen.y / 2) - (btnSize.y / 2)),
+					 Vector2<int>(screen.x - btnSize.x, (screen.y / 2) + (btnSize.y / 2)), img);
 
 	StageInit();
 
@@ -256,8 +268,8 @@ void SelectScene::Draw()
 	text = "Stage" + std::to_string(_stageCnt + 1);
 
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
-	DrawString(Game::Instance().GetScreenSize().x / 2 - strSize.x / 2, 
-			   Game::Instance().GetScreenSize().y - (strSize.y + (strSize.y / 2)),
+	DrawString((Game::Instance().GetScreenSize().x / 2) - (strSize.x / 2), 
+			   (Game::Instance().GetScreenSize().y / 2) - (strSize.y / 2),
 			   text.c_str(), 0x00ff00);
 	
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, std::abs(_pal - 255));
