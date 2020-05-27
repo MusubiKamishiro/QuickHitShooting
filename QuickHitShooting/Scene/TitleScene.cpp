@@ -75,10 +75,14 @@ TitleScene::TitleScene()
 
 	_updater = &TitleScene::FadeinUpdate;
 	_drawer = &TitleScene::StartDraw;
-	NetWorkWS2::Instance().Initialize("192.168.11.47");
-	SendDataWS2 realTimeDataws2 = {};
-	realTimeDataws2.Buffer = "REALTIMEKUSOZAKO";
-	NetWorkWS2::Instance().RealTimeServer(realTimeDataws2);
+	
+	std::thread realTimeServerThread([&]() {
+		NetWorkWS2::Instance().Initialize("192.168.11.47");
+		SendDataWS2 realTimeDataws2 = {};
+		realTimeDataws2.Buffer = "REALTIMEKUSOZAKO";
+		NetWorkWS2::Instance().RealTimeServer(realTimeDataws2);
+		});
+	realTimeServerThread.detach();
 }
 
 
