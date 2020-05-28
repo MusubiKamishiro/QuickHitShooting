@@ -36,7 +36,6 @@ private:
 	///@param ltPos		画像を表示する左上座標
 	///@param rbPos		画像を表示する右下座標
 	///@param img		画像のハンドル
-	void AddMenu(const std::string& path, const Vector2<int>& ltPos, const Vector2<int>& rbPos, const int& img);
 	void AddGunMenu(const GunStatus& gunstate, const Vector2<int>& ltPos, const Vector2<int>& rbPos, const int& img);
 	
 	// ステージ用のメニューボックスの表示
