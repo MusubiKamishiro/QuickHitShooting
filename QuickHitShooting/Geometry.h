@@ -38,6 +38,10 @@ struct Vector2
 		x /= in.x;
 		y /= in.y;
 	}
+	Vector2<T> operator/(const T& in)
+	{
+		return Vector2<T>(x / in, y / in);
+	}
 
 	bool operator==(const Vector2<T>& in)const
 	{
@@ -57,6 +61,7 @@ struct Vector2
 struct Size {
 	Size() : width(0), height(0) {}
 	Size(int inw, int inh) : width(inw), height(inh) {}
+	Size(Vector2<int> invec) : width(invec.x), height(invec.y) {}
 	int width;	// ïù
 	int height;	// çÇÇ≥
 };

@@ -59,13 +59,13 @@ SelectScene::SelectScene() : _dightMax(5)
 	/// 左矢印ボタンの表示
 	Game::Instance().GetFileSystem()->Load("img/leftArrow.png", data);
 	img = data.GetHandle();
-	AddMenu("left", Vector2<int>(btnSize.x, (screen.y / 2) - (btnSize.y / 2)), 
+	_menu->AddMenuList("left", Vector2<int>(btnSize.x, (screen.y / 2) - (btnSize.y / 2)),
 				    Vector2<int>((btnSize.x * 2), (screen.y / 2) + (btnSize.y / 2)), img);
 
 	/// 右矢印ボタンの表示
 	Game::Instance().GetFileSystem()->Load("img/rightArrow.png", data);
 	img = data.GetHandle();
-	AddMenu("right", Vector2<int>(screen.x - (btnSize.x * 2), (screen.y / 2) - (btnSize.y / 2)),
+	_menu->AddMenuList("right", Vector2<int>(screen.x - (btnSize.x * 2), (screen.y / 2) - (btnSize.y / 2)),
 					 Vector2<int>(screen.x - btnSize.x, (screen.y / 2) + (btnSize.y / 2)), img);
 
 	StageInit();
@@ -189,11 +189,6 @@ void SelectScene::WaitUpdate(const Peripheral& p)
 std::string SelectScene::GetStagePath(const int& num) const
 {
 	return "StageData/stage" + std::to_string(num) + ".bin";
-}
-
-void SelectScene::AddMenu(const std::string& path, const Vector2<int>& ltPos, const Vector2<int>& rbPos, const int& img)
-{
-	_menu->AddMenuList(path.c_str(), ltPos, rbPos, img);
 }
 
 void SelectScene::AddGunMenu(const GunStatus& gunstate, const Vector2<int>& ltPos, const Vector2<int>& rbPos, const int& img)
