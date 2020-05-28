@@ -8,6 +8,8 @@
 #include "../Gun.h"
 
 class TrimString;
+class Menu;
+class Keyboard;
 
 // ƒŠƒUƒ‹ƒgî•ñ
 struct ResultData
@@ -38,11 +40,14 @@ private:
 	void FadeoutUpdate(const Peripheral& p);
 	void ScoreUpdate(const Peripheral& p);
 	void HitRateUpdate(const Peripheral& p);
+	void RankinUpdate(const Peripheral& p);
 	void WaitUpdate(const Peripheral& p);
 
 	ResultData _resultData;
 
 	std::unique_ptr<TrimString> _trimString;
+	std::shared_ptr<Menu> _menu;
+	std::shared_ptr<Keyboard> _keyboard;
 
 	int _time;
 

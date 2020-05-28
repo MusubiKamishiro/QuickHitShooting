@@ -12,6 +12,8 @@
 #include "../Loader/SoundLoader.h"
 #include "../TrimString.h"
 
+#include "../Keyboard.h"
+
 
 constexpr int _maxScoreDigit = 6;	// ƒXƒRƒA‚ÌÅ‘åŒ…”
 constexpr int _maxHitRateDigit = 5;	// –½’†—¦‚ÌÅ‘åŒ…”
@@ -21,6 +23,7 @@ ResultScene::ResultScene(const ResultData& resultData)
 	_pal = 0;
 	_time = 0;
 	_trimString = std::make_unique<TrimString>();
+	_keyboard.reset(new Keyboard());
 
 	_resultData = resultData;
 
@@ -85,6 +88,10 @@ void ResultScene::HitRateUpdate(const Peripheral& p)
 		_hitRate.num = _resultData.hitRate;
 
 		_updater = &ResultScene::WaitUpdate;
+		if (_score.num > _resultData.ranking[2].second)
+		{
+			_updater = &ResultScene::RankinUpdate;
+		}
 	}
 	else
 	{
@@ -95,6 +102,11 @@ void ResultScene::HitRateUpdate(const Peripheral& p)
 	{
 		++_hitRate.nowDigit;
 	}
+}
+
+void ResultScene::RankinUpdate(const Peripheral& p)
+{
+
 }
 
 void ResultScene::WaitUpdate(const Peripheral & p)
@@ -144,7 +156,7 @@ float ResultScene::RandomCountUp(const unsigned int& maxDigit, const NumData& nu
 
 void ResultScene::Update(const Peripheral& p)
 {
-
+	_keyboard->Update(p);
 
 	(this->*_updater)(p);
 }
@@ -162,6 +174,8 @@ void ResultScene::Draw()
 	DxLib::DrawFormatString(700, 300, 0x000000, "1ˆÊ %s %d", _resultData.ranking[0].first.c_str(), _resultData.ranking[0].second);
 	DxLib::DrawFormatString(700, 400, 0x000000, "2ˆÊ %s %d", _resultData.ranking[1].first.c_str(), _resultData.ranking[1].second);
 	DxLib::DrawFormatString(700, 500, 0x000000, "3ˆÊ %s %d", _resultData.ranking[2].first.c_str(), _resultData.ranking[2].second);
+
+	_keyboard->Draw(Vector2<int>());
 
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, std::abs(_pal - 255));
 	DxLib::DrawBox(0, 0, _scrSize.x, _scrSize.y, 0x000000, true);

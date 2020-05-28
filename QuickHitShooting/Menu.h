@@ -13,9 +13,9 @@ struct MenuData
 {
 	MenuData() : rect(0, 0, 0, 0), useRect(0, 0, 0, 0), img(-1), flag(false) {};
 	MenuData(Rect rect, int img) : rect(rect), useRect(rect), img(img), flag(false) {};
-	MenuData(Rect rect, Rect userect, int img) : rect(userect), img(img), flag(false) {};
+	MenuData(Rect rect, Rect userect, int img) : rect(rect), useRect(userect), img(img), flag(false) {};
 	Rect rect;		// 座標と幅高
-	Rect useRect;	// 画像ないの使用する範囲
+	Rect useRect;	// 画像内の使用する範囲
 	int img;		// 画像
 	bool flag;		// カーソルがrect内に入ってるとtrue返す
 };
@@ -45,6 +45,8 @@ public:
 	///@param size	画像の幅高
 	///@param img	画像ハンドル
 	void AddMenuList(const std::string& name, const Vector2<int>& ltPos, const Vector2<int>& rbPos, const int& img);
+	///@param imgRect	画像内の使用する範囲
+	void AddMenuList(const std::string& name, const Vector2<int>& ltPos, const Vector2<int>& rbPos, const Rect& imgRect, const int& img);
 
 	///引数のメニューをクリックしたかを確認する
 	///@param name	確認したいメニュー名
