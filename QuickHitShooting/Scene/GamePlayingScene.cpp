@@ -36,6 +36,11 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const StageData& s
 	_stageData = stageData;
 
 	ImageData data;
+
+	/// ƒQ[ƒ€’†‚Ì”wŒi‰æ‘œ‚ÌŽæ“¾
+	Game::Instance().GetFileSystem()->Load("img/game.png", data);
+	_gameBg = data.GetHandle();
+
 	Game::Instance().GetFileSystem()->Load("img/pause.png", data);
 	int i = data.GetHandle();
 	_menu->AddMenuList("pause", Vector2<int>(_scrSize.x - 50, 0), Vector2<int>(_scrSize.x, 50), i);
@@ -123,6 +128,8 @@ void GamePlayingScene::WaitUpdate(const Peripheral& p)
 
 void GamePlayingScene::TestDraw()
 {
+	/// ”wŒi‚Ì•`‰æ
+	DxLib::DrawGraph(0, 0, _gameBg, true);
 	_trimString->ChangeFontSize(40);
 	DxLib::DrawFormatString(_trimString->GetStringCenterPosx("00000"), 0, 0x000000, "%05d", _score);
 	DxLib::DrawFormatString(0, 0, 0x000000, "WAVE %d", (_waveCnt + 1));

@@ -22,11 +22,14 @@ SelectScene::SelectScene() : _dightMax(5)
 
 	/// 画像情報の取得
 	ImageData data;
+	Game::Instance().GetFileSystem()->Load("img/select.png", data);
+	_selectBg = data.GetHandle();
+
+	/// 銃のメニュー登録
+	int space = 95;
 	Game::Instance().GetFileSystem()->Load("img/gun1.png", data);
 	int img = data.GetHandle();
 
-	int space = 95;
-	/// 銃のメニュー登録
 	_menu.reset(new Menu());
 	_gunState.name		 = "Gun1";
 	_gunState.maxBullets = 700;
@@ -227,9 +230,15 @@ void SelectScene::Draw()
 		return name;
 	};
 
+	/* 描画開始位置 */
+
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, _pal);
 	DxLib::DrawBox(0, 0, _scrSize.x, _scrSize.y, 0xffffff, true);
 
+	/// 背景の描画
+	DxLib::DrawGraph(0, 0, _selectBg, true);
+
+	/// メニューの描画
 	_menu->Draw();
 
 	_trimString->ChangeFontSize(70);
@@ -239,7 +248,7 @@ void SelectScene::Draw()
 	/// スコアの間隔(debug用)
 	int space = 400;
 	
-	/// スコア表示
+	/// スコアの描画
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, "000000", strlen("000000"));
 	auto score = _stageDatas[_stageCnt].GetStageData().scores;
 	for (int i = 0; i < score.size(); ++i)
@@ -250,6 +259,7 @@ void SelectScene::Draw()
 				  text.c_str(), 0x000000);
 	}
 
+	/// プレイヤーランキングの描画
 	text = std::to_string(0) + "位 " + "AAA";
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
 	auto name = _stageDatas[_stageCnt].GetStageData().names;
@@ -259,6 +269,8 @@ void SelectScene::Draw()
 		DrawString(200 + (space * i) - (strSize.x / 2), 80 - (strSize.y / 2),
 			text.c_str(), 0xff0000);
 	}
+
+	/// ステージの描画
 	_trimString->ChangeFontSize(150);
 	text = "Stage" + std::to_string(_stageCnt + 1);
 

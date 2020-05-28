@@ -43,6 +43,7 @@ private:
 
 	int _waveCnt;	// ウェーブカウント
 	int _score;		// 獲得スコア
+	int _gameBg;
 
 	float _hitCount;
 	float _shotCount;

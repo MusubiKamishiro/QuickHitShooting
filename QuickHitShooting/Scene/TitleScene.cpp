@@ -53,15 +53,18 @@ void TitleScene::WaitUpdate(const Peripheral & p)
 
 void TitleScene::StartDraw()
 {
+	DxLib::DrawGraph(0, 0, _titleBg, true);
 	if ((_sceneTime / 30 % 2) == 0)
 	{
-		_trimString->ChangeFontSize(50);
-		DxLib::DrawString(_trimString->GetStringCenterPosx("Click"), _trimString->GetFontSize() + 500, "Click", 0x000000);
+		/// 文字サイズと位置を少しいじった。
+		_trimString->ChangeFontSize(80);
+		DxLib::DrawString(_trimString->GetStringCenterPosx("Click"), _trimString->GetFontSize() + 550, "Click", 0x000000);
 	}
 }
 
 void TitleScene::SelectPlayDraw()
 {
+	DxLib::DrawGraph(0, 0, _titleBg, true);
 	_trimString->ChangeFontSize(50);
 		
 	DxLib::DrawString(_trimString->GetStringCenterPosx(" 1P vs CPU"), 500, " 1P vs CPU", 0x000000);
@@ -72,9 +75,12 @@ TitleScene::TitleScene()
 {
 	_pal = 0;
 	_trimString = std::make_unique<TrimString>();
+	ImageData data;
+	Game::Instance().GetFileSystem()->Load("img/title.png", data);
+	_titleBg = data.GetHandle();
 
 	_updater = &TitleScene::FadeinUpdate;
-	_drawer = &TitleScene::StartDraw;
+	_drawer  = &TitleScene::StartDraw;
 }
 
 

@@ -58,8 +58,12 @@ void Game::Initialize()
 	DxLib::SetDrawScreen(DX_SCREEN_BACK);		// 裏画面に描画
 
 	// フォントの変更
-	//AddFontResourceEx("fonts/PixelMplus10-Regular.ttf", FR_PRIVATE, nullptr);
-	//DxLib::ChangeFont("PixelMplus10", DX_CHARSET_DEFAULT);
+	if (!AddFontResourceEx("Font/font.ttf", FR_PRIVATE, nullptr))
+	{
+		MessageBox(NULL, "フォント読込み失敗", "", MB_OK);
+	}
+
+	DxLib::ChangeFont("Edmunds Distressed", DX_CHARSET_DEFAULT);
 	
 
 	_peripheral.reset(new Peripheral());
