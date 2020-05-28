@@ -29,6 +29,8 @@ private:
 
 	std::vector<GunStatus> _gunStatus;
 
+	int _selectBg;
+
 	const int _dightMax;		// スコアの桁数最大値(とりあえず6桁)
 
 	///銃のメニューの追加
