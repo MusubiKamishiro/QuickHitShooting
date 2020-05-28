@@ -30,6 +30,12 @@ void Menu::AddMenuList(const std::string& name, const Vector2<int>& ltPos, const
 	_menuTable.emplace(name, md);
 }
 
+void Menu::AddMenuList(const std::string& name, const Vector2<int>& ltPos, const Vector2<int>& rbPos, const Rect& imgRect, const int& img)
+{
+	MenuData md = MenuData(Rect((rbPos.x + ltPos.x) / 2, (rbPos.y + ltPos.y) / 2, std::abs(rbPos.x - ltPos.x), std::abs(rbPos.y - ltPos.y)), imgRect, img);
+	_menuTable.emplace(name, md);
+}
+
 bool Menu::CheckClick(const std::string& name, const Peripheral& p)
 {
 	if (p.IsTrigger(MOUSE_INPUT_LEFT) && _cd->IsCollision(p.GetMousePos(), _menuTable[name.c_str()].rect))
@@ -68,7 +74,8 @@ void Menu::Draw()
 			DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 192);
 		}
 
-		DxLib::DrawExtendGraph(md.useRect.Left(), md.useRect.Top(), md.useRect.Right(), md.useRect.Bottom(), md.img, true);
+		DxLib::DrawRectExtendGraph(md.rect.Left(), md.rect.Top(), md.rect.Right(), md.rect.Bottom(),
+			md.useRect.Left(), md.useRect.Top(), md.useRect.Width(), md.useRect.Height(), md.img, true);
 
 		DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
 	}
