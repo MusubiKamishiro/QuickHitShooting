@@ -99,14 +99,16 @@ void NetWorkWS2::RealTimeServer(SendDataWS2& data)
 {
 	len = sizeof(client);
 	sock = accept(sock0, (sockaddr*)&client, &len);
+	std::string returnData;
+	returnData.resize(128);
 	const char* p = (const char*)&data;
 	while (true) {
+		
 		send(sock, p, sizeof(data), 0);
-		std::string returnData;
-		returnData.resize(256);
 		int n = recv(sock, (char*)returnData.c_str(), 256, 0);
 		std::cout << returnData.c_str() << std::endl;
 	}
+	
 	closesocket(sock);
 }
 
@@ -130,6 +132,7 @@ void NetWorkWS2::RealTimeClient(SendDataWS2& data)
 	connect(sock, (sockaddr*)&server, sizeof(server));
 	while (true) {
 		int n = recv(sock, (char*)&data, sizeof(data), 0);
+		std::cout << data.Buffer << std::endl;
 		send(sock, "Success", 7, 0);
 	}
 	closesocket(sock);

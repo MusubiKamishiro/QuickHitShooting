@@ -76,13 +76,27 @@ TitleScene::TitleScene()
 	_updater = &TitleScene::FadeinUpdate;
 	_drawer = &TitleScene::StartDraw;
 	
-	std::thread realTimeServerThread([&]() {
+	//##############################################################
+	// リアルタイムサーバースレッド
+	std::thread RealSendThread([]() {
+		SendDataWS2 dataws2 = {};
+		dataws2.Buffer = "KUSOZAKO";
 		NetWorkWS2::Instance().Initialize("192.168.11.47");
-		SendDataWS2 realTimeDataws2 = {};
-		realTimeDataws2.Buffer = "REALTIMEKUSOZAKO";
-		NetWorkWS2::Instance().RealTimeServer(realTimeDataws2);
+		NetWorkWS2::Instance().RealTimeServer(dataws2);
 		});
-	realTimeServerThread.detach();
+	RealSendThread.detach();
+	//##############################################################
+
+	//##############################################################
+	// リアルタイムクライアントスレッド
+	/*std::thread RealReciveThread([]() {
+		SendDataWS2 dataws2 = {};
+		dataws2.Buffer = "";
+		NetWorkWS2::Instance().Initialize("192.168.11.55");
+		NetWorkWS2::Instance().RealTimeClient(dataws2);
+		});
+	RealReciveThread.detach();*/
+	//##############################################################
 }
 
 
@@ -101,10 +115,9 @@ void TitleScene::Update(const Peripheral& p)
 	//##############################################################
 
 	//##############################################################
-	// ネットワーク通信呼び出し（仮）
+	// ネットワーク通信呼び出し（仮）(サーバー)
 	if (nowInput && !oldInput) {
 		std::thread reciveThread([]() {
-			DxLib::DxLib_Init();
 			SendDataWS2 dataws2 = {};
 			dataws2.Buffer = "KUSOZAKO";
 			NetWorkWS2::Instance().Initialize("192.168.11.47");
@@ -114,6 +127,21 @@ void TitleScene::Update(const Peripheral& p)
 	}
 	oldInput = nowInput;
 	nowInput = CheckHitKey(KEY_INPUT_S);
+	//##############################################################
+
+	//##############################################################
+	// ネットワーク通信呼び出し（仮）(クライアント)
+	/*if (nowInput && !oldInput) {
+		SendDataWS2 dataws2 = {};
+		dataws2.Buffer = "";
+		std::thread sendThread([&]() {
+			NetWorkWS2::Instance().Initialize("192.168.11.55");
+			NetWorkWS2::Instance().RecivedClient(dataws2);
+			});
+		sendThread.detach();
+	}
+	oldInput = nowInput;
+	nowInput = CheckHitKey(KEY_INPUT_S);*/
 	//##############################################################
 }
 
