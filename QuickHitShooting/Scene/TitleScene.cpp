@@ -16,6 +16,10 @@
 namespace {
 	int nowInput = 0;
 	int oldInput = 0;
+	// 送るデータ構造体の宣言
+	// これを書き換えると送られるデータも書き換えられる
+	// 受信するデータ構造体もここで宣言してよい
+	SendDataWS2 dataws2 = {};
 }
 
 void TitleScene::FadeinUpdate(const Peripheral & p)
@@ -81,6 +85,27 @@ TitleScene::TitleScene()
 
 	_updater = &TitleScene::FadeinUpdate;
 	_drawer  = &TitleScene::StartDraw;
+
+	//##############################################################
+	// リアルタイムサーバースレッド
+	std::thread RealSendThread([]() {
+		dataws2.Buffer = "REALKUSOZAKO";
+		NetWorkWS2::Instance().Initialize("192.168.11.47");
+		NetWorkWS2::Instance().RealTimeServer(dataws2);
+		});
+	RealSendThread.detach();
+	//##############################################################
+
+	//##############################################################
+	// リアルタイムクライアントスレッド
+	/*std::thread RealReciveThread([]() {
+		SendDataWS2 dataws2 = {};
+		dataws2.Buffer = "";
+		NetWorkWS2::Instance().Initialize("192.168.11.55");
+		NetWorkWS2::Instance().RealTimeClient(dataws2);
+		});
+	RealSendThread.detach();*/
+	//##############################################################
 }
 
 
@@ -99,7 +124,7 @@ void TitleScene::Update(const Peripheral& p)
 	//##############################################################
 
 	//##############################################################
-	// ネットワーク通信呼び出し（仮）
+	// ネットワーク通信呼び出し（仮）(サーヴァー)
 	if (nowInput && !oldInput) {
 		std::thread reciveThread([]() {
 			DxLib::DxLib_Init();
@@ -112,6 +137,22 @@ void TitleScene::Update(const Peripheral& p)
 	}
 	oldInput = nowInput;
 	nowInput = CheckHitKey(KEY_INPUT_S);
+	//##############################################################
+
+	//##############################################################
+	// ネットワーク通信呼び出し（仮）(クルァイアント)
+	/*if (nowInput && !oldInput) {
+		std::thread reciveThread([]() {
+			DxLib::DxLib_Init();
+			SendDataWS2 dataws2 = {};
+			dataws2.Buffer = "";
+			NetWorkWS2::Instance().Initialize("192.168.11.55");
+			NetWorkWS2::Instance().RecivedClient(dataws2);
+			});
+		reciveThread.detach();
+	}
+	oldInput = nowInput;
+	nowInput = CheckHitKey(KEY_INPUT_S);*/
 	//##############################################################
 }
 
