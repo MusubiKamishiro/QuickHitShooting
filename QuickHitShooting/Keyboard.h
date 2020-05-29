@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <string>
 #include "Geometry.h"
 
 class Menu;
@@ -9,13 +10,18 @@ class Keyboard
 {
 private:
 	std::shared_ptr<Menu> _menu;
+	std::string _name;
+
+	unsigned int _nameCount;
 
 public:
 	Keyboard();
 	~Keyboard();
 
-	void Update(const Peripheral& p);
+	bool Update(const Peripheral& p);
 
-	void Draw(const Vector2<int>& pos);
+	void Draw();
+
+	std::string GetName()const;
 };
 

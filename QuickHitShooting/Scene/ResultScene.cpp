@@ -3,7 +3,7 @@
 #include <random>
 #include "ResultScene.h"
 #include "SceneManager.h"
-#include "TitleScene.h"
+#include "SelectScene.h"
 #include "../Peripheral.h"
 
 #include "../Game.h"
@@ -11,6 +11,7 @@
 #include "../Loader/ImageLoader.h"
 #include "../Loader/SoundLoader.h"
 #include "../TrimString.h"
+#include "../Menu.h"
 
 #include "../Keyboard.h"
 
@@ -24,6 +25,15 @@ ResultScene::ResultScene(const ResultData& resultData)
 	_time = 0;
 	_trimString = std::make_unique<TrimString>();
 	_keyboard.reset(new Keyboard());
+	_menu.reset(new Menu());
+
+	ImageData data;
+	Game::Instance().GetFileSystem()->Load("img/sample02.png", data);
+	int img = data.GetHandle();
+	_menu->AddMenuList("ReTry", Vector2<int>(_scrSize.x/2 - 330, _scrSize.y - 150), Vector2<int>(_scrSize.x/2 - 30, _scrSize.y), img);
+	Game::Instance().GetFileSystem()->Load("img/sample03.png", data);
+	img = data.GetHandle();
+	_menu->AddMenuList("BackSelect", Vector2<int>(_scrSize.x/2 + 30, _scrSize.y - 150), Vector2<int>(_scrSize.x/2 + 330, _scrSize.y), img);
 
 	_resultData = resultData;
 
@@ -54,7 +64,7 @@ void ResultScene::FadeoutUpdate(const Peripheral & p)
 {
 	if (_pal <= 0)
 	{
-		SceneManager::Instance().ChangeScene(std::make_unique<TitleScene>());
+		SceneManager::Instance().ChangeScene(std::make_unique<SelectScene>());
 	}
 	else
 	{
@@ -106,12 +116,41 @@ void ResultScene::HitRateUpdate(const Peripheral& p)
 
 void ResultScene::RankinUpdate(const Peripheral& p)
 {
+	_menu->Update(p);
 
+	if (_keyboard->Update(p))
+	{
+		for (int i = (_resultData.ranking.size() - 1); i >= 0; --i)
+		{
+			if (_resultData.ranking[i].second < _score.num)
+			{
+				if (i != (_resultData.ranking.size() - 1))
+				{
+					_resultData.ranking[i + 1].first = _resultData.ranking[i].first;
+					_resultData.ranking[i + 1].second = _resultData.ranking[i].second;
+				}
+
+				_resultData.ranking[i].first = _keyboard->GetName();
+				_resultData.ranking[i].second = _resultData.score;
+			}
+		}
+
+		_updater = &ResultScene::WaitUpdate;
+	}
 }
 
 void ResultScene::WaitUpdate(const Peripheral & p)
 {
-	
+	_menu->Update(p);
+
+	if (_menu->CheckClick("ReTry", p))
+	{
+
+	}
+	else if (_menu->CheckClick("BackSelect", p))
+	{
+		_updater = &ResultScene::FadeoutUpdate;
+	}
 }
 
 void ResultScene::CheckDigit(NumData& numData, const int& num, const int& maxDigit)
@@ -156,8 +195,6 @@ float ResultScene::RandomCountUp(const unsigned int& maxDigit, const NumData& nu
 
 void ResultScene::Update(const Peripheral& p)
 {
-	_keyboard->Update(p);
-
 	(this->*_updater)(p);
 }
 
@@ -169,13 +206,20 @@ void ResultScene::Draw()
 	_trimString->ChangeFontSize(50);
 	std::string s = "score %" + std::to_string(_maxScoreDigit) + "d";
 	DxLib::DrawFormatString(0, 300, 0x000000, s.c_str(), static_cast<int>(_score.num));
-	s = "–½’†—¦ %" + std::to_string(_maxHitRateDigit) + ".2f";
+	s = "HitRate %" + std::to_string(_maxHitRateDigit) + ".2f";
 	DxLib::DrawFormatString(0, 400, 0x000000, s.c_str(), _hitRate.num);
 	DxLib::DrawFormatString(700, 300, 0x000000, "1ˆÊ %s %d", _resultData.ranking[0].first.c_str(), _resultData.ranking[0].second);
 	DxLib::DrawFormatString(700, 400, 0x000000, "2ˆÊ %s %d", _resultData.ranking[1].first.c_str(), _resultData.ranking[1].second);
 	DxLib::DrawFormatString(700, 500, 0x000000, "3ˆÊ %s %d", _resultData.ranking[2].first.c_str(), _resultData.ranking[2].second);
 
-	_keyboard->Draw(Vector2<int>());
+	if (_updater == &ResultScene::RankinUpdate)
+	{
+		_keyboard->Draw();
+	}
+	else if (_updater == &ResultScene::WaitUpdate)
+	{
+		_menu->Draw();
+	}
 
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, std::abs(_pal - 255));
 	DxLib::DrawBox(0, 0, _scrSize.x, _scrSize.y, 0x000000, true);
