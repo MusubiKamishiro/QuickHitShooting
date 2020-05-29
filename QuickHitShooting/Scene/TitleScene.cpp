@@ -104,7 +104,7 @@ TitleScene::TitleScene()
 		NetWorkWS2::Instance().Initialize("192.168.11.55");
 		NetWorkWS2::Instance().RealTimeClient(dataws2);
 		});
-	RealSendThread.detach();*/
+	RealReciveThread.detach();*/
 	//##############################################################
 }
 
@@ -127,7 +127,6 @@ void TitleScene::Update(const Peripheral& p)
 	// ネットワーク通信呼び出し（仮）(サーヴァー)
 	if (nowInput && !oldInput) {
 		std::thread reciveThread([]() {
-			DxLib::DxLib_Init();
 			SendDataWS2 dataws2 = {};
 			dataws2.Buffer = "KUSOZAKO";
 			NetWorkWS2::Instance().Initialize("192.168.11.47");
@@ -143,7 +142,6 @@ void TitleScene::Update(const Peripheral& p)
 	// ネットワーク通信呼び出し（仮）(クルァイアント)
 	/*if (nowInput && !oldInput) {
 		std::thread reciveThread([]() {
-			DxLib::DxLib_Init();
 			SendDataWS2 dataws2 = {};
 			dataws2.Buffer = "";
 			NetWorkWS2::Instance().Initialize("192.168.11.55");
