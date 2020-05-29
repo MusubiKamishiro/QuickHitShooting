@@ -16,6 +16,10 @@
 namespace {
 	int nowInput = 0;
 	int oldInput = 0;
+	// 送るデータ構造体の宣言
+	// 受信するデータ構造体もここに宣言
+	// こいつを書き換えると送るデータも変わる
+	SendDataWS2 realDataws2 = {};
 }
 
 void TitleScene::FadeinUpdate(const Peripheral & p)
@@ -77,24 +81,31 @@ TitleScene::TitleScene()
 	_drawer = &TitleScene::StartDraw;
 	
 	//##############################################################
-	// リアルタイムサーバースレッド
-	std::thread RealSendThread([]() {
-		SendDataWS2 dataws2 = {};
-		dataws2.Buffer = "KUSOZAKO";
+	// リアルタイムサーバースレッド（仮）
+	std::thread RealSendThread([&]() {
+		realDataws2.Buffer = "REALKUSOZAKO";
+		// ネットワーククラスの初期化
+		// 引数には相手方のIPアドレスを入れる
 		NetWorkWS2::Instance().Initialize("192.168.11.47");
-		NetWorkWS2::Instance().RealTimeServer(dataws2);
+		// リアルタイム通信の開始（サーバー）
+		NetWorkWS2::Instance().RealTimeServer(realDataws2);
 		});
+	// スレッド開始
 	RealSendThread.detach();
 	//##############################################################
 
 	//##############################################################
-	// リアルタイムクライアントスレッド
+	// リアルタイムクライアントスレッド（仮）
 	/*std::thread RealReciveThread([]() {
-		SendDataWS2 dataws2 = {};
+		// 受け取るデータを格納するバッファの作成
 		dataws2.Buffer = "";
+		// ネットワーククラスの初期化
+		// 引数には相手方のIPアドレスを入れる
 		NetWorkWS2::Instance().Initialize("192.168.11.55");
+		// リアルタイム通信の開始（クライアント）
 		NetWorkWS2::Instance().RealTimeClient(dataws2);
 		});
+	// スレッド開始
 	RealReciveThread.detach();*/
 	//##############################################################
 }
@@ -120,9 +131,13 @@ void TitleScene::Update(const Peripheral& p)
 		std::thread reciveThread([]() {
 			SendDataWS2 dataws2 = {};
 			dataws2.Buffer = "KUSOZAKO";
+			// ネットワーククラスの初期化
+			// 引数に相手方のIPアドレス
 			NetWorkWS2::Instance().Initialize("192.168.11.47");
+			// 非リアルタイム通信開始
 			NetWorkWS2::Instance().SendServer(dataws2);
 			});
+		// スレッドの開始
 		reciveThread.detach();
 	}
 	oldInput = nowInput;
@@ -135,9 +150,13 @@ void TitleScene::Update(const Peripheral& p)
 		SendDataWS2 dataws2 = {};
 		dataws2.Buffer = "";
 		std::thread sendThread([&]() {
+		// ネットワーククラスの初期化
+			// 引数に相手方のIPアドレス
 			NetWorkWS2::Instance().Initialize("192.168.11.55");
+			// 非リアルタイム通信の開始
 			NetWorkWS2::Instance().RecivedClient(dataws2);
 			});
+		// スレッドの開始
 		sendThread.detach();
 	}
 	oldInput = nowInput;
