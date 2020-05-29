@@ -43,6 +43,7 @@ private:
 	void RankinUpdate(const Peripheral& p);
 	void WaitUpdate(const Peripheral& p);
 
+
 	ResultData _resultData;
 
 	std::unique_ptr<TrimString> _trimString;

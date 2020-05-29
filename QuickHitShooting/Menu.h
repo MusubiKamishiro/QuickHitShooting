@@ -30,8 +30,8 @@ private:
 	// “–‚½‚è”»’è
 	std::shared_ptr<CollisionDetector> _cd;
 
-	int img;
-	int size;
+	//int _img;
+	//int _size;
 
 public:
 	Menu();
