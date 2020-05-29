@@ -21,6 +21,9 @@ struct StageInfo
 	std::array<int, 3> scores;
 	std::array<std::string, 3> names;
 	std::vector<vec_target> targetData;
+
+	/// ステージネーム取得用
+	std::string stageName;
 };
 
 class StageLoader : public Loader
@@ -56,5 +59,5 @@ private:
 	bool IsAvailable();
 
 public:
-	StageInfo GetStageData()const;
+	StageInfo GetStageData() const;
 };

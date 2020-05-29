@@ -82,10 +82,14 @@ void GamePlayingScene::FadeoutUpdate(const Peripheral & p)
 		ResultData r;
 		r.score = _score;
 		r.hitRate = ((_hitCount / _shotCount) * 100);
-		r.ranking[0] = std::make_pair("ムスビ", 765283);
-		r.ranking[1] = std::make_pair("miyabi", 346315);
-		r.ranking[2] = std::make_pair("りばー", 72);
 
+		/// ランキングデータの書き込み
+		for (int i = 0; i < r.ranking.size(); ++i)
+		{
+			r.ranking[i] = std::make_pair(_stageData.GetStageData().names[i], _stageData.GetStageData().scores[i]);
+		}
+
+		r.name = _stageData.GetStageData().stageName;
 		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>(r));
 	}
 	else
