@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <vector>
-#include <windows.h>
+#include <array>
 #include "Geometry.h"
 
 class Input;
@@ -19,18 +19,26 @@ enum class TargetID
 // 的の情報
 struct TargetData
 {
-	u_char type;			// 的の種類		(1番目のデータ)
-	u_int appearTime;		// 出現する時間 (2番目のデータ)
-	u_int dispTime;			// 表示する時間 (3番目のデータ)
-	Vector2<int> pos;		// 座標			(4番目のデータ)
+	unsigned char type;			// 的の種類		(1番目のデータ)
+	unsigned int appearTime;	// 出現する時間 (2番目のデータ)
+	unsigned int dispTime;		// 表示する時間 (3番目のデータ)
+	Vector2<int> pos;			// 座標			(4番目のデータ)
 };
 
-using vec2_target  = std::vector<std::vector<TargetData>>;
+using vec_target = std::vector<TargetData>;
 
 using unique_input = std::unique_ptr<Input>;
 
 // 的の状態遷移用ポインター
 using unique_state = std::unique_ptr<TargetState>;
+
+struct StageInfo
+{
+	// ウェーブのデータ保持用変数
+	std::vector<vec_target> targetData;
+	std::array<int, 3> scores;
+	std::array<std::string, 3> names;
+};
 
 class Stage
 {
@@ -98,13 +106,12 @@ private:
 	// ステージ設定で使用する情報
 	int _nowWaveCnt, _nowTargetCnt;
 
-	// ウェーブのデータ保持用変数
-	vec2_target _stageData;
-
 	// 入力関係のポインター
 	unique_input _input;
 
 	unique_state _targetState;
+
+	StageInfo _stageInfo;
 
 	// エディットモードの関数ポインター
 	void (Stage::* _nowMode)();

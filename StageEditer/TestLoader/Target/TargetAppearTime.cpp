@@ -11,7 +11,7 @@ TargetAppearTime::~TargetAppearTime()
 }
 
 void TargetAppearTime::Update(int& wCnt, int& tCnt, 
-							  const unique_input& input, vec2_target& stageData)
+							  const unique_input& input, std::vector<vec_target>& stageData)
 {
 	if (input->IsTrigger(KEY_INPUT_SPACE))
 	{
@@ -28,7 +28,7 @@ void TargetAppearTime::Update(int& wCnt, int& tCnt,
 	Draw(wCnt, tCnt, stageData);
 }
 
-void TargetAppearTime::Draw(const int& wCnt, const int& tCnt, const vec2_target stageData)
+void TargetAppearTime::Draw(const int& wCnt, const int& tCnt, const std::vector<vec_target> stageData)
 {
 	/// ê›íËíÜÇÃèÛë‘ï`âÊ
 	SetFontSize(60);
@@ -86,7 +86,7 @@ void TargetAppearTime::Draw(const int& wCnt, const int& tCnt, const vec2_target 
 	}
 }
 
-void TargetAppearTime::DataConfig(const int& wCnt, const int& tCnt, const unique_input& input, vec2_target& stageData)
+void TargetAppearTime::DataConfig(const int& wCnt, const int& tCnt, const unique_input& input, std::vector<vec_target>& stageData)
 {
 	if (input->IsTrigger(KEY_INPUT_RIGHT) || input->IsTrigger(KEY_INPUT_D))
 	{

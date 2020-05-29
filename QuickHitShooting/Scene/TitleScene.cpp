@@ -16,10 +16,6 @@
 namespace {
 	int nowInput = 0;
 	int oldInput = 0;
-	// 送るデータ構造体の宣言
-	// 受信するデータ構造体もここに宣言
-	// こいつを書き換えると送るデータも変わる
-	SendDataWS2 realDataws2 = {};
 }
 
 void TitleScene::FadeinUpdate(const Peripheral & p)
@@ -57,15 +53,18 @@ void TitleScene::WaitUpdate(const Peripheral & p)
 
 void TitleScene::StartDraw()
 {
+	DxLib::DrawGraph(0, 0, _titleBg, true);
 	if ((_sceneTime / 30 % 2) == 0)
 	{
-		_trimString->ChangeFontSize(50);
-		DxLib::DrawString(_trimString->GetStringCenterPosx("Click"), _trimString->GetFontSize() + 500, "Click", 0x000000);
+		/// 文字サイズと位置を少しいじった。
+		_trimString->ChangeFontSize(80);
+		DxLib::DrawString(_trimString->GetStringCenterPosx("Click"), _trimString->GetFontSize() + 550, "Click", 0x000000);
 	}
 }
 
 void TitleScene::SelectPlayDraw()
 {
+	DxLib::DrawGraph(0, 0, _titleBg, true);
 	_trimString->ChangeFontSize(50);
 		
 	DxLib::DrawString(_trimString->GetStringCenterPosx(" 1P vs CPU"), 500, " 1P vs CPU", 0x000000);
@@ -76,38 +75,12 @@ TitleScene::TitleScene()
 {
 	_pal = 0;
 	_trimString = std::make_unique<TrimString>();
+	ImageData data;
+	Game::Instance().GetFileSystem()->Load("img/title.png", data);
+	_titleBg = data.GetHandle();
 
 	_updater = &TitleScene::FadeinUpdate;
-	_drawer = &TitleScene::StartDraw;
-	
-	//##############################################################
-	// リアルタイムサーバースレッド（仮）
-	std::thread RealSendThread([&]() {
-		realDataws2.Buffer = "REALKUSOZAKO";
-		// ネットワーククラスの初期化
-		// 引数には相手方のIPアドレスを入れる
-		NetWorkWS2::Instance().Initialize("192.168.11.47");
-		// リアルタイム通信の開始（サーバー）
-		NetWorkWS2::Instance().RealTimeServer(realDataws2);
-		});
-	// スレッド開始
-	RealSendThread.detach();
-	//##############################################################
-
-	//##############################################################
-	// リアルタイムクライアントスレッド（仮）
-	/*std::thread RealReciveThread([]() {
-		// 受け取るデータを格納するバッファの作成
-		dataws2.Buffer = "";
-		// ネットワーククラスの初期化
-		// 引数には相手方のIPアドレスを入れる
-		NetWorkWS2::Instance().Initialize("192.168.11.55");
-		// リアルタイム通信の開始（クライアント）
-		NetWorkWS2::Instance().RealTimeClient(dataws2);
-		});
-	// スレッド開始
-	RealReciveThread.detach();*/
-	//##############################################################
+	_drawer  = &TitleScene::StartDraw;
 }
 
 
@@ -126,41 +99,19 @@ void TitleScene::Update(const Peripheral& p)
 	//##############################################################
 
 	//##############################################################
-	// ネットワーク通信呼び出し（仮）(サーバー)
+	// ネットワーク通信呼び出し（仮）
 	if (nowInput && !oldInput) {
 		std::thread reciveThread([]() {
+			DxLib::DxLib_Init();
 			SendDataWS2 dataws2 = {};
 			dataws2.Buffer = "KUSOZAKO";
-			// ネットワーククラスの初期化
-			// 引数に相手方のIPアドレス
 			NetWorkWS2::Instance().Initialize("192.168.11.47");
-			// 非リアルタイム通信開始
 			NetWorkWS2::Instance().SendServer(dataws2);
 			});
-		// スレッドの開始
 		reciveThread.detach();
 	}
 	oldInput = nowInput;
 	nowInput = CheckHitKey(KEY_INPUT_S);
-	//##############################################################
-
-	//##############################################################
-	// ネットワーク通信呼び出し（仮）(クライアント)
-	/*if (nowInput && !oldInput) {
-		SendDataWS2 dataws2 = {};
-		dataws2.Buffer = "";
-		std::thread sendThread([&]() {
-		// ネットワーククラスの初期化
-			// 引数に相手方のIPアドレス
-			NetWorkWS2::Instance().Initialize("192.168.11.55");
-			// 非リアルタイム通信の開始
-			NetWorkWS2::Instance().RecivedClient(dataws2);
-			});
-		// スレッドの開始
-		sendThread.detach();
-	}
-	oldInput = nowInput;
-	nowInput = CheckHitKey(KEY_INPUT_S);*/
 	//##############################################################
 }
 

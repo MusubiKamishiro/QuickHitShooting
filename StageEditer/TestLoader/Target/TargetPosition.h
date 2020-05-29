@@ -8,12 +8,12 @@ public:
 	~TargetPosition();
 
 	void Update(int& wCnt, int& tCnt, 
-				const unique_input& input, vec2_target& stageData) override;
+				const unique_input& input, std::vector<vec_target>& stageData) override;
 private:
 	void Draw(const int& wCnt, const int& tCnt,
-			  const vec2_target stageData) override;
+			  const std::vector<vec_target> stageData) override;
 	void DataConfig(const int& wCnt, const int& tCnt, 
-					const unique_input& input, vec2_target& stageData) override;
+					const unique_input& input, std::vector<vec_target>& stageData) override;
 
 	int _alpha;				// “§–¾“x—p‚Ì’l
 

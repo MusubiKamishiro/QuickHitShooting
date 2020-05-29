@@ -10,7 +10,6 @@
 #include "../Loader/FileSystem.h"
 #include "../Loader/ImageLoader.h"
 #include "../Loader/SoundLoader.h"
-#include "../Loader/StageLoader.h"
 #include "../Menu.h"
 #include "../TrimString.h"
 
@@ -21,7 +20,7 @@
 #include "../DeductionEnemy.h"
 #include "../CollisionDetector.h"
 
-GamePlayingScene::GamePlayingScene(const GunStatus& gunState)
+GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const StageData& stageData)
 {
 	_pal = 0;
 	
@@ -33,62 +32,28 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState)
 	_menu.reset(new Menu());
 	_trimString.reset(new TrimString());
 
+	/// ステージの読み込み
+	_stageData = stageData;
+
 	ImageData data;
+
+	/// ゲーム中の背景画像の取得
+	Game::Instance().GetFileSystem()->Load("img/game.png", data);
+	_gameBg = data.GetHandle();
+
 	Game::Instance().GetFileSystem()->Load("img/pause.png", data);
 	int i = data.GetHandle();
 	_menu->AddMenuList("pause", Vector2<int>(_scrSize.x - 50, 0), Vector2<int>(_scrSize.x, 50), i);
+	_menu->AddMenuList("test", Vector2<int>(0, 0), Vector2<int>(50, 50), i);
 
-	hitFlag = false;
+	_hitFlag = false;
+
+	_hitCount = 0.0f;
+	_shotCount = 0.0f;
 
 	_waveCnt = 0;
 	_score = 0;
-	/// ステージ読み込み(いずれセレクトシーンに移動する予定)
-
-	auto stageCnt = []()
-	{
-		int cnt = 0;
-		HANDLE handle;
-		WIN32_FIND_DATA findData;
-		std::string searchName = "../StageData/*.bin";
-		handle = FindFirstFile(searchName.c_str(), &findData);
-
-		do {
-			if (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-			{
-				cnt++;
-			}
-		} while (FindNextFile(handle, &findData));
-		FindClose(handle);
-
-		if (cnt == 0)
-		{
-			MessageBox(GetMainWindowHandle(),
-				"ステージデータが見つかりませんでした。",
-				"Not Found StageData",
-				MB_OK);
-		}
-		return cnt;
-	};
-
-	int cnt = stageCnt();
-
-	/// 全ステージを読み込む(仮の処理)
-	StageData stage;
-	for (int i = 0; i < cnt; ++i)
-	{
-		TargetData debug;
-		std::string stageNum = std::to_string(i + 1);
-		Game::Instance().GetFileSystem()->Load("StageData/stage" + stageNum + ".bin", stage);
-
-		for (auto wave : stage.GetStageData())
-		{
-			for (auto target : wave)
-			{
-				debug = target;
-			}
-		}
-	}
-
+	
 	/// 敵の仮生成
 	CreateEnemy();
 }
@@ -114,7 +79,14 @@ void GamePlayingScene::FadeoutUpdate(const Peripheral & p)
 {
 	if (_pal <= 0)
 	{
-		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>(_score));
+		ResultData r;
+		r.score = _score;
+		r.hitRate = ((_hitCount / _shotCount) * 100);
+		r.ranking[0] = std::make_pair("ムスビ", 765283);
+		r.ranking[1] = std::make_pair("miyabi", 346315);
+		r.ranking[2] = std::make_pair("りばー", 72);
+
+		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>(r));
 	}
 	else
 	{
@@ -133,13 +105,17 @@ void GamePlayingScene::WaitUpdate(const Peripheral& p)
 	{
 		if (_gun->Shot())
 		{
+			++_shotCount;
+
 			Vector2<int> pos = p.GetMousePos();
 			for (auto enemy : _enemies)
 			{
 				if (_cd->IsCollision(pos, enemy->GetRect()))
 				{
 					enemy->HitShot();
-					hitFlag = true;
+					_hitFlag = true;
+					++_hitCount;
+					_score += enemy->GetScore();
 				}
 			}
 		}
@@ -152,6 +128,8 @@ void GamePlayingScene::WaitUpdate(const Peripheral& p)
 
 void GamePlayingScene::TestDraw()
 {
+	/// 背景の描画
+	DxLib::DrawGraph(0, 0, _gameBg, true);
 	_trimString->ChangeFontSize(40);
 	DxLib::DrawFormatString(_trimString->GetStringCenterPosx("00000"), 0, 0x000000, "%05d", _score);
 	DxLib::DrawFormatString(0, 0, 0x000000, "WAVE %d", (_waveCnt + 1));
@@ -164,7 +142,7 @@ void GamePlayingScene::TestDraw()
 	_gun->Draw();
 	_menu->Draw();
 
-	if (hitFlag)
+	if (_hitFlag)
 	{
 		DxLib::DrawString(500, 0, "Hit", 0xff0000);
 	}
@@ -173,12 +151,10 @@ void GamePlayingScene::TestDraw()
 bool GamePlayingScene::CreateEnemy()
 {
 	/// 仮でステージデータを読み込んでいる
-	StageData stage;
-	Game::Instance().GetFileSystem()->Load("StageData/stage1.bin", stage);
 
-	if (_waveCnt < stage.GetStageData().size())
+	if (_waveCnt < (int)_stageData.GetStageData().targetData.size())
 	{
-		auto data = stage.GetStageData()[_waveCnt];
+		auto data = _stageData.GetStageData().targetData[_waveCnt];
 		for (auto target : data)
 		{
 			/// 敵の生成
@@ -214,6 +190,13 @@ std::shared_ptr<Enemy> GamePlayingScene::GetEnemyInfo(const TargetData& target)
 
 void GamePlayingScene::Update(const Peripheral& p)
 {
+	//
+	if (_menu->CheckClick("test", p))
+	{
+		_updater = &GamePlayingScene::FadeoutUpdate;
+	}
+	//
+
 	for (auto& enemy : _enemies)
 	{
 		enemy->Update();
@@ -230,9 +213,11 @@ void GamePlayingScene::Update(const Peripheral& p)
 	if (_enemies.size() <= 0)
 	{
 		++_waveCnt;
-		if (CreateEnemy())
+		/// 1ウェーブが終了した時、すぐに次のウェーブに出現する的の用意をしている。
+		if (!CreateEnemy())
 		{
 			/// 全てのウェーブを終えた時に入る処理
+			_updater = &GamePlayingScene::FadeoutUpdate;
 		}
 	}
 
