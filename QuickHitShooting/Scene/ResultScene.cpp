@@ -126,15 +126,16 @@ void ResultScene::RankinUpdate(const Peripheral& p)
 			{
 				if (i != (_resultData.ranking.size() - 1))
 				{
-					_resultData.ranking[i + 1].first = _resultData.ranking[i].first;
+					_resultData.ranking[i + 1].first  = _resultData.ranking[i].first;
 					_resultData.ranking[i + 1].second = _resultData.ranking[i].second;
 				}
 
-				_resultData.ranking[i].first = _keyboard->GetName();
+				_resultData.ranking[i].first  = _keyboard->GetName();
 				_resultData.ranking[i].second = _resultData.score;
 			}
 		}
-
+		/// ランキングデータをセーブする
+		SaveRanking();
 		_updater = &ResultScene::WaitUpdate;
 	}
 }
@@ -151,6 +152,55 @@ void ResultScene::WaitUpdate(const Peripheral & p)
 	{
 		_updater = &ResultScene::FadeoutUpdate;
 	}
+}
+
+bool ResultScene::SaveRanking()
+{
+	StageData data;
+	Game::Instance().GetFileSystem()->Load(_resultData.name, data);
+
+	FILE* file;
+	/// フォルダーで指定したファイルを開く
+	if (fopen_s(&file, _resultData.name.c_str(), "wb") == 0)
+	{
+		/// ランキングデータの書き込み
+		char name[3];
+		for (int i = 0; i < _resultData.ranking.size(); ++i)
+		{
+			/// スコアの書き込み
+			fwrite(&_resultData.ranking[i].second, sizeof(int), 1, file);
+			/// 文字の取得を行っている
+			for (int c = 0; c < sizeof(name) / sizeof(name[0]); ++c)
+			{
+				name[c] = _resultData.ranking[i].first[c];
+			}
+			/// プレイヤー名の書き込み
+			fwrite(name, (sizeof(char) * 3), 1, file);
+		}
+		/// 書き込むウェーブ数の設定
+		int targetCnt = 0;
+		int waveCnt = data.GetStageData().targetData.size();
+		fwrite(&waveCnt, sizeof(int), 1, file);
+
+		for (int w = 0; w < waveCnt; ++w)
+		{
+			/// 書き込むターゲット数の設定
+			targetCnt = data.GetStageData().targetData[w].size();
+			fwrite(&targetCnt, sizeof(int), 1, file);
+			for (int t = 0; t < targetCnt; ++t)
+			{
+				/// ターゲットデータの書き込み
+				fwrite(&data.GetStageData().targetData[w][t].type,		 sizeof(unsigned char), 1, file);
+				fwrite(&data.GetStageData().targetData[w][t].dispTime,	 sizeof(unsigned int), 1, file);
+				fwrite(&data.GetStageData().targetData[w][t].appearTime, sizeof(unsigned int), 1, file);
+				fwrite(&data.GetStageData().targetData[w][t].pos.x,		 sizeof(int), 1, file);
+				fwrite(&data.GetStageData().targetData[w][t].pos.y,		 sizeof(int), 1, file);
+			}
+		}
+		fclose(file);
+		return true;
+	}
+	return false;
 }
 
 void ResultScene::CheckDigit(NumData& numData, const int& num, const int& maxDigit)

@@ -18,6 +18,7 @@ struct ResultData
 	int score;					// 獲得スコア
 	float hitRate;				// 命中率
 	GunStatus gunStatus;		// 銃種
+	std::string name;
 };
 
 // 数値のデータ
@@ -43,6 +44,7 @@ private:
 	void RankinUpdate(const Peripheral& p);
 	void WaitUpdate(const Peripheral& p);
 
+	bool SaveRanking();
 
 	ResultData _resultData;
 

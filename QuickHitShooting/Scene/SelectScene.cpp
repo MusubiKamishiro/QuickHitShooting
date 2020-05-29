@@ -11,7 +11,7 @@
 #include "../Loader/ImageLoader.h"
 #include "../Menu.h"
 
-SelectScene::SelectScene() : _dightMax(5)
+SelectScene::SelectScene() : _dightMax(6)
 {
 	_pal = 0;
 	_trimString = std::make_unique<TrimString>();
@@ -67,14 +67,16 @@ SelectScene::SelectScene() : _dightMax(5)
 	/// 左矢印ボタンの表示
 	Game::Instance().GetFileSystem()->Load("img/leftArrow.png", data);
 	img = data.GetHandle();
-	_menu->AddMenuList("left", Vector2<int>(btnSize.x, (_scrSize.y / 2) - (btnSize.y / 2)),
-							   Vector2<int>((btnSize.x * 2), (_scrSize.y / 2) + (btnSize.y / 2)), img);
+	_menu->AddMenuList("left", Vector2<int>((btnSize.x / 2), (_scrSize.y / 2) - (btnSize.y / 2)),
+							   Vector2<int>(btnSize.x + (btnSize.x / 2), (_scrSize.y / 2) + (btnSize.y / 2)), img);
 
 	/// 右矢印ボタンの表示
 	Game::Instance().GetFileSystem()->Load("img/rightArrow.png", data);
 	img = data.GetHandle();
-	_menu->AddMenuList("right", Vector2<int>(_scrSize.x - (btnSize.x * 2), (_scrSize.y / 2) - (btnSize.y / 2)),
-								Vector2<int>(_scrSize.x - btnSize.x, (_scrSize.y / 2) + (btnSize.y / 2)), img);
+	_menu->AddMenuList("right", Vector2<int>(_scrSize.x - (btnSize.x / 2),(_scrSize.y / 2) + (btnSize.y / 2)), 
+								Vector2<int>(_scrSize.x - btnSize.x - (btnSize.x / 2), (_scrSize.y / 2) - (btnSize.y / 2)), img);
+
+	Game::Instance().GetFileSystem()->Load("img/stageboard.png", data);
 
 	StageInit();
 
@@ -176,7 +178,7 @@ void SelectScene::WaitUpdate(const Peripheral& p)
 		if (_menu->CheckClick(_gunStatus[i].name.c_str(), p))
 		{
 			_gunState = _gunStatus[i];
-			_updater = &SelectScene::FadeoutUpdate;
+			_updater  = &SelectScene::FadeoutUpdate;
 		}
 	}
 
@@ -227,14 +229,18 @@ void SelectScene::Draw()
 		}
 
 		/// スコアが6桁以下の時、0で埋める処理
-		if (divCnt <= max)
+		if (divCnt < max)
 		{
 			for (int i = 0; i < (max - divCnt); ++i)
 			{
 				name += "0";
 			}
 		}
-		name += std::to_string(score);
+		if (score > 0)
+		{
+			name += std::to_string(score);
+		}
+		
 		return name;
 	};
 
@@ -255,7 +261,6 @@ void SelectScene::Draw()
 	/// 銃ボードの描画
 	DxLib::DrawGraph(40, _scrSize.y - 230, _gunBd, true);
 
-
 	/// メニューの描画
 	_menu->Draw();
 
@@ -273,7 +278,7 @@ void SelectScene::Draw()
 	{
 		text = GetScoreDight(score[i], _dightMax);
 
-		DrawString(200 + (space * i) - (strSize.x / 2), 150 - strSize.y / 2,
+		DrawString(240 + (space * i) - (strSize.x / 2), 150 - strSize.y / 2,
 				  text.c_str(), 0x000000);
 	}
 
@@ -284,7 +289,7 @@ void SelectScene::Draw()
 	for (int i = 0; i < name.size(); ++i)
 	{
 		text = std::to_string(i + 1) + "位 " + name[i];
-		DrawString(200 + (space * i) - (strSize.x / 2), 80 - (strSize.y / 2),
+		DrawString(240 + (space * i) - (strSize.x / 2), 80 - (strSize.y / 2),
 			text.c_str(), 0xff0000);
 	}
 
@@ -295,7 +300,7 @@ void SelectScene::Draw()
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
 	DrawString((Game::Instance().GetScreenSize().x / 2) - (strSize.x / 2), 
 			   (Game::Instance().GetScreenSize().y / 2) - (strSize.y / 2) + (strSize.y / 7),
-			   text.c_str(), 0x191970);
+			   text.c_str(), 0x000080);
 	
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, std::abs(_pal - 255));
 	DxLib::DrawBox(0, 0, _scrSize.x, _scrSize.y, 0x000000, true);
