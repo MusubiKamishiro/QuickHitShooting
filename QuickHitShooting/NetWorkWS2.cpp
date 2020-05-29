@@ -34,19 +34,16 @@ void NetWorkWS2::InitializeClient(const std::string& ip)
 	}
 }
 
-// サーバ側処理
-// 引数に送るデータを入れる
-void NetWorkWS2::SendServer(SendDataWS2& data)
+void NetWorkWS2::SendServerCore(const char* data, size_t size)
 {
 	// 何度でも接続できるよう、whileでずっとループする
 	while (true) {
 		len = sizeof(client);
 		// ここで接続してきたか確認
 		sock = accept(sock0, (sockaddr*)&client, &len);
-		// 構造体データを変換する
-		const char* p = (const char*)&data;
+
 		// データを送る
-		send(sock, p, sizeof(data), 0);
+		send(sock, data, size, 0);
 		std::string returnData;
 		returnData.resize(256);
 		// 返信があるまで待機
@@ -57,25 +54,47 @@ void NetWorkWS2::SendServer(SendDataWS2& data)
 	}
 }
 
+void NetWorkWS2::RealTimeServerCore(const char* data, size_t size)
+{
+	len = sizeof(client);
+	// クライアントから接続されたか確認する
+	sock = accept(sock0, (sockaddr*)&client, &len);
+	std::string returnData;
+	returnData.resize(256);
+	while (true) {
+		// 構造体データを送信
+		send(sock, data, size, 0);
+		// 受信データの受け取る
+		int n = recv(sock, (char*)returnData.c_str(), 256, 0);
+		std::cout << returnData.c_str() << std::endl;
+	}
+	// ソケットを閉じる
+	closesocket(sock);
+}
+
+// サーバ側処理
+// 引数に送るデータを入れる
+void NetWorkWS2::SendServer(SendDataWS2& data)
+{
+	// 構造体データを変換する
+	const char* p = (const char*)&data;
+	SendServerCore(p,sizeof(data));
+}
+
 // サーバー側処理（TargetData Ver）
 // 引数に送るデータを入れる
 void NetWorkWS2::SendServer(TargetData& data)
 {
-	while (true) {
-		len = sizeof(client);
-		// ここで接続してきたか確認
-		sock = accept(sock0, (sockaddr*)&client, &len);
-		// 構造体データを変換する
-		const char* p = (const char*)&data;
-		// データを送る
-		send(sock, p, sizeof(data), 0);
-		std::string returnData = "";
-		// 返信があるまで待機
-		int n = recv(sock, (char*)returnData.c_str(), 256, 0);
-		std::cout << returnData.c_str() << std::endl;
-		// ソケットを閉じる
-		closesocket(sock);
-	}
+	// 構造体データを変換する
+	const char* p = (const char*)&data;
+	SendServerCore(p, sizeof(data));
+}
+
+void NetWorkWS2::SendServer(StageInfo& data)
+{
+	// 構造体データを変換する
+	const char* p = (const char*)&data;
+	SendServerCore(p, sizeof(data));
 }
 
 // クライアント側の処理
@@ -85,7 +104,7 @@ void NetWorkWS2::RecivedClient(SendDataWS2& data)
 	// サーバーに接続する関数
 	connect(sock, (sockaddr*)&server, sizeof(server));
 	// 接続出来たらデータを受け取る準備をする
-	int n = recv(sock, (char*)&data, sizeof(data),0);
+	int n = recv(sock, (char*)&data, sizeof(data), 0);
 	std::cout << n << data.Buffer << std::endl;
 	// 受け取ったら文字列を返す
 	send(sock, "Success", 7, 0);
@@ -107,47 +126,41 @@ void NetWorkWS2::RecivedClient(TargetData& data)
 	closesocket(sock);
 }
 
+void NetWorkWS2::RecivedClient(StageInfo& data)
+{
+	// サーバーに接続する関数
+	connect(sock, (sockaddr*)&server, sizeof(server));
+	// データを受け取る
+	int n = recv(sock, (char*)&data, sizeof(data), 0);
+	// データを送る
+	send(sock, "Success", 7, 0);
+	// ソケットを閉じる
+	closesocket(sock);
+}
+
 // リアルタイムサーバー処理
 // 引数に送るデータを入れる
 void NetWorkWS2::RealTimeServer(SendDataWS2& data)
 {
-	len = sizeof(client);
-	// クライアントから接続されたか確認する
-	sock = accept(sock0, (sockaddr*)&client, &len);
-	std::string returnData;
-	returnData.resize(256);
 	// 構造体データを変換
 	const char* p = (const char*)&data;
-	while (true) {
-		// 構造体データを送信
-		send(sock, p, sizeof(data), 0);
-		// 受信データの受け取る
-		int n = recv(sock, (char*)returnData.c_str(), 256, 0);
-		std::cout << returnData.c_str() << std::endl;
-	}
-	// ソケットを閉じる
-	closesocket(sock);
+	RealTimeServerCore(p,sizeof(data));
 }
 
 // リアルタイム通信サーバーの処理（TargetData Ver）
 // 引数に送るデータを入れる
 void NetWorkWS2::RealTimeServer(TargetData& data)
 {
-	len = sizeof(client);
-	// クライアントから接続されたか確認する
-	sock = accept(sock0, (sockaddr*)&client, &len);
 	// 構造体データを変換
 	const char* p = (const char*)&data;
-	while (true) {
-		// 構造体データを送信
-		send(sock, p, sizeof(data), 0);
-		std::string returnData = "";
-		// 受信データの受け取る
-		int n = recv(sock, (char*)returnData.c_str(), 256, 0);
-		std::cout << returnData.c_str() << std::endl;
-	}
-	// ソケットを閉じる
-	closesocket(sock);
+	RealTimeServerCore(p, sizeof(data));
+}
+
+void NetWorkWS2::RealTimeServer(StageInfo& data)
+{
+	// 構造体データを変換
+	const char* p = (const char*)&data;
+	RealTimeServerCore(p, sizeof(data));
 }
 
 // リアルタイム通信クライアントの処理
@@ -170,6 +183,20 @@ void NetWorkWS2::RealTimeClient(SendDataWS2& data)
 // リアルタイム通信クライアント処理（TargetData Ver）
 // 引数にデータを受け取るためのバッファを渡す。
 void NetWorkWS2::RealTimeClient(TargetData& data)
+{
+	// サーバーへ接続
+	connect(sock, (sockaddr*)&server, sizeof(server));
+	while (true) {
+		// データの受信
+		int n = recv(sock, (char*)&data, sizeof(data), 0);
+		// データの送信
+		send(sock, "Success", 7, 0);
+	}
+	// ソケットを閉じる
+	closesocket(sock);
+}
+
+void NetWorkWS2::RealTimeClient(StageInfo& data)
 {
 	// サーバーへ接続
 	connect(sock, (sockaddr*)&server, sizeof(server));
