@@ -18,7 +18,7 @@ void TargetDispTime::Update(int& wCnt, int& tCnt,
 		// ターゲット位置の初期化
 		tCnt = 0;
 		wCnt = 0;
-		Stage::Instance().ChagneState(new TargetAppearTime());
+		Editer::Instance().ChagneState(new TargetAppearTime());
 
 		return;
 	}
@@ -27,6 +27,22 @@ void TargetDispTime::Update(int& wCnt, int& tCnt,
 	ChangeTarget(tCnt, (int)stageData[wCnt].size(), input);
 	DataConfig(wCnt, tCnt, input, stageData);
 	Draw(wCnt, tCnt, stageData);
+}
+
+void TargetDispTime::DataConfig(const int& wCnt, const int& tCnt,
+	const unique_input& input, std::vector<vec_target>& stageData)
+{
+	if (input->IsTrigger(KEY_INPUT_RIGHT) || input->IsTrigger(KEY_INPUT_D))
+	{
+		stageData[wCnt][tCnt].dispTime += 10;
+	}
+	else if (input->IsTrigger(KEY_INPUT_LEFT) || input->IsTrigger(KEY_INPUT_A))
+	{
+		stageData[wCnt][tCnt].dispTime = (stageData[wCnt][tCnt].dispTime >= 10
+			? stageData[wCnt][tCnt].dispTime - 10
+			: stageData[wCnt][tCnt].dispTime);
+	}
+	else {}
 }
 
 void TargetDispTime::Draw(const int& wCnt, const int& tCnt, const std::vector<vec_target> stageData)
@@ -55,21 +71,21 @@ void TargetDispTime::Draw(const int& wCnt, const int& tCnt, const std::vector<ve
 	SetFontSize(100);
 	_text = "targetCount";
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
-	_drawPos.x = (Stage::Instance().GetScreenSize().x / 2) - (_strSize.x / 2);
-	_drawPos.y = (Stage::Instance().GetScreenSize().y / 5) + (_strSize.y / 2);
+	_drawPos.x = (Editer::Instance().GetScreenSize().x / 2) - (_strSize.x / 2);
+	_drawPos.y = (Editer::Instance().GetScreenSize().y / 5) + (_strSize.y / 2);
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffffff);
 
 	_text = std::to_string(tCnt + 1) + " / " + std::to_string(stageData[wCnt].size());
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
-	_drawPos.x = (Stage::Instance().GetScreenSize().x / 2) - (_strSize.x / 2);
-	_drawPos.y = (Stage::Instance().GetScreenSize().y / 3) + (_strSize.y / 2);
+	_drawPos.x = (Editer::Instance().GetScreenSize().x / 2) - (_strSize.x / 2);
+	_drawPos.y = (Editer::Instance().GetScreenSize().y / 3) + (_strSize.y / 2);
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffffff);
 
 	/// ターゲットの出現時間の表示
 	_text = "now Disp Time : " + std::to_string(stageData[wCnt][tCnt].dispTime);
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
-	_drawPos.x = (Stage::Instance().GetScreenSize().x / 5);
-	_drawPos.y = (Stage::Instance().GetScreenSize().y / 2) + _strSize.y;
+	_drawPos.x = (Editer::Instance().GetScreenSize().x / 5);
+	_drawPos.y = (Editer::Instance().GetScreenSize().y / 2) + _strSize.y;
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffffff);
 
 	/// 全てのターゲットの出現時間の表示
@@ -80,25 +96,9 @@ void TargetDispTime::Draw(const int& wCnt, const int& tCnt, const std::vector<ve
 		configColor = (i == tCnt ? 0xffff00 : 0xffffff);
 		_text	   = std::to_string(i + 1) + " : " + std::to_string(stageData[wCnt][i].dispTime);
 		GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
-		_drawPos.x = Stage::Instance().GetScreenSize().x - _strSize.x;
+		_drawPos.x = Editer::Instance().GetScreenSize().x - _strSize.x;
 		_drawPos.y = (_strSize.y * i);
 
 		DrawString(_drawPos.x, _drawPos.y, _text.c_str(), configColor);
 	}
-}
-
-void TargetDispTime::DataConfig(const int& wCnt, const int& tCnt, 
-								const unique_input& input, std::vector<vec_target>& stageData)
-{
-	if (input->IsTrigger(KEY_INPUT_RIGHT) || input->IsTrigger(KEY_INPUT_D))
-	{
-		stageData[wCnt][tCnt].dispTime += 10;
-	}
-	else if (input->IsTrigger(KEY_INPUT_LEFT) || input->IsTrigger(KEY_INPUT_A))
-	{
-		stageData[wCnt][tCnt].dispTime = (stageData[wCnt][tCnt].dispTime >= 10
-									   ?  stageData[wCnt][tCnt].dispTime - 10
-									   :  stageData[wCnt][tCnt].dispTime);
-	}
-	else {}
 }

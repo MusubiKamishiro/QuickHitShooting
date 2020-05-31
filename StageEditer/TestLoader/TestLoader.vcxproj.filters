@@ -30,9 +30,6 @@
     <ClCompile Include="Input.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Stage.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Geometry.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -51,12 +48,12 @@
     <ClCompile Include="Target\TargetType.cpp">
       <Filter>Target\ソースファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Editer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Input.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Stage.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Geometry.h">
@@ -76,6 +73,9 @@
     </ClInclude>
     <ClInclude Include="Target\TargetType.h">
       <Filter>Target\ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Editer.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

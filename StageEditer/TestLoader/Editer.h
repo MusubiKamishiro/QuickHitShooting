@@ -29,7 +29,7 @@ using vec_target = std::vector<TargetData>;
 
 using unique_input = std::unique_ptr<Input>;
 
-// 的の状態遷移用ポインター
+// 的設定の状態遷移用ポインター
 using unique_state = std::unique_ptr<TargetState>;
 
 struct StageInfo
@@ -40,15 +40,15 @@ struct StageInfo
 	std::array<std::string, 3> names;
 };
 
-class Stage
+class Editer
 {
 public:
-	static Stage& Instance()
+	static Editer& Instance()
 	{
 		/// シングルトンの中身が空の時に生成する
 		if (!s_Instance)
 		{
-			s_Instance.reset(new Stage());
+			s_Instance.reset(new Editer());
 		}
 		return *s_Instance;
 	}
@@ -60,43 +60,44 @@ public:
 	// エディターの画面サイズ取得用
 	Vector2<int> GetScreenSize() const;
 private:
-	Stage();
-	~Stage();
+	Editer();
+	~Editer();
 
+	/// シングルトンのデリーター
 	struct EditerDeleter
 	{
-		void operator()(Stage* pointer)
+		void operator()(Editer* pointer)
 		{
 			delete pointer;
 		}
 	};
 
-	static std::unique_ptr<Stage, EditerDeleter> s_Instance;
+	static std::unique_ptr<Editer, EditerDeleter> s_Instance;
 
 	bool Init();
 
-	// ウェーブ数の設定用
+	/// ステージ設定の初期化用
 	void Wave();
-
 	void Target();
+	void Stage();
 
-	// ステージの編集
-	void Edit();
-
+	/// ステージ設定の更新用
 	void WaveUpdate();
 	void TargetUpdate();
-	void EditUpdate();
+	void StageUpdate();
 
+	/// ステージデータの描画用
+	void WaveDrawer();
+	void TargetDrawer();
+	void StageDrawer();
+
+	/// ステージデータの保存と読み込み用
 	bool Save();
 	bool Load();
 
-	// ステージデータを初期化するかの確認用
+	/// 特定の行動を行うかの判定用
 	bool IsReset();
-
-	// 読み込みを行うかの確認用
 	bool IsSave();
-
-	// 書き込みを行うかの確認用
 	bool IsLoad();
 
 	int _waveCnt;						// ウェーブ数のカウント保存用
@@ -114,7 +115,8 @@ private:
 	StageInfo _stageInfo;
 
 	// エディットモードの関数ポインター
-	void (Stage::* _nowMode)();
+	void (Editer::* _nowMode)();
+	void (Editer::* _drawer)();
 
 	const Vector2<int> _gameScreen;	// ゲームの画面サイズ
 	const Vector2<int> _screen;		// エディターの画面サイズ
