@@ -111,7 +111,7 @@ void Editer::Stage()
 		for (auto& target : _stageInfo.targetData[i])
 		{
 			target.type		  = 0;
-			target.appearTime = 60;
+			target.banishTime = 60;
 			target.dispTime	  = 60;
 			target.pos.x	  = _screen.x / 2;
 			target.pos.y	  = _screen.y / 2;
@@ -367,7 +367,7 @@ bool Editer::Save()
 					/// ターゲットデータの書き込み
 					fwrite(&_stageInfo.targetData[w][t].type,		 sizeof(unsigned char), 1, file);
 					fwrite(&_stageInfo.targetData[w][t].dispTime,	 sizeof(unsigned int), 1, file);
-					fwrite(&_stageInfo.targetData[w][t].appearTime,  sizeof(unsigned int), 1, file);
+					fwrite(&_stageInfo.targetData[w][t].banishTime,  sizeof(unsigned int), 1, file);
 					registPos.x = (_stageInfo.targetData[w][t].pos.x * rate.x);
 					fwrite(&registPos.x, sizeof(int), 1, file);
 					registPos.y = (_stageInfo.targetData[w][t].pos.y * rate.x);
@@ -429,7 +429,7 @@ bool Editer::Load()
 				{
 					fread(&target.type,		  sizeof(unsigned char), 1, file);
 					fread(&target.dispTime,   sizeof(unsigned int), 1, file);
-					fread(&target.appearTime, sizeof(unsigned int), 1, file);
+					fread(&target.banishTime, sizeof(unsigned int), 1, file);
 					fread(&target.pos.x, sizeof(int), 1, file);
 					target.pos.x *= rate.x;
 					fread(&target.pos.y, sizeof(int), 1, file);

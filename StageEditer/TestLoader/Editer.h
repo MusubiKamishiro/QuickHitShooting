@@ -19,10 +19,10 @@ enum class TargetID
 // 的の情報
 struct TargetData
 {
-	unsigned char type;			// 的の種類		(1番目のデータ)
-	unsigned int appearTime;	// 出現する時間 (2番目のデータ)
-	unsigned int dispTime;		// 表示する時間 (3番目のデータ)
-	Vector2<int> pos;			// 座標			(4番目のデータ)
+	unsigned char type;			// 的の種類			(1番目のデータ)
+	unsigned int dispTime;		// 出現する時間		(2番目のデータ)
+	unsigned int banishTime;	// 消えるまでの時間 (3番目のデータ)
+	Vector2<int> pos;			// 座標				(4番目のデータ)
 };
 
 using vec_target = std::vector<TargetData>;

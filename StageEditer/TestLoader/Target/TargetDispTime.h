@@ -1,7 +1,7 @@
 #pragma once
 #include "TargetState.h"
-class TargetDispTime :
-	public TargetState
+
+class TargetDispTime : public TargetState
 {
 public:
 	TargetDispTime();

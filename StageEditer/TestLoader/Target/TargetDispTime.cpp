@@ -1,6 +1,6 @@
 #include <DxLib.h>
 #include "TargetDispTime.h"
-#include "TargetAppearTime.h"
+#include "TargetBanishTime.h"
 
 TargetDispTime::TargetDispTime()
 {
@@ -15,10 +15,7 @@ void TargetDispTime::Update(int& wCnt, int& tCnt,
 {
 	if (input->IsTrigger(KEY_INPUT_SPACE))
 	{
-		// ターゲット位置の初期化
-		tCnt = 0;
-		wCnt = 0;
-		Editer::Instance().ChagneState(new TargetAppearTime());
+		Editer::Instance().ChagneState(new TargetBanishTime());
 
 		return;
 	}
@@ -32,6 +29,7 @@ void TargetDispTime::Update(int& wCnt, int& tCnt,
 void TargetDispTime::DataConfig(const int& wCnt, const int& tCnt,
 	const unique_input& input, std::vector<vec_target>& stageData)
 {
+	/// 的の出現時間変更用
 	if (input->IsTrigger(KEY_INPUT_RIGHT) || input->IsTrigger(KEY_INPUT_D))
 	{
 		stageData[wCnt][tCnt].dispTime += 10;
@@ -39,23 +37,24 @@ void TargetDispTime::DataConfig(const int& wCnt, const int& tCnt,
 	else if (input->IsTrigger(KEY_INPUT_LEFT) || input->IsTrigger(KEY_INPUT_A))
 	{
 		stageData[wCnt][tCnt].dispTime = (stageData[wCnt][tCnt].dispTime >= 10
-			? stageData[wCnt][tCnt].dispTime - 10
-			: stageData[wCnt][tCnt].dispTime);
+									   ?  stageData[wCnt][tCnt].dispTime - 10
+									   :  stageData[wCnt][tCnt].dispTime);
 	}
 	else {}
 }
 
+/// ステージデータの描画(出現時間)
 void TargetDispTime::Draw(const int& wCnt, const int& tCnt, const std::vector<vec_target> stageData)
 {
-	/// 設定中の状態描画
+	/// 現在のモード
 	SetFontSize(60);
-	_text = "target DispTime Config";
+	_text = "Target DispTime Config";
 	_drawPos.x = 0;
 	_drawPos.y = 0;
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x7fffd4);
 
-	/// ウェーブ数の描画
-	_text = "waveCount";
+	/// ウェーブ数
+	_text = "Wave Count";
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
 	_drawPos.x = 0;
 	_drawPos.y = _strSize.y * 2;
@@ -67,9 +66,9 @@ void TargetDispTime::Draw(const int& wCnt, const int& tCnt, const std::vector<ve
 	_drawPos.y = _strSize.y * 3;
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffff9e);
 
-	/// ターゲット数の表示
+	/// 的数
 	SetFontSize(100);
-	_text = "targetCount";
+	_text = "Target Count";
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
 	_drawPos.x = (Editer::Instance().GetScreenSize().x / 2) - (_strSize.x / 2);
 	_drawPos.y = (Editer::Instance().GetScreenSize().y / 5) + (_strSize.y / 2);
@@ -81,14 +80,14 @@ void TargetDispTime::Draw(const int& wCnt, const int& tCnt, const std::vector<ve
 	_drawPos.y = (Editer::Instance().GetScreenSize().y / 3) + (_strSize.y / 2);
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffffff);
 
-	/// ターゲットの出現時間の表示
-	_text = "now Disp Time : " + std::to_string(stageData[wCnt][tCnt].dispTime);
+	/// 出現時間
+	_text = "Now Disp Time: " + std::to_string(stageData[wCnt][tCnt].dispTime);
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
 	_drawPos.x = (Editer::Instance().GetScreenSize().x / 5);
 	_drawPos.y = (Editer::Instance().GetScreenSize().y / 2) + _strSize.y;
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffffff);
 
-	/// 全てのターゲットの出現時間の表示
+	/// 全ての出現時間
 	SetFontSize(60);
 	int configColor = 0;			/// 設定中の色
 	for (int i = 0; i < stageData[wCnt].size(); ++i)

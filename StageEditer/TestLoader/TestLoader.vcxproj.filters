@@ -33,9 +33,6 @@
     <ClCompile Include="Geometry.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Target\TargetAppearTime.cpp">
-      <Filter>Target\ソースファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Target\TargetDispTime.cpp">
       <Filter>Target\ソースファイル</Filter>
     </ClCompile>
@@ -51,6 +48,9 @@
     <ClCompile Include="Editer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Target\TargetBanishTime.cpp">
+      <Filter>Target\ソースファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Input.h">
@@ -58,9 +58,6 @@
     </ClInclude>
     <ClInclude Include="Geometry.h">
       <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Target\TargetAppearTime.h">
-      <Filter>Target\ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="Target\TargetDispTime.h">
       <Filter>Target\ヘッダーファイル</Filter>
@@ -76,6 +73,9 @@
     </ClInclude>
     <ClInclude Include="Editer.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Target\TargetBanishTime.h">
+      <Filter>Target\ヘッダーファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

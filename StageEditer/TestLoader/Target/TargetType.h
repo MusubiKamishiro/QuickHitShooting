@@ -1,9 +1,7 @@
 #pragma once
-
 #include "TargetState.h"
 
-class TargetType :
-	public TargetState
+class TargetType : public TargetState
 {
 public:
 	TargetType();
