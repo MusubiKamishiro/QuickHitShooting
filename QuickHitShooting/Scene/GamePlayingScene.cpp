@@ -37,7 +37,7 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const StageData& s
 
 	/// ゲーム中の背景画像の取得
 	Game::Instance().GetFileSystem()->Load("img/game.png", data);
-	_gameBg = data.GetHandle();
+	_gameBg  = data.GetHandle();
 
 	Game::Instance().GetFileSystem()->Load("img/pause.png", data);
 	int i = data.GetHandle();
@@ -76,7 +76,7 @@ void GamePlayingScene::FadeoutUpdate(const Peripheral & p)
 	if (_pal <= 0)
 	{
 		ResultData r;
-		r.score = _score;
+		r.score	  = _score;
 		r.hitRate = ((_hitCount / _shotCount) * 100);
 
 		/// ランキングデータの書き込み
@@ -93,10 +93,12 @@ void GamePlayingScene::FadeoutUpdate(const Peripheral & p)
 	}
 }
 
+/// カウントダウンの更新用
 void GamePlayingScene::CountDownUpdate(const Peripheral& p)
 {
 	if (_waitCnt <= 0)
 	{
+		CreateEnemy();
 		_pal	 = 255;
 		_updater = &GamePlayingScene::WaitUpdate;
 		_drawer  = &GamePlayingScene::GameDraw;
@@ -104,8 +106,34 @@ void GamePlayingScene::CountDownUpdate(const Peripheral& p)
 	--_waitCnt;
 }
 
+/// ゲーム終了時の更新
+void GamePlayingScene::FinishUpdate(const Peripheral& p)
+{
+	if (_waitCnt <= 0)
+	{
+		_updater = &GamePlayingScene::FadeoutUpdate;
+	}
+	--_waitCnt;
+}
+
+/// ゲーム中の更新用1
 void GamePlayingScene::WaitUpdate(const Peripheral& p)
 {
+	if (_enemies.size() <= 0)
+	{
+		++_waveCnt;
+		/// 1ウェーブが終了した時、すぐに次のウェーブに出現する的の用意をしている。
+		if (!CreateEnemy())
+		{
+			/// 全てのウェーブを終えた時に入る処理
+			_updater = &GamePlayingScene::FinishUpdate;
+			_drawer  = &GamePlayingScene::FinishDraw;
+
+			_waitCnt = 120;
+			return;
+		}
+	}
+
 	//ポーズボタンを押したらポーズシーンに切り替え
 	if (_menu->CheckClick("pause", p))
 	{
@@ -180,6 +208,19 @@ void GamePlayingScene::GameDraw()
 	_menu->Draw();
 }
 
+void GamePlayingScene::FinishDraw()
+{
+	/// 背景の描画
+	DxLib::DrawGraph(0, 0, _gameBg, true);
+	
+	/// 開始の合図
+	Vector2<int> _strSize;
+	_trimString->ChangeFontSize(100);
+	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, "FINISH", strlen("FINISH"));
+	DxLib::DrawString((_scrSize.x / 2) - (_strSize.x / 2), (_scrSize.y / 2) - (_strSize.y / 2),
+					  "FINISH", 0xff0000);
+}
+
 bool GamePlayingScene::CreateEnemy()
 {
 	/// 仮でステージデータを読み込んでいる
@@ -214,7 +255,6 @@ std::shared_ptr<Enemy> GamePlayingScene::GetEnemyInfo(const TargetData& target)
 		return std::make_shared<DeductionEnemy>(target.dispTime, target.banishTime, target.pos);
 	}
 	else{}
-
 	/// 該当なし
 	return nullptr;
 }
@@ -238,16 +278,6 @@ void GamePlayingScene::Update(const Peripheral& p)
 
 	/// 敵の削除
 	_enemies.erase(result, _enemies.end());
-	if (_enemies.size() <= 0)
-	{
-		++_waveCnt;
-		/// 1ウェーブが終了した時、すぐに次のウェーブに出現する的の用意をしている。
-		if (!CreateEnemy())
-		{
-			/// 全てのウェーブを終えた時に入る処理
-			_updater = &GamePlayingScene::FadeoutUpdate;
-		}
-	}
 
 	(this->*_updater)(p);
 }

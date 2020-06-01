@@ -23,12 +23,14 @@ private:
 	void FadeinUpdate(const Peripheral& p);
 	void FadeoutUpdate(const Peripheral& p);
 	void CountDownUpdate(const Peripheral& p);
+	void FinishUpdate(const Peripheral& p);
 	void WaitUpdate(const Peripheral& p);
 	
 	void (GamePlayingScene::*_drawer)();
 	void CountDownDraw();
 	void GameDraw();
-
+	void FinishDraw();
+	
 	bool CreateEnemy();
 	std::shared_ptr<Enemy> GetEnemyInfo(const TargetData& target);
 	
@@ -44,6 +46,7 @@ private:
 	int _waitCnt;	// 待機時間
 	int _waveCnt;	// ウェーブカウント
 	int _score;		// 獲得スコア
+
 	int _gameBg;
 
 	float _hitCount;
