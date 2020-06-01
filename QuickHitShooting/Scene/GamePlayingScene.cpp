@@ -22,10 +22,8 @@
 
 GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const StageData& stageData)
 {
-	_pal = 0;
-	
 	_updater = &GamePlayingScene::FadeinUpdate;
-	_drawer  = &GamePlayingScene::TestDraw;
+	_drawer  = &GamePlayingScene::CountDownDraw;
 
 	_gun.reset(new Gun(gunState));
 	_cd.reset(new CollisionDetector());
@@ -46,13 +44,11 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const StageData& s
 	_menu->AddMenuList("pause", Vector2<int>(_scrSize.x - 50, 0), Vector2<int>(_scrSize.x, 50), i);
 	_menu->AddMenuList("test", Vector2<int>(0, 0), Vector2<int>(50, 50), i);
 
-	_hitFlag = false;
+	_hitFlag   = false;
+	_hitCount  = _shotCount = 0.0f;
+	_waveCnt   = _score = _pal = 0;
 
-	_hitCount = 0.0f;
-	_shotCount = 0.0f;
-
-	_waveCnt = 0;
-	_score = 0;
+	_waitCnt   = 239;
 	
 	/// 敵の仮生成
 	CreateEnemy();
@@ -67,7 +63,7 @@ void GamePlayingScene::FadeinUpdate(const Peripheral & p)
 	if (_pal > 255)
 	{
 		_pal = 255;
-		_updater = &GamePlayingScene::WaitUpdate;
+		_updater = &GamePlayingScene::CountDownUpdate;
 	}
 	else
 	{
@@ -88,7 +84,6 @@ void GamePlayingScene::FadeoutUpdate(const Peripheral & p)
 		{
 			r.ranking[i] = std::make_pair(_stageData.GetStageData().names[i], _stageData.GetStageData().scores[i]);
 		}
-
 		r.name = _stageData.GetStageData().stageName;
 		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>(r));
 	}
@@ -96,6 +91,17 @@ void GamePlayingScene::FadeoutUpdate(const Peripheral & p)
 	{
 		_pal -= 20;
 	}
+}
+
+void GamePlayingScene::CountDownUpdate(const Peripheral& p)
+{
+	if (_waitCnt <= 0)
+	{
+		_pal	 = 255;
+		_updater = &GamePlayingScene::WaitUpdate;
+		_drawer  = &GamePlayingScene::GameDraw;
+	}
+	--_waitCnt;
 }
 
 void GamePlayingScene::WaitUpdate(const Peripheral& p)
@@ -110,7 +116,6 @@ void GamePlayingScene::WaitUpdate(const Peripheral& p)
 		if (_gun->Shot())
 		{
 			++_shotCount;
-
 			Vector2<int> pos = p.GetMousePos();
 			for (auto enemy : _enemies)
 			{
@@ -130,10 +135,39 @@ void GamePlayingScene::WaitUpdate(const Peripheral& p)
 	}
 }
 
-void GamePlayingScene::TestDraw()
+/// カウントダウン時の描画
+void GamePlayingScene::CountDownDraw()
 {
 	/// 背景の描画
 	DxLib::DrawGraph(0, 0, _gameBg, true);
+
+	Vector2<int> _strSize;
+	if ((_waitCnt / 60) >= 1)
+	{
+		/// カウントダウン時の描画
+		_trimString->ChangeFontSize(180);
+		std::string text = std::to_string(_waitCnt / 60);
+		GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
+
+		DxLib::DrawString((_scrSize.x / 2) - (_strSize.x / 2), (_scrSize.y / 2) - (_strSize.y / 2), 
+						   text.c_str(), 0xff0000);
+	}
+	else
+	{
+		/// 開始の合図
+		_trimString->ChangeFontSize(100);
+		GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, "START", strlen("START"));
+		DxLib::DrawString((_scrSize.x / 2) - (_strSize.x / 2), (_scrSize.y / 2) - (_strSize.y / 2),
+						  "START", 0xff0000);
+	}
+}
+
+/// ゲーム中の描画
+void GamePlayingScene::GameDraw()
+{
+	/// 背景の描画
+	DxLib::DrawGraph(0, 0, _gameBg, true);
+
 	_trimString->ChangeFontSize(40);
 	DxLib::DrawFormatString(_trimString->GetStringCenterPosx("00000"), 0, 0x000000, "%05d", _score);
 	DxLib::DrawFormatString(0, 0, 0x000000, "WAVE %d", (_waveCnt + 1));
@@ -142,20 +176,13 @@ void GamePlayingScene::TestDraw()
 	{
 		enemy->Draw();
 	}
-
 	_gun->Draw();
 	_menu->Draw();
-
-	if (_hitFlag)
-	{
-		DxLib::DrawString(500, 0, "Hit", 0xff0000);
-	}
 }
 
 bool GamePlayingScene::CreateEnemy()
 {
 	/// 仮でステージデータを読み込んでいる
-
 	if (_waveCnt < (int)_stageData.GetStageData().targetData.size())
 	{
 		auto data = _stageData.GetStageData().targetData[_waveCnt];
@@ -194,12 +221,10 @@ std::shared_ptr<Enemy> GamePlayingScene::GetEnemyInfo(const TargetData& target)
 
 void GamePlayingScene::Update(const Peripheral& p)
 {
-	//
 	if (_menu->CheckClick("test", p))
 	{
 		_updater = &GamePlayingScene::FadeoutUpdate;
 	}
-	//
 
 	for (auto& enemy : _enemies)
 	{
@@ -213,7 +238,6 @@ void GamePlayingScene::Update(const Peripheral& p)
 
 	/// 敵の削除
 	_enemies.erase(result, _enemies.end());
-
 	if (_enemies.size() <= 0)
 	{
 		++_waveCnt;
@@ -232,7 +256,7 @@ void GamePlayingScene::Draw()
 {
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
 	DxLib::DrawBox(0, 0, _scrSize.x, _scrSize.y, 0xffffff, true);
-
+	
 	(this->*_drawer)();
 
 	// フェードイン,アウトのための幕

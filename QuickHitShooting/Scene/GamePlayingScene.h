@@ -22,25 +22,26 @@ private:
 	void (GamePlayingScene::*_updater)(const Peripheral& p);
 	void FadeinUpdate(const Peripheral& p);
 	void FadeoutUpdate(const Peripheral& p);
+	void CountDownUpdate(const Peripheral& p);
 	void WaitUpdate(const Peripheral& p);
 	
 	void (GamePlayingScene::*_drawer)();
-	void TestDraw();
+	void CountDownDraw();
+	void GameDraw();
 
 	bool CreateEnemy();
 	std::shared_ptr<Enemy> GetEnemyInfo(const TargetData& target);
 	
-
 	std::shared_ptr<Gun> _gun;
 	std::shared_ptr<CollisionDetector> _cd;
 	std::shared_ptr<Menu> _menu;
 	std::shared_ptr<TrimString> _trimString;
 
-	/// 仮で複数の敵を出現させている
 	std::vector<std::shared_ptr<Enemy>> _enemies;
 
 	StageData _stageData;
 
+	int _waitCnt;	// 待機時間
 	int _waveCnt;	// ウェーブカウント
 	int _score;		// 獲得スコア
 	int _gameBg;
