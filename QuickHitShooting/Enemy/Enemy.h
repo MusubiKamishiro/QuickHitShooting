@@ -18,13 +18,11 @@ protected:
 public:
 	virtual ~Enemy();
 
-	virtual void Draw() = 0;
 	void Update(); 
+	void Draw();
 
-	// ’e‚ª“–‚½‚Á‚½‚Ìˆ—
 	bool HitShot();
 
-	// “G‚Ìíœ—p
 	bool Destroy();
 
 	virtual int GetScore() const = 0;
