@@ -3,14 +3,12 @@
 
 class Enemy
 {
-private:
-
 protected:
 	Vector2<int> _pos;
 	Rect _rect;
 
 	int _dispTime;
-	int _appearTime;
+	int _banishTime;
 
 	bool _isAlive;		// true : ¶‘¶, false : €–S
 public:
@@ -20,7 +18,7 @@ public:
 	void Update(); 
 
 	// ’e‚ª“–‚½‚Á‚½‚Ìˆ—
-	void HitShot();
+	bool HitShot();
 
 	// “G‚Ìíœ—p
 	bool Destroy();

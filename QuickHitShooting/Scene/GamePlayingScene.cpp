@@ -114,12 +114,12 @@ void GamePlayingScene::WaitUpdate(const Peripheral& p)
 			Vector2<int> pos = p.GetMousePos();
 			for (auto enemy : _enemies)
 			{
-				if (_cd->IsCollision(pos, enemy->GetRect()))
+				if (_cd->IsCollision(pos, enemy->GetRect()) &&
+					enemy->HitShot())
 				{
-					enemy->HitShot();
+					++_hitCount;	
+					_score  += enemy->GetScore();
 					_hitFlag = true;
-					++_hitCount;
-					_score += enemy->GetScore();
 				}
 			}
 		}
@@ -174,17 +174,17 @@ std::shared_ptr<Enemy> GamePlayingScene::GetEnemyInfo(const TargetData& target)
 	if (target.type == 0)
 	{
 		/// 通常の的を生成する
-		return std::make_shared<NormalEnemy>(target.dispTime, target.appearTime, target.pos);
+		return std::make_shared<NormalEnemy>(target.dispTime, target.banishTime, target.pos);
 	}
 	else if (target.type == 1)
 	{
 		/// 特別な的を生成する
-		return std::make_shared<SpecialEnemy>(target.dispTime, target.appearTime, target.pos);
+		return std::make_shared<SpecialEnemy>(target.dispTime, target.banishTime, target.pos);
 	}
 	else if (target.type == 2)
 	{
 		/// 減点の的を生成する
-		return std::make_shared<DeductionEnemy>(target.dispTime, target.appearTime, target.pos);
+		return std::make_shared<DeductionEnemy>(target.dispTime, target.banishTime, target.pos);
 	}
 	else{}
 

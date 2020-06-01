@@ -192,7 +192,7 @@ bool ResultScene::SaveRanking()
 				/// ターゲットデータの書き込み
 				fwrite(&data.GetStageData().targetData[w][t].type,		 sizeof(unsigned char), 1, file);
 				fwrite(&data.GetStageData().targetData[w][t].dispTime,	 sizeof(unsigned int), 1, file);
-				fwrite(&data.GetStageData().targetData[w][t].appearTime, sizeof(unsigned int), 1, file);
+				fwrite(&data.GetStageData().targetData[w][t].banishTime, sizeof(unsigned int), 1, file);
 				fwrite(&data.GetStageData().targetData[w][t].pos.x,		 sizeof(int), 1, file);
 				fwrite(&data.GetStageData().targetData[w][t].pos.y,		 sizeof(int), 1, file);
 			}

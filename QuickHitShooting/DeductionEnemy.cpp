@@ -1,11 +1,11 @@
 #include <DxLib.h>
 #include "DeductionEnemy.h"
 
-DeductionEnemy::DeductionEnemy(const int& dispTime, const int& appearTime, 
+DeductionEnemy::DeductionEnemy(const int& dispTime, const int& banishTime, 
 							   const Vector2<int>& pos) : _point(-30)
 {
 	_dispTime	= dispTime;
-	_appearTime = appearTime;
+	_banishTime = banishTime;
 	_pos		= pos;
 	_isAlive	= true;
 

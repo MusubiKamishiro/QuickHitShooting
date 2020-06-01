@@ -8,7 +8,7 @@ void Enemy::Update()
 {
 	if (_dispTime <= 0)
 	{
-		--_appearTime;
+		--_banishTime;
 	}
 	else
 	{
@@ -16,18 +16,20 @@ void Enemy::Update()
 	}
 }
 
-void Enemy::HitShot()
+bool Enemy::HitShot()
 {
 	if (_dispTime <= 0 && _isAlive)
 	{
 		_isAlive	= false;
-		_appearTime = 60;
+		_banishTime = 60;
+		return true;
 	}
+	return false;
 }
 
 bool Enemy::Destroy()
 {
-	return _appearTime <= 0;
+	return _banishTime <= 0;
 }
 
 Vector2<int> Enemy::GetPos() const

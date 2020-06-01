@@ -1,11 +1,11 @@
 #include <DxLib.h>
 #include "SpecialEnemy.h"
 
-SpecialEnemy::SpecialEnemy(const int& dispTime, const int& appearTime,
+SpecialEnemy::SpecialEnemy(const int& dispTime, const int& banishTime,
 						   const Vector2<int>& pos) : _point(60)
 {
 	_dispTime	= dispTime;
-	_appearTime = appearTime;
+	_banishTime = banishTime;
 	_pos		= pos;
 	_isAlive	= true;
 

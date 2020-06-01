@@ -48,7 +48,7 @@ bool StageLoader::Load(const std::string& path, Data& data)
 				{
 					fread(&target.type,			sizeof(unsigned char), 1, file);
 					fread(&target.dispTime,		sizeof(unsigned int), 1, file);
-					fread(&target.appearTime,	sizeof(unsigned int), 1, file);
+					fread(&target.banishTime,	sizeof(unsigned int), 1, file);
 					fread(&target.pos.x,		sizeof(int), 1, file);
 					fread(&target.pos.y,		sizeof(int), 1, file);
 
@@ -58,8 +58,8 @@ bool StageLoader::Load(const std::string& path, Data& data)
 
 				/// 的情報を開放する
 				targetData.clear();
-				std::vector<TargetData>().swap(targetData);
 			}
+			std::vector<TargetData>().swap(targetData);
 			fclose(file);
 
 			/// ステージデータの登録
