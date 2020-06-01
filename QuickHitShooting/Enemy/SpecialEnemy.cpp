@@ -9,6 +9,10 @@ SpecialEnemy::SpecialEnemy(const int& dispTime, const int& banishTime,
 	_pos		= pos;
 	_isAlive	= true;
 
+	ImageData data;
+	Game::Instance().GetFileSystem()->Load("img/sEnemy.png", data);
+	_targetImg = data.GetHandle();
+
 	/// ‹éŒ`‚Ìİ’è(‰¼)
 	_rect = Rect(_pos, Size(50, 50));
 }
@@ -21,11 +25,7 @@ void SpecialEnemy::Draw()
 {
 	if (_dispTime <= 0)
 	{
-		/// ƒqƒbƒg‚Í•‚­“h‚è‚Â‚Ô‚·
-		int color = (_isAlive ? 0xff0000 : 0x000000);
-		DrawBox(_rect.center.x - _rect.size.width / 2, _rect.center.y - _rect.size.height / 2,
-				_rect.center.x + _rect.size.width / 2, _rect.center.y + _rect.size.height / 2,
-				color, true);
+		DrawExtendGraph(_rect.Left(), _rect.Top(), _rect.Right(), _rect.Bottom(), _targetImg, true);
 	}
 }
 

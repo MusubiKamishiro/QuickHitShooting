@@ -14,10 +14,10 @@
 #include "../TrimString.h"
 
 #include "../Gun.h"
-#include "../Enemy.h"
-#include "../NormalEnemy.h"
-#include "../SpecialEnemy.h"
-#include "../DeductionEnemy.h"
+#include "../Enemy/Enemy.h"
+#include "../Enemy/NormalEnemy.h"
+#include "../Enemy/SpecialEnemy.h"
+#include "../Enemy/DeductionEnemy.h"
 #include "../CollisionDetector.h"
 
 GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const StageData& stageData)
