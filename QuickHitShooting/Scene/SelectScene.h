@@ -29,8 +29,10 @@ private:
 
 	std::vector<GunStatus> _gunStatus;
 
-	/// ボード用の画像 
+	/// 下地用の画像
 	int _rankBd, _gunBd, _stageBd;	
+
+	// 背景画像
 	int _selectBg;
 
 	const int _dightMax;			// スコアの桁数最大値(とりあえず6桁)

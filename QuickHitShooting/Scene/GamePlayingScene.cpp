@@ -35,7 +35,14 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const StageData& s
 
 	ImageData data;
 
-	/// ÉQÅ[ÉÄíÜÇÃîwåiâÊëúÇÃéÊìæ
+	/// â∫ínâÊëúÇÃéÊìæ
+	Game::Instance().GetFileSystem()->Load("img/plate/bulletBd.png", data);
+	_bulletBd = data.GetHandle();
+
+	Game::Instance().GetFileSystem()->Load("img/plate/waveBd.png", data);
+	_waveBd = data.GetHandle();
+
+	/// îwåiâÊëúÇÃéÊìæ
 	Game::Instance().GetFileSystem()->Load("img/game.png", data);
 	_gameBg  = data.GetHandle();
 
@@ -169,6 +176,9 @@ void GamePlayingScene::CountDownDraw()
 	/// îwåiÇÃï`âÊ
 	DxLib::DrawGraph(0, 0, _gameBg, true);
 
+	DxLib::DrawGraph(0, -23, _waveBd, true);
+	DxLib::DrawGraph(0, _scrSize.y - 97, _bulletBd, true);
+
 	Vector2<int> _strSize;
 	if ((_waitCnt / 60) >= 1)
 	{
@@ -196,6 +206,9 @@ void GamePlayingScene::GameDraw()
 	/// îwåiÇÃï`âÊ
 	DxLib::DrawGraph(0, 0, _gameBg, true);
 
+	DxLib::DrawGraph(0, -23, _waveBd, true);
+	DxLib::DrawGraph(0, _scrSize.y - 97, _bulletBd, true);
+
 	_trimString->ChangeFontSize(40);
 	DxLib::DrawFormatString(_trimString->GetStringCenterPosx("00000"), 0, 0x000000, "%05d", _score);
 	DxLib::DrawFormatString(0, 0, 0x000000, "WAVE %d", (_waveCnt + 1));
@@ -212,7 +225,10 @@ void GamePlayingScene::FinishDraw()
 {
 	/// îwåiÇÃï`âÊ
 	DxLib::DrawGraph(0, 0, _gameBg, true);
-	
+
+	DxLib::DrawGraph(0, -23, _waveBd, true);
+	DxLib::DrawGraph(0, _scrSize.y - 97, _bulletBd, true);
+
 	/// äJénÇÃçáê}
 	Vector2<int> _strSize;
 	_trimString->ChangeFontSize(100);

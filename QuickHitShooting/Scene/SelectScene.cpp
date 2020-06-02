@@ -19,17 +19,18 @@ SelectScene::SelectScene() : _dightMax(6)
 	/// スクリーンサイズの取得
 	Vector2<int> btnSize = Vector2<int>(300, 150);
 
-	/// 画像情報の取得
+	/// 下地画像の取得
 	ImageData data;
-	Game::Instance().GetFileSystem()->Load("img/rankboard.png", data);
+	Game::Instance().GetFileSystem()->Load("img/plate/rankBd.png", data);
 	_rankBd = data.GetHandle();
 
-	Game::Instance().GetFileSystem()->Load("img/gunboard.png", data);
+	Game::Instance().GetFileSystem()->Load("img/plate/gunBd.png", data);
 	_gunBd = data.GetHandle();
 
-	Game::Instance().GetFileSystem()->Load("img/stageboard.png", data);
+	Game::Instance().GetFileSystem()->Load("img/plate/stageBd.png", data);
 	_stageBd = data.GetHandle();
 
+	/// 背景画像の取得
 	Game::Instance().GetFileSystem()->Load("img/select.png", data);
 	_selectBg = data.GetHandle();
 
@@ -252,13 +253,9 @@ void SelectScene::Draw()
 	/// 背景の描画
 	DxLib::DrawGraph(0, 0, _selectBg, true);
 
-	/// ランキングボードの描画
+	/// 下地の描画
 	DxLib::DrawGraph(40, 0, _rankBd, true);
-
-	/// ステージボードの描画
-	DxLib::DrawGraph(100, _scrSize.y / 2 - 110, _stageBd, true);
-
-	/// 銃ボードの描画
+	DxLib::DrawGraph(300, _scrSize.y / 2 - 110, _stageBd, true);
 	DxLib::DrawGraph(40, _scrSize.y - 230, _gunBd, true);
 
 	/// メニューの描画
