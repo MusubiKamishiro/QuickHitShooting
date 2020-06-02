@@ -269,12 +269,11 @@ void SelectScene::Draw()
 	int space = 400;
 	
 	/// スコアの描画
-	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, "000000", strlen("000000"));
 	auto score = _stageDatas[_stageCnt].GetStageData().scores;
 	for (int i = 0; i < score.size(); ++i)
 	{
 		text = GetScoreDight(score[i], _dightMax);
-
+		GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
 		DrawString(240 + (space * i) - (strSize.x / 2), 150 - strSize.y / 2,
 				  text.c_str(), 0x000000);
 	}
@@ -292,7 +291,7 @@ void SelectScene::Draw()
 
 	/// ステージの描画
 	_trimString->ChangeFontSize(120);
-	text = "STAGE" + std::to_string(_stageCnt + 1);
+	text = "STAGE " + std::to_string(_stageCnt + 1);
 
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
 	DrawString((Game::Instance().GetScreenSize().x / 2) - (strSize.x / 2), 

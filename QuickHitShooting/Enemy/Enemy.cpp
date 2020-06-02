@@ -42,7 +42,7 @@ bool Enemy::HitShot()
 	if (_dispTime <= 0 && _isAlive)
 	{
 		_isAlive	= false;
-		_banishTime = 60;
+		_banishTime = 30;
 		return true;
 	}
 	return false;

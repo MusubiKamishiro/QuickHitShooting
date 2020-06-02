@@ -177,7 +177,7 @@ void GamePlayingScene::CountDownDraw()
 	DxLib::DrawGraph(0, 0, _gameBg, true);
 
 	DxLib::DrawGraph(0, -23, _waveBd, true);
-	DxLib::DrawGraph(0, _scrSize.y - 97, _bulletBd, true);
+	DxLib::DrawGraph(570, _scrSize.y - 97, _bulletBd, true);
 
 	Vector2<int> _strSize;
 	if ((_waitCnt / 60) >= 1)
@@ -207,7 +207,7 @@ void GamePlayingScene::GameDraw()
 	DxLib::DrawGraph(0, 0, _gameBg, true);
 
 	DxLib::DrawGraph(0, -23, _waveBd, true);
-	DxLib::DrawGraph(0, _scrSize.y - 97, _bulletBd, true);
+	DxLib::DrawGraph(570, _scrSize.y - 97, _bulletBd, true);
 
 	_trimString->ChangeFontSize(40);
 	DxLib::DrawFormatString(_trimString->GetStringCenterPosx("00000"), 0, 0x000000, "%05d", _score);
@@ -227,7 +227,7 @@ void GamePlayingScene::FinishDraw()
 	DxLib::DrawGraph(0, 0, _gameBg, true);
 
 	DxLib::DrawGraph(0, -23, _waveBd, true);
-	DxLib::DrawGraph(0, _scrSize.y - 97, _bulletBd, true);
+	DxLib::DrawGraph(570, _scrSize.y - 97, _bulletBd, true);
 
 	/// äJénÇÃçáê}
 	Vector2<int> _strSize;
