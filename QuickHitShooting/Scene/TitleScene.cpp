@@ -111,6 +111,7 @@ TitleScene::TitleScene()
 
 TitleScene::~TitleScene()
 {
+	NetWorkWS2::Instance().Terminate();
 }
 
 void TitleScene::Update(const Peripheral& p)
