@@ -32,13 +32,13 @@
       <UniqueIdentifier>{71c95e1c-78aa-4fd3-a502-f279c7d95341}</UniqueIdentifier>
     </Filter>
     <Filter Include="Enemy">
-      <UniqueIdentifier>{823409a9-ba81-418d-ba8f-c18b29d28b44}</UniqueIdentifier>
+      <UniqueIdentifier>{25e34f60-91f6-426c-8069-41e0800fd5c4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Enemy\ヘッダーファイル">
-      <UniqueIdentifier>{26a6f7ec-5fd2-4fbd-8cbf-5633e09ff938}</UniqueIdentifier>
+    <Filter Include="Enemy\ソース ファイル">
+      <UniqueIdentifier>{e34f2d8a-89d0-481d-ace0-41ec5e368395}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Enemy\ソースファイル">
-      <UniqueIdentifier>{c468d891-5349-4e50-928c-2377d39c7e01}</UniqueIdentifier>
+    <Filter Include="Enemy\ヘッダー ファイル">
+      <UniqueIdentifier>{c5553fba-0e82-4d3c-a5c6-34224cede5d7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -111,17 +111,20 @@
     <ClCompile Include="Keyboard.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="SoundPlayer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
     <ClCompile Include="Enemy\DeductionEnemy.cpp">
-      <Filter>Enemy\ソースファイル</Filter>
+      <Filter>Enemy\ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Enemy\Enemy.cpp">
-      <Filter>Enemy\ソースファイル</Filter>
+      <Filter>Enemy\ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Enemy\NormalEnemy.cpp">
-      <Filter>Enemy\ソースファイル</Filter>
+      <Filter>Enemy\ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Enemy\SpecialEnemy.cpp">
-      <Filter>Enemy\ソースファイル</Filter>
+      <Filter>Enemy\ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -191,17 +194,20 @@
     <ClInclude Include="Keyboard.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="SoundPlayer.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
     <ClInclude Include="Enemy\DeductionEnemy.h">
-      <Filter>Enemy\ヘッダーファイル</Filter>
+      <Filter>Enemy\ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Enemy\Enemy.h">
-      <Filter>Enemy\ヘッダーファイル</Filter>
+      <Filter>Enemy\ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Enemy\NormalEnemy.h">
-      <Filter>Enemy\ヘッダーファイル</Filter>
+      <Filter>Enemy\ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Enemy\SpecialEnemy.h">
-      <Filter>Enemy\ヘッダーファイル</Filter>
+      <Filter>Enemy\ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

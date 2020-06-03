@@ -11,12 +11,6 @@
 Menu::Menu()
 {
 	_cd.reset(new CollisionDetector());
-
-	//ImageData data;
-	//Game::Instance().GetFileSystem()->Load("img/white.png", data);
-	//_img = data.GetHandle();
-
-	//_size = 20;
 }
 
 
@@ -72,7 +66,6 @@ void Menu::Draw()
 
 		if (md.flag)
 		{
-			//DxLib::DrawExtendGraph(md.rect.Left() - _size, md.rect.Top() - _size, md.rect.Right() + _size, md.rect.Bottom() + _size, _img, true);
 			DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 192);
 		}
 
