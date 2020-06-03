@@ -48,9 +48,10 @@ bool TargetPosition::CheckTargetRange(const Vector2<int>& pos) const
 
 void TargetPosition::Draw(const int& wCnt, const int& tCnt, const std::vector<vec_target> stageData)
 {
+	/// ‰º’n
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
 	DrawBox(0, 0, Editer::Instance().GetScreenSize().x, 96,
-		    0xffffff, true);
+		    0xdddddd, true);
 	DrawBox(0, 96, Editer::Instance().GetScreenSize().x, Editer::Instance().GetScreenSize().y - 100,
 			0x00ff00, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
