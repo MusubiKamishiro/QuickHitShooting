@@ -24,14 +24,11 @@ class Menu
 private:
 	///メニューテーブル
 	///@param string ボタン名
-	///@param int メニューデータ
+	///@param MenuData メニューデータ
 	std::map<std::string, MenuData> _menuTable;
 
 	// 当たり判定
 	std::shared_ptr<CollisionDetector> _cd;
-
-	//int _img;
-	//int _size;
 
 public:
 	Menu();
