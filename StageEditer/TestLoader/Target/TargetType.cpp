@@ -44,6 +44,11 @@ void TargetType::DataConfig(const int& wCnt, const int& tCnt,
 /// ステージデータの描画(的ID)
 void TargetType::Draw(const int& wCnt, const int& tCnt, const std::vector<vec_target> stageData)
 {
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+	DrawBox(0, 0, Editer::Instance().GetScreenSize().x, Editer::Instance().GetScreenSize().y, 
+			0xffffff, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
 	/// 現在のモード
 	SetFontSize(48);
 	_text	   = "ID Config";
@@ -79,13 +84,13 @@ void TargetType::Draw(const int& wCnt, const int& tCnt, const std::vector<vec_ta
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x000000);
 
 	/// 現在のID
-	_text = "Now Target:  ";
+	_text = "Target: ";
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
 	_drawPos.x = (Editer::Instance().GetScreenSize().x / 2) - (_strSize.x / 2);
 	_drawPos.y = (Editer::Instance().GetScreenSize().y / 2) + _strSize.y;
-	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x000000);
+	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x191970);
+	
 	_drawPos.x = (Editer::Instance().GetScreenSize().x / 2) + (_strSize.x / 2);
-
 	DrawExtendGraph(_drawPos.x, _drawPos.y - 20,
 					_drawPos.x + 120, _drawPos.y + 100,
 					_imageID[stageData[wCnt][tCnt].type], true);

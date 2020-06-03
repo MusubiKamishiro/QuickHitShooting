@@ -25,17 +25,36 @@ void TargetPosition::Update(int& wCnt, int& tCnt, const unique_input& input, std
 	DataConfig(wCnt, tCnt, input, stageData);
 }
 
-void TargetPosition::DataConfig(const int& wCnt, const int& tCnt,
-	const unique_input& input, std::vector<vec_target>& stageData)
+void TargetPosition::DataConfig(const int& wCnt, const int& tCnt,const unique_input& input, std::vector<vec_target>& stageData)
 {
 	if (input->IsMouseTrigger(MOUSE_INPUT_LEFT))
 	{
-		GetMousePoint(&stageData[wCnt][tCnt].pos.x, &stageData[wCnt][tCnt].pos.y);
+		Vector2<int> mPos;
+		GetMousePoint(&mPos.x, &mPos.y);
+		mPos -= Vector2<int>(_targetSize / 2, _targetSize / 2);
+		if (CheckTargetRange(mPos))
+		{
+			stageData[wCnt][tCnt].pos = mPos;
+		}
 	}
+}
+
+/// 的を配置する位置が範囲内であるかの判定取得用
+bool TargetPosition::CheckTargetRange(const Vector2<int>& pos) const
+{
+	return (pos.x >= 0  && pos.x < Editer::Instance().GetScreenSize().x &&
+			pos.y >= 96 && pos.y < Editer::Instance().GetScreenSize().y - 100 - (_targetSize / 2));
 }
 
 void TargetPosition::Draw(const int& wCnt, const int& tCnt, const std::vector<vec_target> stageData)
 {
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+	DrawBox(0, 0, Editer::Instance().GetScreenSize().x, 96,
+		    0xffffff, true);
+	DrawBox(0, 96, Editer::Instance().GetScreenSize().x, Editer::Instance().GetScreenSize().y - 100,
+			0x00ff00, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
 	/// 現在のモード
 	SetFontSize(48);
 	_text = "Position Config";
@@ -73,18 +92,15 @@ void TargetPosition::Draw(const int& wCnt, const int& tCnt, const std::vector<ve
 	for (int i = 0; i < stageData[wCnt].size(); ++i)
 	{
 		DrawExtendGraph(stageData[wCnt][i].pos.x, stageData[wCnt][i].pos.y,
-						stageData[wCnt][i].pos.x + _boxSize, stageData[wCnt][i].pos.y + _boxSize,
+						stageData[wCnt][i].pos.x + _targetSize, stageData[wCnt][i].pos.y + _targetSize,
 						_imageID[stageData[wCnt][i].type], true);
 	}
 
 	/// 設定中の座標
 	_alpha = (_alpha + 10) % (_alphaMax * 2);
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, abs(_alpha - _alphaMax));
-
-	DrawCircle(stageData[wCnt][tCnt].pos.x + _boxSize / 2, 
-			   stageData[wCnt][tCnt].pos.y + _boxSize / 2, _boxSize / 2, 
+	DrawCircle(stageData[wCnt][tCnt].pos.x + _targetSize / 2, 
+			   stageData[wCnt][tCnt].pos.y + _targetSize / 2, _targetSize / 2, 
 			   0xffffd1, true);
-
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-
 }

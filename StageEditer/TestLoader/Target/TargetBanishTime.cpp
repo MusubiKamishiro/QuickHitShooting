@@ -46,6 +46,11 @@ void TargetBanishTime::DataConfig(const int& wCnt, const int& tCnt,
 /// ステージデータの描画(消えるまでの時間)
 void TargetBanishTime::Draw(const int& wCnt, const int& tCnt, const std::vector<vec_target> stageData)
 {
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+	DrawBox(0, 0, Editer::Instance().GetScreenSize().x, Editer::Instance().GetScreenSize().y,
+			0xffffff, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
 	/// 現在のモード
 	SetFontSize(48);
 	_text = "BanishTime Config";
@@ -81,11 +86,11 @@ void TargetBanishTime::Draw(const int& wCnt, const int& tCnt, const std::vector<
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x000000);
 
 	/// 消えるまでの時間
-	_text	   = "Now Banish Time : " + std::to_string(stageData[wCnt][tCnt].banishTime);
+	_text	   = "Banish Time: " + std::to_string(stageData[wCnt][tCnt].banishTime);
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
-	_drawPos.x = (Editer::Instance().GetScreenSize().x / 5);
+	_drawPos.x = (Editer::Instance().GetScreenSize().x / 2) - (_strSize.x / 2);
 	_drawPos.y = (Editer::Instance().GetScreenSize().y / 2) + _strSize.y;
-	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x000000);
+	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x191970);
 
 	/// 全ての消えるまでの時間
 	SetFontSize(48);
@@ -93,7 +98,7 @@ void TargetBanishTime::Draw(const int& wCnt, const int& tCnt, const std::vector<
 	for (int i = 0; i < stageData[wCnt].size(); ++i)
 	{
 		configColor = (i == tCnt ? 0x00bfff : 0x000000);
-		_text	   = std::to_string(i + 1) + " : " + std::to_string(stageData[wCnt][i].banishTime);
+		_text	   = std::to_string(i + 1) + ": " + std::to_string(stageData[wCnt][i].banishTime);
 		GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
 		_drawPos.x = Editer::Instance().GetScreenSize().x - _strSize.x;
 		_drawPos.y = (_strSize.y * i);

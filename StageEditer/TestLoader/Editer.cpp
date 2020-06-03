@@ -223,6 +223,11 @@ void Editer::WaveDrawer()
 	/// îwåi
 	DrawGraph(0, 0, _editBg, true);
 
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+	DrawBox(0, 0, Editer::Instance().GetScreenSize().x, Editer::Instance().GetScreenSize().y,
+			0xffffff, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
 	Vector2<int> strSize;
 	std::string text;
 	SetFontSize(64);
@@ -242,6 +247,11 @@ void Editer::TargetDrawer()
 {
 	/// îwåi
 	DrawGraph(0, 0, _editBg, true);
+
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+	DrawBox(0, 0, Editer::Instance().GetScreenSize().x, Editer::Instance().GetScreenSize().y,
+			0xffffff, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	Vector2<int> strSize;
 	std::string text;
