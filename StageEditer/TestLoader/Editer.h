@@ -107,6 +107,8 @@ private:
 	// ステージ設定で使用する情報
 	int _nowWaveCnt, _nowTargetCnt;
 
+	int _editBg;
+
 	// 入力関係のポインター
 	unique_input _input;
 
@@ -118,7 +120,6 @@ private:
 	void (Editer::* _nowMode)();
 	void (Editer::* _drawer)();
 
-	const Vector2<int> _gameScreen;	// ゲームの画面サイズ
 	const Vector2<int> _screen;		// エディターの画面サイズ
 	const int _targetCntMax;		// 的の最大数
 

@@ -6,8 +6,7 @@
 
 std::unique_ptr<Editer, Editer::EditerDeleter> Editer::s_Instance(new Editer());
 
-Editer::Editer() : _targetCntMax(10), _screen(1920, 1080), 
-_gameScreen(1280, 720), _waveEnd(55)
+Editer::Editer() : _targetCntMax(10), _screen(1280, 720), _waveEnd(55)
 {
 	Init();
 	_input = std::make_unique<Input>();
@@ -29,6 +28,8 @@ bool Editer::Init()
 	}
 	SetMainWindowText("StageEditer");
 	SetDrawScreen(DX_SCREEN_BACK);
+
+	_editBg = LoadGraph("img/game.png");
 
 	/// ステージエディターの初期状態
 	Wave();
@@ -66,6 +67,7 @@ void Editer::Target()
 	_nowMode = &Editer::TargetUpdate;
 	_drawer  = &Editer::TargetDrawer;
 
+	_configTarget = 0;
 	/// ウェーブ数の初期化
 	_waveTargetCnt.clear();
 	std::vector<int>().swap(_waveTargetCnt);
@@ -217,50 +219,61 @@ void Editer::StageUpdate()
 /// ウェーブ設定の描画
 void Editer::WaveDrawer()
 {
+	/// 背景
+	DrawGraph(0, 0, _editBg, true);
+
 	Vector2<int> strSize;
 	std::string text;
 	SetFontSize(80);
 	text = "Now Wave Count";
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
-	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) - strSize.y, text.c_str(), 0xffffff);
+	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) - (strSize.y / 2), text.c_str(), 0x000000);
 
 	/// 現在のウェーブ数
 	SetFontSize(140);
 	text = std::to_string(_waveCnt);
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
-	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) + (strSize.y / 2), text.c_str(), 0x88ff88);
+	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) + (strSize.y / 2), text.c_str(), 0x0000cd);
 }
 
 /// 的設定の描画
 void Editer::TargetDrawer()
 {
+	/// 背景
+	DrawGraph(0, 0, _editBg, true);
+
 	Vector2<int> strSize;
 	std::string text;
 	SetFontSize(80);
 	text = "Appear Target Count";
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
-	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) - strSize.y, text.c_str(), 0xffffff);
+	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) - (strSize.y / 2), text.c_str(), 0x000000);
 
+	SetFontSize(60);
 	/// 設定を行っている的の表示
-	int nowTargetColor;
-	for (int i = 0; i < _waveTargetCnt.size(); ++i)
+	int nowColor;
+	int dispOffset = (_configTarget < 10 ? 0 : _configTarget - 9);
+	int cntMax	   = (_waveTargetCnt.size() < 10 ? _waveTargetCnt.size() : dispOffset + 10);
+	for (int i = dispOffset; i < cntMax; ++i)
 	{
-		nowTargetColor = (_configTarget == i ? 0xffff00 : 0xffffff);
+		nowColor = (_configTarget == i ? 0x00bfff : 0x000000);
 		text = std::to_string(i + 1) + " : " + std::to_string(_waveTargetCnt[i]);
 		GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
-		DrawString(_screen.x - strSize.x, strSize.y * i, text.c_str(), nowTargetColor);
+		DrawString(_screen.x - strSize.x, strSize.y * (i - dispOffset), text.c_str(), nowColor);
 	}
 
 	/// 現在の的数
 	SetFontSize(140);
 	text = std::to_string(_waveTargetCnt[_configTarget]);
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
-	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) + (strSize.y / 2), text.c_str(), 0x88ff88);
+	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) + (strSize.y / 2), text.c_str(), 0x0000cd);
 }
 
 /// ステージ設定の描画
 void Editer::StageDrawer()
 {
+	/// 背景
+	DrawGraph(0, 0, _editBg, true);
 	_targetState->Draw(_nowWaveCnt, _nowTargetCnt, _stageInfo.targetData);
 }
 
@@ -346,17 +359,12 @@ bool Editer::Save()
 				}
 				fwrite(name, (sizeof(char) * 3), 1, file);
 			}
-			/// エディターの画面サイズからゲームの画面サイズの倍率を求めている
-			Vector2<double> rate = Vector2<double>((double)_gameScreen.x / _screen.x,
-												   (double)_gameScreen.y / _screen.y);
-
 			Vector2<int> registPos;
 			int targetCnt = 0;
 
 			/// 書き込むウェーブ数の設定
 			int waveCnt = _stageInfo.targetData.size();
 			fwrite(&waveCnt, sizeof(int), 1, file);
-
 			for (int w = 0; w < waveCnt; ++w)
 			{
 				/// 書き込むターゲット数の設定
@@ -368,10 +376,8 @@ bool Editer::Save()
 					fwrite(&_stageInfo.targetData[w][t].type,		 sizeof(unsigned char), 1, file);
 					fwrite(&_stageInfo.targetData[w][t].dispTime,	 sizeof(unsigned int), 1, file);
 					fwrite(&_stageInfo.targetData[w][t].banishTime,  sizeof(unsigned int), 1, file);
-					registPos.x = (_stageInfo.targetData[w][t].pos.x * rate.x);
-					fwrite(&registPos.x, sizeof(int), 1, file);
-					registPos.y = (_stageInfo.targetData[w][t].pos.y * rate.x);
-					fwrite(&registPos.y, sizeof(int), 1, file);
+					fwrite(&_stageInfo.targetData[w][t].pos.x,		 sizeof(int), 1, file);
+					fwrite(&_stageInfo.targetData[w][t].pos.y,		 sizeof(int), 1, file);
 				}
 			}
 			/// ファイルを閉じる
@@ -409,10 +415,6 @@ bool Editer::Load()
 				fread(&_stageInfo.scores[i], sizeof(int), 1, file);
 				fread((char*)_stageInfo.names[i].c_str(), (sizeof(char) * 3), 1, file);
 			}
-			/// ゲームの画面サイズからエディターの画面サイズの倍率を求めている
-			Vector2<double> rate = Vector2<double>((double)_screen.x / _gameScreen.x,
-												   (double)_screen.y / _gameScreen.y);
-
 			TargetData target;
 			std::vector<TargetData> targetData;
 
@@ -430,11 +432,8 @@ bool Editer::Load()
 					fread(&target.type,		  sizeof(unsigned char), 1, file);
 					fread(&target.dispTime,   sizeof(unsigned int), 1, file);
 					fread(&target.banishTime, sizeof(unsigned int), 1, file);
-					fread(&target.pos.x, sizeof(int), 1, file);
-					target.pos.x *= rate.x;
-					fread(&target.pos.y, sizeof(int), 1, file);
-					target.pos.y *= rate.y;
-
+					fread(&target.pos.x,	  sizeof(int), 1, file);
+					fread(&target.pos.y,	  sizeof(int), 1, file);
 					targetData[t] = target;
 				}
 				_stageInfo.targetData.push_back(targetData);
