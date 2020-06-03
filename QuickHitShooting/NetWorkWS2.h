@@ -71,14 +71,12 @@ public:
 	// 返信があるまで待機します。
 	// 引数に送るデータを入れる
 	void SendServer(SendDataWS2& data);
-	void SendServer(TargetData& data);
 	void SendServer(StageInfo& data);
 	// クライアント側処理関数
 	// サーバーに接続してデータが送られてくるのを待機
 	// 送られてきたら引数でもらってきたデータを送り返す。
 	// 引数にデータを受け取るためのバッファを渡す
 	void RecivedClient(SendDataWS2& data);
-	void RecivedClient(TargetData& data);
 	void RecivedClient(StageInfo& data);
 	//####################################################
 
@@ -89,14 +87,12 @@ public:
 	// 処理としてはほぼ同じ
 	// 引数に送るデータを入れる
 	void RealTimeServer(SendDataWS2& data);
-	void RealTimeServer(TargetData& data);
 	void RealTimeServer(StageInfo& data);
 	// クライアント側処理関数
 	// 非リアルタイム通信をリアルタイムに改良したもの
 	// 処理はほぼ同じ
 	// 引数にデータを受け取るためのバッファを渡す
 	void RealTimeClient(SendDataWS2& data);
-	void RealTimeClient(TargetData& data);
 	void RealTimeClient(StageInfo& data);
 	//####################################################
 

@@ -96,29 +96,6 @@ void NetWorkWS2::SendServer(SendDataWS2& data)
 	}
 }
 
-// サーバー側処理（TargetData Ver）
-// 引数に送るデータを入れる
-void NetWorkWS2::SendServer(TargetData& data)
-{
-	// 何度でも接続できるよう、whileでずっとループする
-	while (true) {
-		len = sizeof(client);
-		// ここで接続してきたか確認
-		sock = accept(sock0, (sockaddr*)&client, &len);
-		// 構造体データを変換する
-		const char* p = (const char*)&data;
-		// データを送る
-		send(sock, p, sizeof(data), 0);
-		std::string returnData;
-		returnData.resize(256);
-		// 返信があるまで待機
-		int n = recv(sock, (char*)returnData.c_str(), 256, 0);
-		std::cout << returnData.c_str() << std::endl;
-		// ソケットを閉じる
-		closesocket(sock);
-	}
-}
-
 // サーバー側処理（StageInfo Ver）
 // 引数に送るデータを入れる
 void NetWorkWS2::SendServer(StageInfo& data)
@@ -167,20 +144,6 @@ void NetWorkWS2::RecivedClient(SendDataWS2& data)
 	closesocket(sock);
 }
 
-// クライアント側の処理（TargetData Ver）
-// 引数にデータを受け取るためのバッファを渡す。
-void NetWorkWS2::RecivedClient(TargetData& data)
-{
-	// サーバーに接続する関数
-	connect(sock, (sockaddr*)&server, sizeof(server));
-	// データを受け取る
-	int n = recv(sock, (char*)&data, sizeof(data), 0);
-	// データを送る
-	send(sock, "Success", 7, 0);
-	// ソケットを閉じる
-	closesocket(sock);
-}
-
 // クライアント側の処理（StageInfo Ver）
 // 引数にデータを受け取るためのバッファを渡す。
 void NetWorkWS2::RecivedClient(StageInfo& data)
@@ -213,15 +176,7 @@ void NetWorkWS2::RealTimeServer(SendDataWS2& data)
 	// 構造体データを変換
 	const char* p = (const char*)&data;
 	RealTimeServerCore(p,sizeof(data));
-}
-
-// リアルタイム通信サーバーの処理（TargetData Ver）
-// 引数に送るデータを入れる
-void NetWorkWS2::RealTimeServer(TargetData& data)
-{
-	// 構造体データを変換
-	const char* p = (const char*)&data;
-	RealTimeServerCore(p, sizeof(data));
+	
 }
 
 // リアルタイム通信サーバーの処理（StageInfo Ver）
@@ -230,7 +185,32 @@ void NetWorkWS2::RealTimeServer(StageInfo& data)
 {
 	// 構造体データを変換
 	const char* p = (const char*)&data;
-	RealTimeServerCore(p, sizeof(data));
+	len = sizeof(client);
+	// クライアントから接続されたか確認する
+	sock = accept(sock0, (sockaddr*)&client, &len);
+	std::string returnData;
+	returnData.resize(256);
+	while (true) {
+		// データの受け取り
+		send(sock, (const char*)&data.names, sizeof(data.names[0]) * data.names.size(), 0);
+		send(sock, (const char*)&data.scores, sizeof(data.scores[0]) * data.scores.size(), 0);
+		auto size = data.targetData.size();
+		send(sock, (const char*)&size, sizeof(size_t), 0);
+		for (auto& target : data.targetData) {
+			size = target.size();
+			send(sock, (const char*)&size, sizeof(size_t), 0);
+			for (auto i = 0; i < size; i++) {
+				send(sock, (const char*)&target[i], sizeof(target[i]), 0);
+			}
+		}
+		// 受信データの受け取る
+		int n = recv(sock, (char*)returnData.c_str(), 256, 0);
+		std::cout << returnData.c_str() << std::endl;
+	}
+	// データを送る
+	send(sock, "Success", 7, 0);
+	// ソケットを閉じる
+	closesocket(sock);
 }
 
 // リアルタイム通信クライアントの処理
@@ -250,22 +230,6 @@ void NetWorkWS2::RealTimeClient(SendDataWS2& data)
 	closesocket(sock);
 }
 
-// リアルタイム通信クライアント処理（TargetData Ver）
-// 引数にデータを受け取るためのバッファを渡す。
-void NetWorkWS2::RealTimeClient(TargetData& data)
-{
-	// サーバーへ接続
-	connect(sock, (sockaddr*)&server, sizeof(server));
-	while (true) {
-		// データの受信
-		int n = recv(sock, (char*)&data, sizeof(data), 0);
-		// データの送信
-		send(sock, "Success", 7, 0);
-	}
-	// ソケットを閉じる
-	closesocket(sock);
-}
-
 // リアルタイム通信クライアント処理（StageInfo Ver）
 // 引数にデータを受け取るためのバッファを渡す。
 void NetWorkWS2::RealTimeClient(StageInfo& data)
@@ -273,10 +237,19 @@ void NetWorkWS2::RealTimeClient(StageInfo& data)
 	// サーバーへ接続
 	connect(sock, (sockaddr*)&server, sizeof(server));
 	while (true) {
-		// データの受信
-		int n = recv(sock, (char*)&data, sizeof(data), 0);
-		// データの送信
-		send(sock, "Success", 7, 0);
+		// データを受け取る
+		int n = recv(sock, (char*)&data.names, sizeof(data.names[0]) * data.names.size(), 0);
+		n = recv(sock, (char*)&data.scores, sizeof(data.scores[0]) * data.scores.size(), 0);
+		size_t size = 0;
+		n = recv(sock, (char*)&size, sizeof(size_t), 0);
+		data.targetData.resize(size);
+		for (auto& target : data.targetData) {
+			n = recv(sock, (char*)size, sizeof(size_t), 0);
+			for (auto i = 0; i < size; i++) {
+				target.push_back(TargetData());
+				n = recv(sock, (char*)&target[i], sizeof(TargetData), 0);
+			}
+		}
 	}
 	// ソケットを閉じる
 	closesocket(sock);
