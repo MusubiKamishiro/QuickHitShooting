@@ -34,6 +34,7 @@ void NetWorkWS2::InitializeClient(const std::string& ip)
 	}
 }
 
+// 非リアルタイム通信処理　共通部
 void NetWorkWS2::SendServerCore(const char* data, size_t size)
 {
 	// 何度でも接続できるよう、whileでずっとループする
@@ -54,6 +55,7 @@ void NetWorkWS2::SendServerCore(const char* data, size_t size)
 	}
 }
 
+// リアルタイム通信処理　共通部
 void NetWorkWS2::RealTimeServerCore(const char* data, size_t size)
 {
 	len = sizeof(client);
@@ -176,7 +178,6 @@ void NetWorkWS2::RealTimeServer(SendDataWS2& data)
 	// 構造体データを変換
 	const char* p = (const char*)&data;
 	RealTimeServerCore(p,sizeof(data));
-	
 }
 
 // リアルタイム通信サーバーの処理（StageInfo Ver）
