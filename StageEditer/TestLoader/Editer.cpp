@@ -223,6 +223,12 @@ void Editer::WaveDrawer()
 	/// îwåi
 	DrawGraph(0, 0, _editBg, true);
 
+	/// â∫ín
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+	DrawBox(0, 0, Editer::Instance().GetScreenSize().x, Editer::Instance().GetScreenSize().y,
+			0xffffff, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
 	Vector2<int> strSize;
 	std::string text;
 	SetFontSize(64);
@@ -243,6 +249,12 @@ void Editer::TargetDrawer()
 	/// îwåi
 	DrawGraph(0, 0, _editBg, true);
 
+	/// â∫ín
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+	DrawBox(0, 0, Editer::Instance().GetScreenSize().x, Editer::Instance().GetScreenSize().y,
+			0xffffff, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
 	Vector2<int> strSize;
 	std::string text;
 	SetFontSize(64);
@@ -250,14 +262,14 @@ void Editer::TargetDrawer()
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
 	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) - (strSize.y / 2), text.c_str(), 0x000000);
 
-	SetFontSize(48);
+	SetFontSize(54);
 	/// ê›íËÇçsÇ¡ÇƒÇ¢ÇÈìIÇÃï\é¶
 	int nowColor;
 	int dispOffset = (_configTarget < 10 ? 0 : _configTarget - 9);
 	int cntMax	   = (_waveTargetCnt.size() < 10 ? _waveTargetCnt.size() : dispOffset + 10);
 	for (int i = dispOffset; i < cntMax; ++i)
 	{
-		nowColor = (_configTarget == i ? 0x00bfff : 0x000000);
+		nowColor = (_configTarget == i ? 0xff0000 : 0x000000);
 		text = std::to_string(i + 1) + " : " + std::to_string(_waveTargetCnt[i]);
 		GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
 		DrawString(_screen.x - strSize.x, strSize.y * (i - dispOffset), text.c_str(), nowColor);

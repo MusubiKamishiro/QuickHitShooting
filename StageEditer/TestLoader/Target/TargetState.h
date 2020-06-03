@@ -24,7 +24,7 @@ protected:
 
 	Vector2<int> _drawPos, _strSize;
 	std::string _text;
-	const int _boxSize = 75;
+	const int _targetSize = 75;
 	const int _imageID[static_cast<int>(TargetID::MAX)] = {
 		ImageMng::Instance().GetID("img/nEnemy.png"),
 		ImageMng::Instance().GetID("img/sEnemy.png"),
