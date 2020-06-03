@@ -224,13 +224,13 @@ void Editer::WaveDrawer()
 
 	Vector2<int> strSize;
 	std::string text;
-	SetFontSize(80);
+	SetFontSize(64);
 	text = "Now Wave Count";
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
 	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) - (strSize.y / 2), text.c_str(), 0x000000);
 
 	/// 現在のウェーブ数
-	SetFontSize(140);
+	SetFontSize(112);
 	text = std::to_string(_waveCnt);
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
 	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) + (strSize.y / 2), text.c_str(), 0x0000cd);
@@ -244,12 +244,12 @@ void Editer::TargetDrawer()
 
 	Vector2<int> strSize;
 	std::string text;
-	SetFontSize(80);
+	SetFontSize(64);
 	text = "Appear Target Count";
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
 	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) - (strSize.y / 2), text.c_str(), 0x000000);
 
-	SetFontSize(60);
+	SetFontSize(48);
 	/// 設定を行っている的の表示
 	int nowColor;
 	int dispOffset = (_configTarget < 10 ? 0 : _configTarget - 9);
@@ -263,7 +263,7 @@ void Editer::TargetDrawer()
 	}
 
 	/// 現在の的数
-	SetFontSize(140);
+	SetFontSize(112);
 	text = std::to_string(_waveTargetCnt[_configTarget]);
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
 	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) + (strSize.y / 2), text.c_str(), 0x0000cd);

@@ -23,9 +23,6 @@ protected:
 
 	Vector2<int> _drawPos, _strSize;
 	std::string _text;
-private:
-
-
-	const int _boxSize = 50;
+	const int _boxSize = 75;
 };
 
