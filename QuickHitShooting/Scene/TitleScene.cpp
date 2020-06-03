@@ -19,6 +19,7 @@ namespace {
 	// 送るデータ構造体の宣言
 	// これを書き換えると送られるデータも書き換えられる
 	// 受信するデータ構造体もここで宣言してよい
+	SendDataWS2 RealDataws2 = {};
 	SendDataWS2 dataws2 = {};
 }
 
@@ -88,29 +89,29 @@ TitleScene::TitleScene()
 
 	//##############################################################
 	// リアルタイムサーバースレッド
-	std::thread RealSendThread([]() {
-		dataws2.Buffer = "REALKUSOZAKO";
+	/*std::thread RealSendThread([]() {
+		RealDataws2.Buffer = "REALKUSOZAKO";
 		NetWorkWS2::Instance().Initialize("192.168.11.47");
-		NetWorkWS2::Instance().RealTimeServer(dataws2);
+		NetWorkWS2::Instance().RealTimeServer(RealDataws2);
 		});
-	RealSendThread.detach();
+	RealSendThread.detach();*/
 	//##############################################################
 
 	//##############################################################
 	// リアルタイムクライアントスレッド
 	/*std::thread RealReciveThread([]() {
-		SendDataWS2 dataws2 = {};
-		dataws2.Buffer = "";
+		RealDataws2.Buffer = "";
 		NetWorkWS2::Instance().Initialize("192.168.11.55");
-		NetWorkWS2::Instance().RealTimeClient(dataws2);
+		NetWorkWS2::Instance().RealTimeClient(RealDataws2);
 		});
-	RealSendThread.detach();*/
+	RealReciveThread.detach();*/
 	//##############################################################
 }
 
 
 TitleScene::~TitleScene()
 {
+	NetWorkWS2::Instance().Terminate();
 }
 
 void TitleScene::Update(const Peripheral& p)
@@ -125,13 +126,27 @@ void TitleScene::Update(const Peripheral& p)
 
 	//##############################################################
 	// ネットワーク通信呼び出し（仮）(サーヴァー)
+	
 	if (nowInput && !oldInput) {
 		std::thread reciveThread([]() {
-			DxLib::DxLib_Init();
-			SendDataWS2 dataws2 = {};
+			dataws2.Buffer.resize(256);
 			dataws2.Buffer = "KUSOZAKO";
+			//######################################################
+			// StageInfoテストデータ
+			StageInfo info = {};
+			std::array<std::string, 3> names = { "Title","Game","Result" };
+			info.names = names;
+			TargetData tdata = {};
+			tdata.pos = { 100,500 };
+			tdata.appearTime = 600;
+			tdata.dispTime = 1000;
+			tdata.type = 1;
+			vec_target vtarget = {tdata};
+			info.targetData.push_back(vtarget);
+			info.scores = { 30,50,60 };
+			//######################################################
 			NetWorkWS2::Instance().Initialize("192.168.11.47");
-			NetWorkWS2::Instance().SendServer(dataws2);
+			NetWorkWS2::Instance().SendServer(info);
 			});
 		reciveThread.detach();
 	}
@@ -143,9 +158,11 @@ void TitleScene::Update(const Peripheral& p)
 	// ネットワーク通信呼び出し（仮）(クルァイアント)
 	/*if (nowInput && !oldInput) {
 		std::thread reciveThread([]() {
-			DxLib::DxLib_Init();
-			SendDataWS2 dataws2 = {};
-			dataws2.Buffer = "";
+			dataws2.Buffer.resize(256);
+			//######################################################
+			// StageInfoテストデータ
+			StageInfo info = {};
+			//######################################################
 			NetWorkWS2::Instance().Initialize("192.168.11.55");
 			NetWorkWS2::Instance().RecivedClient(dataws2);
 			});
