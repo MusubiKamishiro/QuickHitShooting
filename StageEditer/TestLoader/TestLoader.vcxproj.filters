@@ -51,6 +51,9 @@
     <ClCompile Include="Target\TargetBanishTime.cpp">
       <Filter>Target\ソースファイル</Filter>
     </ClCompile>
+    <ClCompile Include="ImageMng.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Input.h">
@@ -76,6 +79,9 @@
     </ClInclude>
     <ClInclude Include="Target\TargetBanishTime.h">
       <Filter>Target\ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageMng.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

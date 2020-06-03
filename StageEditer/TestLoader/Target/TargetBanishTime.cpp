@@ -47,52 +47,52 @@ void TargetBanishTime::DataConfig(const int& wCnt, const int& tCnt,
 void TargetBanishTime::Draw(const int& wCnt, const int& tCnt, const std::vector<vec_target> stageData)
 {
 	/// 現在のモード
-	SetFontSize(60);
-	_text = "Target BanishTime Config";
+	SetFontSize(48);
+	_text = "BanishTime Config";
 	_drawPos.x = 0;
 	_drawPos.y = 0;
-	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x7fffd4);
+	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x228b22);
 
 	/// ウェーブ数
 	_text = "Wave Count";
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
 	_drawPos.x = 0;
 	_drawPos.y = _strSize.y * 2;
-	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffff9e);
+	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x00008b);
 
 	_text = std::to_string(wCnt + 1) + " / " + std::to_string(stageData.size());
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
 	_drawPos.x = _strSize.x / 2;
 	_drawPos.y = _strSize.y * 3;
-	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffff9e);
+	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x00008b);
 
 	/// 的数
-	SetFontSize(100);
+	SetFontSize(80);
 	_text = "Target Count";
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
 	_drawPos.x = (Editer::Instance().GetScreenSize().x / 2) - (_strSize.x / 2);
 	_drawPos.y = (Editer::Instance().GetScreenSize().y / 5) + (_strSize.y / 2);
-	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffffff);
+	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x000000);
 
 	_text = std::to_string(tCnt + 1) + " / " + std::to_string(stageData[wCnt].size());
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
 	_drawPos.x = (Editer::Instance().GetScreenSize().x / 2) - (_strSize.x / 2);
 	_drawPos.y = (Editer::Instance().GetScreenSize().y / 3) + (_strSize.y / 2);
-	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffffff);
+	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x000000);
 
 	/// 消えるまでの時間
 	_text	   = "Now Banish Time : " + std::to_string(stageData[wCnt][tCnt].banishTime);
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
 	_drawPos.x = (Editer::Instance().GetScreenSize().x / 5);
 	_drawPos.y = (Editer::Instance().GetScreenSize().y / 2) + _strSize.y;
-	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffffff);
+	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x000000);
 
 	/// 全ての消えるまでの時間
-	SetFontSize(60);
+	SetFontSize(48);
 	int configColor = 0;			/// 設定中の色
 	for (int i = 0; i < stageData[wCnt].size(); ++i)
 	{
-		configColor = (i == tCnt ? 0xffff00 : 0xffffff);
+		configColor = (i == tCnt ? 0x00bfff : 0x000000);
 		_text	   = std::to_string(i + 1) + " : " + std::to_string(stageData[wCnt][i].banishTime);
 		GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
 		_drawPos.x = Editer::Instance().GetScreenSize().x - _strSize.x;
