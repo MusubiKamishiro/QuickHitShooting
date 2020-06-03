@@ -9,8 +9,8 @@
 struct TargetData
 {
 	unsigned char type;			// ID
-	unsigned int  dispTime;		// 表示時間
-	unsigned int  appearTime;	// 表示してから消えるまでの時間
+	unsigned int  dispTime;		// 出現する時間
+	unsigned int  banishTime;	// 消えるまでの時間
 	Vector2<int>  pos;			// 座標
 };
 // 的情報の可変長配列

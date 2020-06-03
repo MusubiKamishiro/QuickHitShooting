@@ -52,6 +52,9 @@ private:
 	std::shared_ptr<Menu> _menu;
 	std::shared_ptr<Keyboard> _keyboard;
 
+	int _resultBg;
+	int _resultBd;
+
 	int _time;
 
 	NumData _score;		// “¾“_

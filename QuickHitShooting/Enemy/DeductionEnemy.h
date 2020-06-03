@@ -6,11 +6,9 @@ class DeductionEnemy :
 private:
 	const int _point;
 public:
-	DeductionEnemy(const int& dispTime, const int& appearTime,
+	DeductionEnemy(const int& dispTime, const int& banishTime,
 				   const Vector2<int>& pos);
 	~DeductionEnemy();
-
-	void Draw() override;
 
 	int GetScore() const override;
 };

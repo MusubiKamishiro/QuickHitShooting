@@ -28,6 +28,11 @@ ResultScene::ResultScene(const ResultData& resultData)
 	_menu.reset(new Menu());
 
 	ImageData data;
+	Game::Instance().GetFileSystem()->Load("img/result.png", data);
+	_resultBg = data.GetHandle();
+	Game::Instance().GetFileSystem()->Load("img/plate/resultBd.png", data);
+	_resultBd = data.GetHandle();
+
 	Game::Instance().GetFileSystem()->Load("img/sample02.png", data);
 	int img = data.GetHandle();
 	_menu->AddMenuList("ReTry", Vector2<int>(_scrSize.x/2 - 330, _scrSize.y - 150), Vector2<int>(_scrSize.x/2 - 30, _scrSize.y), img);
@@ -179,7 +184,7 @@ bool ResultScene::SaveRanking()
 		}
 		/// 書き込むウェーブ数の設定
 		int targetCnt = 0;
-		int waveCnt = data.GetStageData().targetData.size();
+		int waveCnt	  = data.GetStageData().targetData.size();
 		fwrite(&waveCnt, sizeof(int), 1, file);
 
 		for (int w = 0; w < waveCnt; ++w)
@@ -192,7 +197,7 @@ bool ResultScene::SaveRanking()
 				/// ターゲットデータの書き込み
 				fwrite(&data.GetStageData().targetData[w][t].type,		 sizeof(unsigned char), 1, file);
 				fwrite(&data.GetStageData().targetData[w][t].dispTime,	 sizeof(unsigned int), 1, file);
-				fwrite(&data.GetStageData().targetData[w][t].appearTime, sizeof(unsigned int), 1, file);
+				fwrite(&data.GetStageData().targetData[w][t].banishTime, sizeof(unsigned int), 1, file);
 				fwrite(&data.GetStageData().targetData[w][t].pos.x,		 sizeof(int), 1, file);
 				fwrite(&data.GetStageData().targetData[w][t].pos.y,		 sizeof(int), 1, file);
 			}
@@ -253,14 +258,18 @@ void ResultScene::Draw()
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, _pal);
 	DxLib::DrawBox(0, 0, _scrSize.x, _scrSize.y, 0xffffff, true);
 	
+	DxLib::DrawGraph(0, 0, _resultBg, true);
+
+	DxLib::DrawGraph(40, _scrSize.y / 10, _resultBd, true);
+
 	_trimString->ChangeFontSize(50);
 	std::string s = "score %" + std::to_string(_maxScoreDigit) + "d";
-	DxLib::DrawFormatString(0, 300, 0x000000, s.c_str(), static_cast<int>(_score.num));
+	DxLib::DrawFormatString(100, 150, 0x000000, s.c_str(), static_cast<int>(_score.num));
 	s = "HitRate %" + std::to_string(_maxHitRateDigit) + ".2f";
-	DxLib::DrawFormatString(0, 400, 0x000000, s.c_str(), _hitRate.num);
-	DxLib::DrawFormatString(700, 300, 0x000000, "1位 %s %d", _resultData.ranking[0].first.c_str(), _resultData.ranking[0].second);
-	DxLib::DrawFormatString(700, 400, 0x000000, "2位 %s %d", _resultData.ranking[1].first.c_str(), _resultData.ranking[1].second);
-	DxLib::DrawFormatString(700, 500, 0x000000, "3位 %s %d", _resultData.ranking[2].first.c_str(), _resultData.ranking[2].second);
+	DxLib::DrawFormatString(100, 250, 0x000000, s.c_str(), _hitRate.num);
+	DxLib::DrawFormatString(900, 150, 0x000000, "1位 %s %d", _resultData.ranking[0].first.c_str(), _resultData.ranking[0].second);
+	DxLib::DrawFormatString(900, 250, 0x000000, "2位 %s %d", _resultData.ranking[1].first.c_str(), _resultData.ranking[1].second);
+	DxLib::DrawFormatString(900, 350, 0x000000, "3位 %s %d", _resultData.ranking[2].first.c_str(), _resultData.ranking[2].second);
 
 	if (_updater == &ResultScene::RankinUpdate)
 	{
