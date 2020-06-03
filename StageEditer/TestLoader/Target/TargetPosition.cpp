@@ -5,9 +5,6 @@
 TargetPosition::TargetPosition() : _alphaMax(256)
 {
 	_alpha = 0;
-	_idImage[static_cast<int>(TargetID::NORMAL)]	= LoadGraph("img/nEnemy.png");
-	_idImage[static_cast<int>(TargetID::SPECIAL)]	= LoadGraph("img/dEnemy.png");
-	_idImage[static_cast<int>(TargetID::DEDUCTION)] = LoadGraph("img/sEnemy.png");
 }
 
 TargetPosition::~TargetPosition()
@@ -41,7 +38,7 @@ void TargetPosition::Draw(const int& wCnt, const int& tCnt, const std::vector<ve
 {
 	/// 現在のモード
 	SetFontSize(48);
-	_text = "Target Position Config";
+	_text = "Position Config";
 	_drawPos.x = 0;
 	_drawPos.y = 0;
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x228b22);
@@ -51,37 +48,37 @@ void TargetPosition::Draw(const int& wCnt, const int& tCnt, const std::vector<ve
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
 	_drawPos.x = (Editer::Instance().GetScreenSize().x / 2) - (_strSize.x / 2);
 	_drawPos.y = 0;
-	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffff9e);
+	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x00008b);
 
 	_text = std::to_string(wCnt + 1) + " / " + std::to_string(stageData.size());
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
 	_drawPos.x = (Editer::Instance().GetScreenSize().x / 2) - (_strSize.x / 2);
 	_drawPos.y = _strSize.y;
-	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffff9e);
+	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x00008b);
 
 	/// 的数
 	_text = "Target Count";
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
-	_drawPos.x = Editer::Instance().GetScreenSize().x - (Editer::Instance().GetScreenSize().x / 10) - (_strSize.x / 2);
+	_drawPos.x = Editer::Instance().GetScreenSize().x - _strSize.x;
 	_drawPos.y = 0;
-	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffffff);
+	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x000000);
 
 	_text = std::to_string(tCnt + 1) + " / " + std::to_string(stageData[wCnt].size());
 	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, _text.c_str(), strlen(_text.c_str()));
 	_drawPos.x = Editer::Instance().GetScreenSize().x - (Editer::Instance().GetScreenSize().x / 10) - (_strSize.x / 2);
 	_drawPos.y = _strSize.y;
-	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0xffffff);
+	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x000000);
 
 	/// 全ての的表示
 	for (int i = 0; i < stageData[wCnt].size(); ++i)
 	{
 		DrawExtendGraph(stageData[wCnt][i].pos.x, stageData[wCnt][i].pos.y,
 						stageData[wCnt][i].pos.x + _boxSize, stageData[wCnt][i].pos.y + _boxSize,
-						_idImage[stageData[wCnt][i].type], true);
+						_imageID[stageData[wCnt][i].type], true);
 	}
 
 	/// 設定中の座標
-	_alpha = (_alpha + 8) % (_alphaMax * 2);
+	_alpha = (_alpha + 10) % (_alphaMax * 2);
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, abs(_alpha - _alphaMax));
 
 	DrawCircle(stageData[wCnt][tCnt].pos.x + _boxSize / 2, 

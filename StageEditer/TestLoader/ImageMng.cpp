@@ -11,28 +11,11 @@ ImageMng::~ImageMng()
 {
 }
 
-const VEC_INT & ImageMng::GetID(const std::string& key)
+const int & ImageMng::GetID(const std::string& path)
 {
-	return GetID(key, key);
-}
-
-const VEC_INT & ImageMng::GetID(const std::string & key, const std::string & path)
-{
-	if (_imgMap.find(key) == _imgMap.end())
+	if (_imgMap.find(path) == _imgMap.end())
 	{
-		_imgMap[key].resize(1);
-		_imgMap[key][0] = LoadGraph(path.c_str());
+		_imgMap[path] = LoadGraph(path.c_str());
 	}
-	return _imgMap[key];
-}
-
-const VEC_INT & ImageMng::GetID(const std::string & key, const std::string & path, const Vector2 & divCnt, const Vector2 &divSize)
-{
-	if (_imgMap.find(key) == _imgMap.end())
-	{
-		_imgMap[key].resize(divCnt.x * divCnt.y);
-		LoadDivGraph(path.c_str(), divCnt.x * divCnt.y, divCnt.x, divCnt.y, 
-								   divSize.x, divSize.y, &_imgMap[key][0]);
-	}
-	return _imgMap[key];
+	return _imgMap[path];
 }

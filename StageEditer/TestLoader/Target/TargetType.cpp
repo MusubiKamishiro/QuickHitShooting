@@ -4,9 +4,6 @@
 
 TargetType::TargetType()
 {
-	_idImage[static_cast<int>(TargetID::NORMAL)]	= LoadGraph("img/nEnemy.png");
-	_idImage[static_cast<int>(TargetID::SPECIAL)]	= LoadGraph("img/dEnemy.png");
-	_idImage[static_cast<int>(TargetID::DEDUCTION)] = LoadGraph("img/sEnemy.png");
 }
 
 TargetType::~TargetType()
@@ -49,7 +46,7 @@ void TargetType::Draw(const int& wCnt, const int& tCnt, const std::vector<vec_ta
 {
 	/// 現在のモード
 	SetFontSize(48);
-	_text	   = "Target ID Config";
+	_text	   = "ID Config";
 	_drawPos.x = 0;
 	_drawPos.y = 0;
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x228b22);
@@ -89,9 +86,9 @@ void TargetType::Draw(const int& wCnt, const int& tCnt, const std::vector<vec_ta
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x000000);
 	_drawPos.x = (Editer::Instance().GetScreenSize().x / 2) + (_strSize.x / 2);
 
-	DrawExtendGraph(_drawPos.x, _drawPos.y,
-					_drawPos.x + _boxSize, _drawPos.y + _boxSize,
-					_idImage[stageData[wCnt][tCnt].type], true);
+	DrawExtendGraph(_drawPos.x, _drawPos.y - 20,
+					_drawPos.x + 120, _drawPos.y + 100,
+					_imageID[stageData[wCnt][tCnt].type], true);
 
 	/// 全てのIDの表示
 	SetFontSize(48);
@@ -109,6 +106,6 @@ void TargetType::Draw(const int& wCnt, const int& tCnt, const std::vector<vec_ta
 		DrawString(_drawPos.x, _drawPos.y, _text.c_str(), configColor);
 		DrawExtendGraph(Editer::Instance().GetScreenSize().x - 48, (48 * i),
 						Editer::Instance().GetScreenSize().x, (48 * (i + 1)),
-						_idImage[id], true);
+						_imageID[id], true);
 	}
 }

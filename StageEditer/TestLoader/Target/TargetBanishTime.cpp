@@ -48,7 +48,7 @@ void TargetBanishTime::Draw(const int& wCnt, const int& tCnt, const std::vector<
 {
 	/// Œ»Ý‚Ìƒ‚[ƒh
 	SetFontSize(48);
-	_text = "Target BanishTime Config";
+	_text = "BanishTime Config";
 	_drawPos.x = 0;
 	_drawPos.y = 0;
 	DrawString(_drawPos.x, _drawPos.y, _text.c_str(), 0x228b22);

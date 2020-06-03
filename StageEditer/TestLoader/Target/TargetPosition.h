@@ -19,8 +19,5 @@ private:
 	int _alpha;				// 透明度用の値
 
 	const int _alphaMax;	// 透明度の最大値
-
-	// 的の画像ID
-	int _idImage[static_cast<int>(TargetID::MAX)];
 };
 

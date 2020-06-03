@@ -1,6 +1,7 @@
 #include <DxLib.h>
 #include "Input.h"
 #include "Editer.h"
+#include "ImageMng.h"
 #include "Target/TargetState.h"
 #include "Target/TargetType.h"
 
@@ -29,7 +30,7 @@ bool Editer::Init()
 	SetMainWindowText("StageEditer");
 	SetDrawScreen(DX_SCREEN_BACK);
 
-	_editBg = LoadGraph("img/game.png");
+	_editBg = ImageMng::Instance().GetID("img/game.png");
 
 	/// ステージエディターの初期状態
 	Wave();

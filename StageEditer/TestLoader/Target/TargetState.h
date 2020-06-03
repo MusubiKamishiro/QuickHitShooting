@@ -4,6 +4,7 @@
 
 #include "../Editer.h"
 #include "../Input.h"
+#include "../ImageMng.h"
 
 class TargetState
 {
@@ -24,5 +25,10 @@ protected:
 	Vector2<int> _drawPos, _strSize;
 	std::string _text;
 	const int _boxSize = 75;
+	const int _imageID[static_cast<int>(TargetID::MAX)] = {
+		ImageMng::Instance().GetID("img/nEnemy.png"),
+		ImageMng::Instance().GetID("img/sEnemy.png"),
+		ImageMng::Instance().GetID("img/dEnemy.png")
+	};
 };
 
