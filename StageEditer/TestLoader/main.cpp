@@ -1,8 +1,8 @@
 #include <DxLib.h>
-#include "Stage.h"
+#include "Editer.h"
 
 int main()
 {
-	Stage::Instance().Update();
+	Editer::Instance().Update();
 	return 0;
 }

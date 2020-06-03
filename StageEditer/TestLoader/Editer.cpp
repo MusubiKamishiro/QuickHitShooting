@@ -1,53 +1,76 @@
 #include <DxLib.h>
 #include "Input.h"
-#include "Stage.h"
+#include "Editer.h"
 #include "Target/TargetState.h"
 #include "Target/TargetType.h"
 
-std::unique_ptr<Stage, Stage::EditerDeleter> Stage::s_Instance(new Stage());
+std::unique_ptr<Editer, Editer::EditerDeleter> Editer::s_Instance(new Editer());
 
-Stage::Stage() : _targetCntMax(10), _screen(1920, 1080), 
+Editer::Editer() : _targetCntMax(10), _screen(1920, 1080), 
 _gameScreen(1280, 720), _waveEnd(55)
 {
 	Init();
 	_input = std::make_unique<Input>();
 }
 
-Stage::~Stage()
+Editer::~Editer()
 {
 }
 
-bool Stage::Init()
+/// 画面ウィンドウなどの初期化
+bool Editer::Init()
 {
+	///	ウィンドウの初期化
 	ChangeWindowMode(true);
 	SetGraphMode(_screen.x, _screen.y, 32);
 	if (DxLib::DxLib_Init() == -1)
 	{
 		return false;
 	}
-
 	SetMainWindowText("StageEditer");
 	SetDrawScreen(DX_SCREEN_BACK);
 
+	/// ステージエディターの初期状態
 	Wave();
 
 	return false;
 }
 
-void Stage::Wave()
+/// 設定する的情報の変更用
+void Editer::ChagneState(TargetState* targetState)
 {
-	_nowMode = &Stage::WaveUpdate;
-	_waveCnt = 1;
-
-	_stageInfo.targetData.clear();
+	_targetState.reset(targetState);
 }
 
-void Stage::Target()
+/// 画面サイズ取得用
+Vector2<int> Editer::GetScreenSize() const
 {
-	_nowMode = &Stage::TargetUpdate;
+	return _screen;
+}
 
-	/// ウェーブ数を取得している
+/// ウェーブ設定の初期化
+void Editer::Wave()
+{
+	_nowMode = &Editer::WaveUpdate;
+	_drawer  = &Editer::WaveDrawer;
+	_waveCnt = 1;
+
+	/// ステージデータの初期化
+	_stageInfo.targetData.clear();
+	std::vector<vec_target>().swap(_stageInfo.targetData);
+}
+
+/// ターゲット設定の初期化
+void Editer::Target()
+{
+	_nowMode = &Editer::TargetUpdate;
+	_drawer  = &Editer::TargetDrawer;
+
+	/// ウェーブ数の初期化
 	_waveTargetCnt.clear();
+	std::vector<int>().swap(_waveTargetCnt);
+
+	/// ウェーブ数の設定を行う
 	_waveTargetCnt.reserve(_waveCnt);
 	_waveTargetCnt.resize(_waveCnt);
 
@@ -58,10 +81,12 @@ void Stage::Target()
 	}
 }
 
-void Stage::Edit()
+/// ステージ設定の初期化
+void Editer::Stage()
 {
 	/// 設定する的の初期化
-	_nowMode	 = &Stage::EditUpdate;
+	_nowMode	 = &Editer::StageUpdate;
+	_drawer		 = &Editer::StageDrawer;
 	_targetState = std::make_unique<TargetType>();
 
 	/// ウェーブの生成
@@ -76,157 +101,171 @@ void Stage::Edit()
 	}
 
 	/// ステージデータの初期化
-	auto wCnt = _stageInfo.targetData.begin();
-	for (; wCnt != _stageInfo.targetData.end(); ++wCnt)
+	for (unsigned int i = 0; i < _stageInfo.targetData.size(); ++i)
 	{
 		/// 1ウェーブごとの的数の設定
-		auto cnt = wCnt - _stageInfo.targetData.begin();
-		(*wCnt).reserve(_waveTargetCnt[cnt]);
-		(*wCnt).resize(_waveTargetCnt[cnt]);
+		_stageInfo.targetData[i].reserve(_waveTargetCnt[i]);
+		_stageInfo.targetData[i].resize(_waveTargetCnt[i]);
 
 		/// 的情報の初期化
-		for (auto& target : (*wCnt))
+		for (auto& target : _stageInfo.targetData[i])
 		{
 			target.type		  = 0;
-			target.appearTime = 60;
+			target.banishTime = 60;
 			target.dispTime	  = 60;
 			target.pos.x	  = _screen.x / 2;
 			target.pos.y	  = _screen.y / 2;
 		}
 	}
-	_waveTargetCnt.clear();
 
 	/// エディターで使用する値の初期化
 	_nowWaveCnt = _nowTargetCnt = 0;
 }
 
-void Stage::WaveUpdate()
+/// ウェーブ設定の更新用
+void Editer::WaveUpdate()
 {
-	/// ターゲットモードに移行する
+	/// 的設定に移行する
 	if (_input->IsTrigger(KEY_INPUT_SPACE))
 	{
 		Target();
 		return;
 	}
 
-	if (_input->IsTrigger(KEY_INPUT_UP))
+	/// ウェーブ数の設定
+	if (_input->IsTrigger(KEY_INPUT_LEFT) ||
+		_input->IsTrigger(KEY_INPUT_A))
 	{
-		/// ウェーブ数の減算
 		_waveCnt = (_waveCnt > 1 ? _waveCnt - 1 : 1);
 	}
-	else if (_input->IsTrigger(KEY_INPUT_DOWN))
+	else if (_input->IsTrigger(KEY_INPUT_RIGHT) ||
+			 _input->IsTrigger(KEY_INPUT_D))
 	{
-		/// ウェーブ数の加算
 		++_waveCnt;
 	}
 	else {}
-
-	Vector2<int> strSize;
-	std::string text;
-	SetFontSize(80);
-	text = "現在のウェーブ数";
-	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
-	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) - strSize.y, text.c_str(), 0xffffff);
-
-	SetFontSize(140);
-	text = std::to_string(_waveCnt);
-	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
-	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) + (strSize.y / 2), text.c_str(), 0x88ff88);
 }
 
-void Stage::TargetUpdate()
+/// 的設定の更新用
+void Editer::TargetUpdate()
 {
-	/// ウェーブモードに移行する
+	/// ウェーブ設定に移行する
 	if (_input->IsTrigger(KEY_INPUT_F1))
 	{
 		Wave();
 		return;
 	}
 
-	/// エディットモードに移行する
+	/// ステージデータ設定に移行する
 	if (_input->IsTrigger(KEY_INPUT_SPACE))
 	{
-		Edit();
+		Stage();
 		return;
 	}
 
-	if (_input->IsTrigger(KEY_INPUT_LEFT))
+	/// 的数の設定
+	if (_input->IsTrigger(KEY_INPUT_LEFT) ||
+		_input->IsTrigger(KEY_INPUT_A))
 	{
-		/// 的数の減算
 		_waveTargetCnt[_configTarget] = (_waveTargetCnt[_configTarget] > 3 ? _waveTargetCnt[_configTarget] - 1 : 3);
 	}
-	else if (_input->IsTrigger(KEY_INPUT_RIGHT))
+	else if (_input->IsTrigger(KEY_INPUT_RIGHT) ||
+			 _input->IsTrigger(KEY_INPUT_D))
 	{
-		/// 的数の加算
 		_waveTargetCnt[_configTarget] = (_waveTargetCnt[_configTarget] < _targetCntMax ? _waveTargetCnt[_configTarget] + 1 : _targetCntMax);
 	}
 	else {}
 
-	/// 設定する的の切り替え
-	if (_input->IsTrigger(KEY_INPUT_UP))
+	/// 設定する的の切替
+	if (_input->IsTrigger(KEY_INPUT_UP) ||
+		_input->IsTrigger(KEY_INPUT_W))
 	{
 		int targetMax = _waveTargetCnt.size();
 		_configTarget = ((_configTarget - 1) + targetMax) % targetMax;
 	}
-	else if (_input->IsTrigger(KEY_INPUT_DOWN))
+	else if (_input->IsTrigger(KEY_INPUT_DOWN) ||
+			 _input->IsTrigger(KEY_INPUT_S))
 	{
 		int targetMax = _waveTargetCnt.size();
 		_configTarget = (_configTarget + 1) % targetMax;
 	}
 	else{}
-
-	Vector2<int> strSize;
-	std::string text;
-	SetFontSize(80);
-	text = "出現する的の数";
-	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
-	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) - strSize.y, text.c_str(), 0xffffff);
-
-	/// 現在設定している的の表示
-	int nowTargetColor;
-	auto tCnt = _waveTargetCnt.begin();
-	for (; tCnt != _waveTargetCnt.end(); ++tCnt)
-	{
-		auto cnt = tCnt - _waveTargetCnt.begin();
-		nowTargetColor = (_configTarget == cnt ? 0xffff00 : 0xffffff);
-		text = std::to_string(cnt + 1) + " : " + std::to_string((*tCnt));
-		GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
-		DrawString(_screen.x - strSize.x, strSize.y * cnt, text.c_str(), nowTargetColor);
-	}
-
-	/// 出現する的数の設定
-	SetFontSize(140);
-	text = std::to_string(_waveTargetCnt[_configTarget]);
-	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
-	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) + (strSize.y / 2), text.c_str(), 0x88ff88);
 }
 
-void Stage::EditUpdate()
+/// ステージ設定の更新用
+void Editer::StageUpdate()
 {
-	/// ターゲット情報の更新
 	_targetState->Update(_nowWaveCnt, _nowTargetCnt, _input, _stageInfo.targetData);
-	/// ステージデータの初期化
+	
 	if (IsReset())
 	{
 		Wave();
-		_stageInfo.targetData.clear();
 		return;
 	}
 
-	/// ロード処理
 	if (IsLoad())
 	{
 		Load();
 	}
 
-	/// セーブ処理
 	if (IsSave())
 	{
 		Save();
 	}
 }
 
-bool Stage::IsReset()
+/// ウェーブ設定の描画
+void Editer::WaveDrawer()
+{
+	Vector2<int> strSize;
+	std::string text;
+	SetFontSize(80);
+	text = "Now Wave Count";
+	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
+	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) - strSize.y, text.c_str(), 0xffffff);
+
+	/// 現在のウェーブ数
+	SetFontSize(140);
+	text = std::to_string(_waveCnt);
+	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
+	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) + (strSize.y / 2), text.c_str(), 0x88ff88);
+}
+
+/// 的設定の描画
+void Editer::TargetDrawer()
+{
+	Vector2<int> strSize;
+	std::string text;
+	SetFontSize(80);
+	text = "Appear Target Count";
+	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
+	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) - strSize.y, text.c_str(), 0xffffff);
+
+	/// 設定を行っている的の表示
+	int nowTargetColor;
+	for (int i = 0; i < _waveTargetCnt.size(); ++i)
+	{
+		nowTargetColor = (_configTarget == i ? 0xffff00 : 0xffffff);
+		text = std::to_string(i + 1) + " : " + std::to_string(_waveTargetCnt[i]);
+		GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
+		DrawString(_screen.x - strSize.x, strSize.y * i, text.c_str(), nowTargetColor);
+	}
+
+	/// 現在の的数
+	SetFontSize(140);
+	text = std::to_string(_waveTargetCnt[_configTarget]);
+	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
+	DrawString((_screen.x / 2) - (strSize.x / 2), (_screen.y / 2) + (strSize.y / 2), text.c_str(), 0x88ff88);
+}
+
+/// ステージ設定の描画
+void Editer::StageDrawer()
+{
+	_targetState->Draw(_nowWaveCnt, _nowTargetCnt, _stageInfo.targetData);
+}
+
+/// ステージの再設定を行うかの判定用
+bool Editer::IsReset()
 {
 	if (_input->IsTrigger(KEY_INPUT_F1))
 	{
@@ -242,7 +281,8 @@ bool Stage::IsReset()
 	return false;
 }
 
-bool Stage::IsSave()
+/// ステージデータの保存を行うかの判定用
+bool Editer::IsSave()
 {
 	if (_input->IsTrigger(KEY_INPUT_F5))
 	{
@@ -258,7 +298,8 @@ bool Stage::IsSave()
 	return false;
 }
 
-bool Stage::IsLoad()
+/// ステージデータを保存行うかの判定用
+bool Editer::IsLoad()
 {
 	if (_input->IsTrigger(KEY_INPUT_F4))
 	{
@@ -274,18 +315,19 @@ bool Stage::IsLoad()
 	return false;
 }
 
-bool Stage::Save()
+/// セーブ処理
+bool Editer::Save()
 {
-	// ファイルフォルダーを開いて書き込むための初期化
+	/// ファイルフォルダーを開いて書き込むための初期化
 	OPENFILENAME openFileName;
-	char fileSize[MAX_PATH] = "";											// ファイル名のサイズと最後に\0を入れる
-	ZeroMemory(&openFileName, sizeof(openFileName));						// 構造体の初期化
-	openFileName.lStructSize = sizeof(OPENFILENAME);						// 構造体の大きさ
-	openFileName.lpstrFilter = TEXT("binファイル(*.bin)\0*.bin\0\0");		// 形式の選択
-	openFileName.lpstrFile	 = fileSize;									// 開くファイル名の長さ
-	openFileName.lpstrInitialDir = ("../");									// 開くフォルダの指定
-	openFileName.nMaxFile	 = MAX_PATH;									// 開くファイルの大きさ
-	openFileName.lpstrDefExt = (".bin");									// 保存するときのファイル形式
+	char fileSize[MAX_PATH] = "";											/// ファイル名のサイズと最後に\0を入れる
+	ZeroMemory(&openFileName, sizeof(openFileName));						/// 構造体の初期化
+	openFileName.lStructSize = sizeof(OPENFILENAME);						/// 構造体の大きさ
+	openFileName.lpstrFilter = TEXT("binファイル(*.bin)\0*.bin\0\0");		/// 形式の選択(バイナリ形式)
+	openFileName.lpstrFile	 = fileSize;									/// 開くファイル名の長さ
+	openFileName.lpstrInitialDir = ("../");									/// 開くフォルダの指定
+	openFileName.nMaxFile	 = MAX_PATH;									/// 開くファイルサイズ
+	openFileName.lpstrDefExt = (".bin");									/// 保存するときのファイル形式
 
 	if (GetSaveFileName(&openFileName) == true)
 	{
@@ -293,15 +335,13 @@ bool Stage::Save()
 		/// フォルダーで指定したファイルを開く
 		if (fopen_s(&file, openFileName.lpstrFile, "wb") == 0)
 		{
-			/// ステージデータの書き込み
-
 			char name[3];
 			for (int i = 0; i < _stageInfo.scores.size(); ++i)
 			{
 				fwrite(&_stageInfo.scores[i], sizeof(int), 1, file);
-				/// 文字の取得を行っている
 				for (int c = 0; c < sizeof(name) / sizeof(name[0]); ++c)
 				{
+					/// 文字の取得を行っている
 					name[c] = _stageInfo.names[i][c];
 				}
 				fwrite(name, (sizeof(char) * 3), 1, file);
@@ -327,7 +367,7 @@ bool Stage::Save()
 					/// ターゲットデータの書き込み
 					fwrite(&_stageInfo.targetData[w][t].type,		 sizeof(unsigned char), 1, file);
 					fwrite(&_stageInfo.targetData[w][t].dispTime,	 sizeof(unsigned int), 1, file);
-					fwrite(&_stageInfo.targetData[w][t].appearTime,  sizeof(unsigned int), 1, file);
+					fwrite(&_stageInfo.targetData[w][t].banishTime,  sizeof(unsigned int), 1, file);
 					registPos.x = (_stageInfo.targetData[w][t].pos.x * rate.x);
 					fwrite(&registPos.x, sizeof(int), 1, file);
 					registPos.y = (_stageInfo.targetData[w][t].pos.y * rate.x);
@@ -341,34 +381,34 @@ bool Stage::Save()
 	return true;
 }
 
-bool Stage::Load()
+/// ロード処理
+bool Editer::Load()
 {
-	// ファイルフォルダーを開いて読み込むための初期化
+	/// ファイルフォルダーを開いて書き込むための初期化
 	OPENFILENAME openFileName;
-	char fileSize[MAX_PATH] = "";											// ファイル名のサイズと最後に\0を入れる
-	ZeroMemory(&openFileName, sizeof(openFileName));						// 構造体の初期化
-	openFileName.lStructSize = sizeof(OPENFILENAME);						// 構造体の大きさ
-	openFileName.lpstrFilter = TEXT("binファイル(*.bin)\0*.bin\0\0");		// 形式の選択
-	openFileName.lpstrFile	 = fileSize;									// 開くファイル名の長さ
-	openFileName.lpstrInitialDir = ("../");									// 開くフォルダの指定
-	openFileName.nMaxFile	 = MAX_PATH;									// 開くファイルの大きさ
-	openFileName.lpstrDefExt = (".bin");									// 保存するときのファイル形式
+	char fileSize[MAX_PATH] = "";											/// ファイル名のサイズと最後に\0を入れる
+	ZeroMemory(&openFileName, sizeof(openFileName));						/// 構造体の初期化
+	openFileName.lStructSize = sizeof(OPENFILENAME);						/// 構造体の大きさ
+	openFileName.lpstrFilter = TEXT("binファイル(*.bin)\0*.bin\0\0");		/// 形式の選択(バイナリ形式)
+	openFileName.lpstrFile = fileSize;									/// 開くファイル名の長さ
+	openFileName.lpstrInitialDir = ("../");									/// 開くフォルダの指定
+	openFileName.nMaxFile = MAX_PATH;									/// 開くファイルサイズ
+	openFileName.lpstrDefExt = (".bin");									/// 保存するときのファイル形式
 
 	if (GetSaveFileName(&openFileName) == true)
 	{
-		// とりあえずデータの初期化を行う
 		FILE* file;
 		/// フォルダーで指定したファイルを開く
 		if (fopen_s(&file, openFileName.lpstrFile, "rb") == 0)
 		{
 			_stageInfo.targetData.clear();
-			/// スコアデータの読み込み
+			std::vector<vec_target>().swap(_stageInfo.targetData);
+
 			for (int i = 0; i < _stageInfo.scores.size(); ++i)
 			{
 				fread(&_stageInfo.scores[i], sizeof(int), 1, file);
 				fread((char*)_stageInfo.names[i].c_str(), (sizeof(char) * 3), 1, file);
 			}
-
 			/// ゲームの画面サイズからエディターの画面サイズの倍率を求めている
 			Vector2<double> rate = Vector2<double>((double)_screen.x / _gameScreen.x,
 												   (double)_screen.y / _gameScreen.y);
@@ -382,13 +422,14 @@ bool Stage::Load()
 
 			for (int w = 0; w < waveCnt; ++w)
 			{
+				/// ターゲット数の読み込み
 				fread(&targetCnt, sizeof(int), 1, file);
 				targetData.resize(targetCnt);
 				for (int t = 0; t < targetCnt; ++t)
 				{
 					fread(&target.type,		  sizeof(unsigned char), 1, file);
 					fread(&target.dispTime,   sizeof(unsigned int), 1, file);
-					fread(&target.appearTime, sizeof(unsigned int), 1, file);
+					fread(&target.banishTime, sizeof(unsigned int), 1, file);
 					fread(&target.pos.x, sizeof(int), 1, file);
 					target.pos.x *= rate.x;
 					fread(&target.pos.y, sizeof(int), 1, file);
@@ -398,33 +439,24 @@ bool Stage::Load()
 				}
 				_stageInfo.targetData.push_back(targetData);
 				targetData.clear();
-				std::vector<TargetData>().swap(targetData);
 			}
-
+			std::vector<TargetData>().swap(targetData);
 			fclose(file);
 		}
 	}
 	return true;
 }
 
-void Stage::Update()
+/// エディターの更新用
+void Editer::Update()
 {
 	while (ProcessMessage() == 0 && !_input->IsTrigger(KEY_INPUT_ESCAPE))
 	{
 		ClsDrawScreen();
 		_input->Update();
 		(this->*_nowMode)();
+		(this->*_drawer)();
 
 		ScreenFlip();
 	}
-}
-
-void Stage::ChagneState(TargetState* targetState)
-{
-	_targetState.reset(targetState);
-}
-
-Vector2<int> Stage::GetScreenSize() const
-{
-	return _screen;
 }

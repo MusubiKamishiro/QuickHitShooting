@@ -148,8 +148,8 @@
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Stage.cpp" />
-    <ClCompile Include="Target\TargetAppearTime.cpp" />
+    <ClCompile Include="Editer.cpp" />
+    <ClCompile Include="Target\TargetBanishTime.cpp" />
     <ClCompile Include="Target\TargetDispTime.cpp" />
     <ClCompile Include="Target\TargetPosition.cpp" />
     <ClCompile Include="Target\TargetState.cpp" />
@@ -158,8 +158,8 @@
   <ItemGroup>
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="Input.h" />
-    <ClInclude Include="Stage.h" />
-    <ClInclude Include="Target\TargetAppearTime.h" />
+    <ClInclude Include="Editer.h" />
+    <ClInclude Include="Target\TargetBanishTime.h" />
     <ClInclude Include="Target\TargetDispTime.h" />
     <ClInclude Include="Target\TargetPosition.h" />
     <ClInclude Include="Target\TargetState.h" />

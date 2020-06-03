@@ -12,11 +12,10 @@ bool StageLoader::Load(const std::string& path, Data& data)
 {
 	StageData& stage = dynamic_cast<StageData&>(data);
 
+	FILE* file;
 	// データが見つからなかったら読み込む
 	if (_table.find(path.c_str()) == _table.end())
 	{
-		// とりあえずデータの初期化を行う
-		FILE* file;
 		/// フォルダーで指定したファイルを開く
 		if (fopen_s(&file, path.c_str(), "rb") == 0)
 		{
@@ -49,7 +48,7 @@ bool StageLoader::Load(const std::string& path, Data& data)
 				{
 					fread(&target.type,			sizeof(unsigned char), 1, file);
 					fread(&target.dispTime,		sizeof(unsigned int), 1, file);
-					fread(&target.appearTime,	sizeof(unsigned int), 1, file);
+					fread(&target.banishTime,	sizeof(unsigned int), 1, file);
 					fread(&target.pos.x,		sizeof(int), 1, file);
 					fread(&target.pos.y,		sizeof(int), 1, file);
 
@@ -59,17 +58,33 @@ bool StageLoader::Load(const std::string& path, Data& data)
 
 				/// 的情報を開放する
 				targetData.clear();
-				std::vector<TargetData>().swap(targetData);
 			}
+			std::vector<TargetData>().swap(targetData);
 			fclose(file);
 
 			/// ステージデータの登録
-			_table[path]	 = stageInfo;
+			stageInfo.stageName = path;
+			_table[path]		= stageInfo;
 			
 			/// ステージデータを開放する
 			stageInfo.targetData.clear();
 			std::vector<vec_target>().swap(stageInfo.targetData);
 		}
+	}
+	else
+	{
+		if (fopen_s(&file, path.c_str(), "rb") == 0)
+		{
+			/// スコアデータの読み込み
+			for (unsigned int i = 0; i < _table[path].scores.size(); ++i)
+			{
+				/// 文字列の初期化
+				_table[path].names[i] = "AAA";
+				fread(&_table[path].scores[i], sizeof(int), 1, file);
+				fread((char*)_table[path].names[i].c_str(), (sizeof(char) * 3), 1, file);
+			}
+		}
+		fclose(file);
 	}
 	/// パスが見つかったらデータを返す。
 	stage._stageData = _table[path];

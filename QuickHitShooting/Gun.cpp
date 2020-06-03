@@ -41,8 +41,8 @@ bool Gun::Shot()
 void Gun::Draw()
 {
 	Vector2<int> ssize = Game::Instance().GetScreenSize();
-	_trimString->ChangeFontSize(30);
+	_trimString->ChangeFontSize(70);
 
-	DxLib::DrawFormatString(750, ssize.y - _trimString->GetFontSize(), 0xff0000, "残弾数：%d", _gun.remainingBullets);
-	DxLib::DrawFormatString(950, ssize.y - _trimString->GetFontSize(), 0xff0000, "マガジン内残弾数：%d", _gun.BulletsInMagazine);
+	DxLib::DrawFormatString(650, ssize.y - _trimString->GetFontSize() - 8, 0x000000, "残弾数：%d", _gun.remainingBullets);
+	DxLib::DrawFormatString(950, ssize.y - _trimString->GetFontSize() - 8, 0x000000, "マガジン内残弾数：%d", _gun.BulletsInMagazine);
 }
