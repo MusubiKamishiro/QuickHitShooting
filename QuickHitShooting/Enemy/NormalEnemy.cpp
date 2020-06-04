@@ -1,4 +1,5 @@
 #include "NormalEnemy.h"
+#include "../SoundPlayer.h"
 
 NormalEnemy::NormalEnemy(const int& dispTime, const int& banishTime, 
 						 const Vector2<int>& pos) : _point(30)
@@ -10,9 +11,14 @@ NormalEnemy::NormalEnemy(const int& dispTime, const int& banishTime,
 	_isAlive	= true;
 
 	/// ‰æ‘œID‚Ìæ“¾
-	ImageData data;
-	Game::Instance().GetFileSystem()->Load("img/nEnemy.png", data);
-	_targetImg = data.GetHandle();
+	ImageData iData;
+	Game::Instance().GetFileSystem()->Load("img/nEnemy.png", iData);
+	_targetImg = iData.GetHandle();
+
+	_sound = std::make_shared<SoundPlayer>();
+	SoundData sData;
+	Game::Instance().GetFileSystem()->Load("sound/se/glass-crack1.mp3", sData);
+	_sound->AddSound("death", sData.GetHandle());
 
 	/// ‹éŒ`‚Ìİ’è
 	_rect = Rect(_pos, Size(75, 75));

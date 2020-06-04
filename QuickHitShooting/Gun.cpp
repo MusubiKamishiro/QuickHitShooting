@@ -19,9 +19,9 @@ Gun::Gun(const GunStatus& gunState)
 	_soundPlayer.reset(new SoundPlayer);
 	SoundData data;
 	Game::Instance().GetFileSystem()->Load("sound/se/handgun-firing.mp3", data);
-	_soundPlayer->AddSound("shot", data.GetHandle());
+	_soundPlayer->AddSound("shot", data.GetHandle(), 50);
 	Game::Instance().GetFileSystem()->Load("sound/se/handgun-out-bullets.mp3", data);
-	_soundPlayer->AddSound("outOfAmmo", data.GetHandle());
+	_soundPlayer->AddSound("outOfAmmo", data.GetHandle(), 80);
 }
 
 Gun::~Gun()
