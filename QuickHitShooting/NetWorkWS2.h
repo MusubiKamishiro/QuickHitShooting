@@ -65,6 +65,12 @@ public:
 	// 引数に通信したい相手のIPアドレスを入れてください
 	void Initialize(const std::string& ip);
 
+	// 接続出来たかどうかのチェック
+	// サーバー側
+	bool IsConnectionServer();
+	// クライアント側
+	bool IsConnectionClient();
+
 	//####################################################
 	// サーバー側処理関数
 	// クライアント側から接続があればデータを送信して

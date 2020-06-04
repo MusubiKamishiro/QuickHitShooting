@@ -274,3 +274,27 @@ void NetWorkWS2::Initialize(const std::string& ip)
 	InitializeClient(ip);
 	InitializeServer();
 }
+
+// サーバー側接続できるか確認用関数
+bool NetWorkWS2::IsConnectionServer()
+{
+	len = sizeof(client);
+	sock = accept(sock0, (sockaddr*)&client, &len);
+	if (sock != INVALID_SOCKET) {
+		closesocket(sock);
+		return true;
+	}
+	closesocket(sock);
+	return false;
+}
+
+// クライアント側接続できるか確認用関数
+bool NetWorkWS2::IsConnectionClient()
+{
+	if (connect(sock, (sockaddr*)&server, sizeof(server)) == 0) {
+		closesocket(sock);
+		return true;
+	}
+	closesocket(sock);
+	return false;
+}
