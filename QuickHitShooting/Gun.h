@@ -3,6 +3,7 @@
 #include <memory>
 
 class TrimString;
+class SoundPlayer;
 
 // e‚Ìí—Ş
 enum class GunType
@@ -33,6 +34,7 @@ class Gun
 private:
 	GunStatus _gun;
 	std::unique_ptr<TrimString> _trimString;
+	std::shared_ptr<SoundPlayer> _soundPlayer;
 
 public:
 	Gun(const GunStatus& gunState);

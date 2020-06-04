@@ -1,7 +1,13 @@
 #include "Gun.h"
 #include <DxLib.h>
+#undef PlaySound;
 #include "Game.h"
 #include "TrimString.h"
+
+#include "Game.h"
+#include "Loader/FileSystem.h"
+#include "Loader/SoundLoader.h"
+#include "SoundPlayer.h"
 
 Gun::Gun(const GunStatus& gunState)
 {
@@ -9,6 +15,13 @@ Gun::Gun(const GunStatus& gunState)
 	_gun.remainingBullets = gunState.maxBullets;
 	_gun.BulletsInMagazine = gunState.maxBulletsInMagazine;
 	_trimString.reset(new TrimString());
+
+	_soundPlayer.reset(new SoundPlayer);
+	SoundData data;
+	Game::Instance().GetFileSystem()->Load("sound/se/handgun-firing.mp3", data);
+	_soundPlayer->AddSound("shot", data.GetHandle());
+	Game::Instance().GetFileSystem()->Load("sound/se/handgun-out-bullets.mp3", data);
+	_soundPlayer->AddSound("outOfAmmo", data.GetHandle());
 }
 
 Gun::~Gun()
@@ -32,9 +45,12 @@ bool Gun::Shot()
 {
 	if (_gun.BulletsInMagazine > 0)
 	{
+		_soundPlayer->PlaySound("shot");
 		_gun.BulletsInMagazine -= 1;
 		return true;
 	}
+
+	_soundPlayer->PlaySound("outOfAmmo");
 	return false;
 }
 

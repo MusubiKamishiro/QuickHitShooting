@@ -21,12 +21,12 @@ public:
 	///@param volume	ボリューム(最大100%)
 	///@retval true 成功
 	///@retval false 失敗
-	bool AddSound(const std::string& soundname, const int& handle, const int& volume);
+	bool AddSound(const std::string& soundname, const int& handle, const int& volume = 100);
 
 	///サウンドを再生させる
 	///@param soundname サウンド名
 	///@param loop		ループフラグ(trueでループ再生)
-	void PlaySound(const std::string& soundname, const bool& loop);
+	void PlaySound(const std::string& soundname, const bool& loop = false);
 
 	///サウンドを停止させる
 	///@param soundname サウンド名
