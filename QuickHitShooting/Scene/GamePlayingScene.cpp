@@ -46,7 +46,7 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const StageData& s
 	Game::Instance().GetFileSystem()->Load("img/game.png", data);
 	_gameBg  = data.GetHandle();
 
-	Game::Instance().GetFileSystem()->Load("img/pause.png", data);
+	Game::Instance().GetFileSystem()->Load("img/button/menu.png", data);
 	int i = data.GetHandle();
 	_menu->AddMenuList("pause", Vector2<int>(_scrSize.x - 50, 0), Vector2<int>(_scrSize.x, 50), i);
 	_menu->AddMenuList("test", Vector2<int>(0, 0), Vector2<int>(50, 50), i);

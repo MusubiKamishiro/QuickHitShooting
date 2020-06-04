@@ -33,12 +33,12 @@ ResultScene::ResultScene(const ResultData& resultData)
 	Game::Instance().GetFileSystem()->Load("img/plate/resultBd.png", data);
 	_resultBd = data.GetHandle();
 
-	Game::Instance().GetFileSystem()->Load("img/sample02.png", data);
+	Game::Instance().GetFileSystem()->Load("img/button/retry.png", data);
 	int img = data.GetHandle();
-	_menu->AddMenuList("ReTry", Vector2<int>(_scrSize.x/2 - 330, _scrSize.y - 150), Vector2<int>(_scrSize.x/2 - 30, _scrSize.y), img);
-	Game::Instance().GetFileSystem()->Load("img/sample03.png", data);
+	_menu->AddMenuList("ReTry", Vector2<int>(_scrSize.x/2 - 400, _scrSize.y - 130), Vector2<int>(_scrSize.x/2 - 80, _scrSize.y), img);
+	Game::Instance().GetFileSystem()->Load("img/button/backselect.png", data);
 	img = data.GetHandle();
-	_menu->AddMenuList("BackSelect", Vector2<int>(_scrSize.x/2 + 30, _scrSize.y - 150), Vector2<int>(_scrSize.x/2 + 330, _scrSize.y), img);
+	_menu->AddMenuList("BackSelect", Vector2<int>(_scrSize.x/2 + 110, _scrSize.y - 130), Vector2<int>(_scrSize.x/2 + 410, _scrSize.y), img);
 
 	_resultData = resultData;
 
@@ -260,7 +260,7 @@ void ResultScene::Draw()
 	
 	DxLib::DrawGraph(0, 0, _resultBg, true);
 
-	DxLib::DrawGraph(40, _scrSize.y / 10, _resultBd, true);
+	DxLib::DrawGraph(40, 40, _resultBd, true);
 
 	_trimString->ChangeFontSize(50);
 	std::string s = "score %" + std::to_string(_maxScoreDigit) + "d";
