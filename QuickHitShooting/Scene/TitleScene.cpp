@@ -138,7 +138,7 @@ void TitleScene::Update(const Peripheral& p)
 			info.names = names;
 			TargetData tdata = {};
 			tdata.pos = { 100,500 };
-			tdata.appearTime = 600;
+			tdata.banishTime = 600;
 			tdata.dispTime = 1000;
 			tdata.type = 1;
 			vec_target vtarget = {tdata};

@@ -10,7 +10,7 @@ SoundPlayer::~SoundPlayer()
 {
 }
 
-bool SoundPlayer::AddSound(const std::string& soundname, const int& handle, const int& volume = 100)
+bool SoundPlayer::AddSound(const std::string& soundname, const int& handle, const int& volume)
 {
 	// –œ‚ªˆêƒnƒ“ƒhƒ‹‚ª‹ó‚¾‚Á‚½ê‡
 	if (handle == -1)
@@ -30,18 +30,15 @@ bool SoundPlayer::AddSound(const std::string& soundname, const int& handle, cons
 	return false;
 }
 
-void SoundPlayer::PlaySound(const std::string& soundname, const bool& loop = false)
+void SoundPlayer::PlaySound(const std::string& soundname, const bool& loop)
 {
-	if (!DxLib::CheckSoundMem(_table[soundname.c_str()]))
+	if (!loop)
 	{
-		if (!loop)
-		{
-			DxLib::PlaySoundMem(_table[soundname.c_str()], DX_PLAYTYPE_BACK);
-		}
-		else
-		{
-			DxLib::PlaySoundMem(_table[soundname.c_str()], DX_PLAYTYPE_LOOP);
-		}
+		DxLib::PlaySoundMem(_table[soundname.c_str()], DX_PLAYTYPE_BACK);
+	}
+	else if (!DxLib::CheckSoundMem(_table[soundname.c_str()]))
+	{
+		DxLib::PlaySoundMem(_table[soundname.c_str()], DX_PLAYTYPE_LOOP);
 	}
 }
 
