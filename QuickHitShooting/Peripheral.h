@@ -12,6 +12,7 @@ private:
 	int mouseState;		// マウスの入力情報
 	int oldMouseState;	// 1フレーム前のマウスの入力情報
 
+	int pointImg;		// マウスポインターの画像
 	Vector2<int> mousePos;	// マウスの座標
 
 public:
@@ -35,6 +36,6 @@ public:
 	///@return マウスの座標
 	Vector2<int> GetMousePos()const;
 
-	void DebugDraw();
+	void Draw();
 };
 

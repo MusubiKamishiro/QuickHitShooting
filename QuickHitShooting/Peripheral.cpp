@@ -1,13 +1,19 @@
-#include "Peripheral.h"
 #include <DxLib.h>
-
+#include "Peripheral.h"
+#include "Game.h"
+#include "Loader/FileSystem.h"
+#include "Loader/ImageLoader.h"
 
 Peripheral::Peripheral()
 {
 	oldMouseState = 0;
-	mouseState = 0;
-	mousePos = Vector2<int>(0, 0);
+	mouseState	  = 0;
+	mousePos	  = Vector2<int>(0, 0);
 	DxLib::SetMouseDispFlag(false);
+
+	ImageData data;
+	Game::Instance().GetFileSystem()->Load("img/target.png", data);
+	pointImg = data.GetHandle();
 }
 
 
@@ -39,10 +45,8 @@ Vector2<int> Peripheral::GetMousePos() const
 	return mousePos;
 }
 
-void Peripheral::DebugDraw()
+void Peripheral::Draw()
 {
-	//DxLib::DrawBox(0, 0, 400, 200, 0xffffff, true);
-	DxLib::SetFontSize(20);
-	DxLib::DrawFormatString(0, 0, 0x000000, "マウスの座標(%d, %d)", mousePos.x, mousePos.y);
-	DxLib::DrawBox(mousePos.x - 5, mousePos.y - 5, mousePos.x + 5, mousePos.y + 5, 0x0000ff, true);
+	DxLib::DrawExtendGraph(mousePos.x - 35, mousePos.y - 35, mousePos.x + 35, mousePos.y + 35,
+						   pointImg, true);
 }
