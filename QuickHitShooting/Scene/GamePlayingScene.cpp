@@ -10,6 +10,7 @@
 #include "../Loader/FileSystem.h"
 #include "../Loader/ImageLoader.h"
 #include "../Loader/SoundLoader.h"
+#include "../SoundPlayer.h"
 #include "../Menu.h"
 #include "../TrimString.h"
 
@@ -46,10 +47,14 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const StageData& s
 	Game::Instance().GetFileSystem()->Load("img/game.png", data);
 	_gameBg  = data.GetHandle();
 
-	Game::Instance().GetFileSystem()->Load("img/pause.png", data);
+	Game::Instance().GetFileSystem()->Load("img/button/menu.png", data);
 	int i = data.GetHandle();
 	_menu->AddMenuList("pause", Vector2<int>(_scrSize.x - 50, 0), Vector2<int>(_scrSize.x, 50), i);
 	_menu->AddMenuList("test", Vector2<int>(0, 0), Vector2<int>(50, 50), i);
+
+	SoundData sdata;
+	Game::Instance().GetFileSystem()->Load("sound/bgm/game.mp3", sdata);
+	Game::Instance().GetSoundPlayer()->AddSound("gameBGM", sdata.GetHandle());
 
 	_hitFlag   = false;
 	_hitCount  = _shotCount = 0.0f;
@@ -67,6 +72,8 @@ GamePlayingScene::~GamePlayingScene()
 
 void GamePlayingScene::FadeinUpdate(const Peripheral & p)
 {
+	Game::Instance().GetSoundPlayer()->PlaySound("gameBGM", true);
+
 	if (_pal > 255)
 	{
 		_pal = 255;
@@ -92,6 +99,8 @@ void GamePlayingScene::FadeoutUpdate(const Peripheral & p)
 			r.ranking[i] = std::make_pair(_stageData.GetStageData().names[i], _stageData.GetStageData().scores[i]);
 		}
 		r.name = _stageData.GetStageData().stageName;
+
+		Game::Instance().GetSoundPlayer()->StopSound("gameBGM");
 		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>(r));
 	}
 	else

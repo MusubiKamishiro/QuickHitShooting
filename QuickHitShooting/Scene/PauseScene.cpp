@@ -17,15 +17,15 @@ PauseScene::PauseScene()
 
 	_menu.reset(new Menu());
 	ImageData data;
-	Game::Instance().GetFileSystem()->Load("img/sample01.png", data);
+	Game::Instance().GetFileSystem()->Load("img/button/continue.png", data);
 	int i = data.GetHandle();
-	_menu->AddMenuList("BackGame", Vector2<int>(_scrSize.x/2 - 150, 50), Vector2<int>(_scrSize.x/2 + 150, 150), i);
-	Game::Instance().GetFileSystem()->Load("img/sample02.png", data);
+	_menu->AddMenuList("BackGame", Vector2<int>(_scrSize.x/2 - 150, 50), Vector2<int>(_scrSize.x/2 + 150, 180), i);
+	Game::Instance().GetFileSystem()->Load("img/button/retry.png", data);
 	i = data.GetHandle();
-	_menu->AddMenuList("ReTry", Vector2<int>(_scrSize.x/2 - 150, 200), Vector2<int>(_scrSize.x/2 + 150, 300), i);
-	Game::Instance().GetFileSystem()->Load("img/sample03.png", data);
+	_menu->AddMenuList("ReTry", Vector2<int>(_scrSize.x/2 - 150, 230), Vector2<int>(_scrSize.x/2 + 150, 360), i);
+	Game::Instance().GetFileSystem()->Load("img/button/backselect.png", data);
 	i = data.GetHandle();
-	_menu->AddMenuList("BackSelect", Vector2<int>(_scrSize.x/2 - 150, 350), Vector2<int>(_scrSize.x/2 + 150, 450), i);
+	_menu->AddMenuList("BackSelect", Vector2<int>(_scrSize.x/2 - 150, 410), Vector2<int>(_scrSize.x/2 + 150, 540), i);
 }
 
 PauseScene::~PauseScene()

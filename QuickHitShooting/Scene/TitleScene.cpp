@@ -9,6 +9,7 @@
 #include "../Loader/FileSystem.h"
 #include "../Loader/ImageLoader.h"
 #include "../Loader/SoundLoader.h"
+#include "../SoundPlayer.h"
 #include "../TrimString.h"
 
 #include <thread>		// スレッド処理に必要
@@ -25,6 +26,8 @@ namespace {
 
 void TitleScene::FadeinUpdate(const Peripheral & p)
 {
+	Game::Instance().GetSoundPlayer()->PlaySound("titleBGM", true);
+
 	if (_pal >= 255)
 	{
 		_pal = 255;
@@ -40,6 +43,7 @@ void TitleScene::FadeoutUpdate(const Peripheral & p)
 {
 	if (_pal <= 0)
 	{
+		Game::Instance().GetSoundPlayer()->StopSound("titleBGM");
 		SceneManager::Instance().ChangeScene(std::make_unique <SelectScene>());
 	}
 	else
@@ -86,6 +90,10 @@ TitleScene::TitleScene()
 
 	_updater = &TitleScene::FadeinUpdate;
 	_drawer  = &TitleScene::StartDraw;
+
+	SoundData sdata;
+	Game::Instance().GetFileSystem()->Load("sound/bgm/title.mp3", sdata);
+	Game::Instance().GetSoundPlayer()->AddSound("titleBGM", sdata.GetHandle());
 
 	//##############################################################
 	// リアルタイムサーバースレッド

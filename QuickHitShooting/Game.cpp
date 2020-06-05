@@ -4,6 +4,7 @@
 #include "Peripheral.h"
 #include "Scene/SceneManager.h"
 #include "Loader/FileSystem.h"
+#include "SoundPlayer.h"
 #include "FrameFixity/FrameFixity.h"
 #include <iostream>
 #include <thread>
@@ -32,7 +33,7 @@ void Game::Initialize()
 #ifdef _DEBUG
 	DxLib::ChangeWindowMode(true);
 #else
-	int ans = MessageBox(DxLib::GetMainWindowHandle(), "フルスクリーンで表示しますか？", "画面の大きさどうしようか", MB_YESNO | MB_ICONQUESTION);
+	/*int ans = MessageBox(DxLib::GetMainWindowHandle(), "フルスクリーンで表示しますか？", "画面の大きさどうしようか", MB_YESNO | MB_ICONQUESTION);
 
 	if (ans == IDYES)
 	{
@@ -41,7 +42,8 @@ void Game::Initialize()
 	else
 	{
 		DxLib::ChangeWindowMode(true);
-	}
+	}*/
+	DxLib::ChangeWindowMode(false);
 #endif // _DEBUG
 
 	// 画面サイズの設定
@@ -65,9 +67,9 @@ void Game::Initialize()
 
 	DxLib::ChangeFont("Edmunds Distressed", DX_CHARSET_DEFAULT);
 	
-
-	_peripheral.reset(new Peripheral());
 	_fileSystem.reset(new FileSystem());
+	_soundPlayer.reset(new SoundPlayer());
+	_peripheral.reset(new Peripheral());
 }
 
 void Game::Run()
@@ -123,10 +125,11 @@ void Game::Run()
 			nowInput = CheckHitKey(KEY_INPUT_S);*/
 
 #ifdef _DEBUG
-			DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
-			_peripheral->DebugDraw();
+			
+			
 #endif // _DEBUG
-
+			DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
+			_peripheral->Draw();
 			DxLib::ScreenFlip();
 		}
 	}
@@ -142,6 +145,11 @@ void Game::Terminate()
 const std::shared_ptr<FileSystem> Game::GetFileSystem() const
 {
 	return _fileSystem;
+}
+
+const std::shared_ptr<SoundPlayer> Game::GetSoundPlayer() const
+{
+	return _soundPlayer;
 }
 
 const Vector2<int>& Game::GetScreenSize()const

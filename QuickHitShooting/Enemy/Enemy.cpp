@@ -1,5 +1,7 @@
 #include <DxLib.h>
 #include "Enemy.h"
+#undef PlaySound;
+#include "../SoundPlayer.h"
 
 Enemy::~Enemy()
 {
@@ -41,6 +43,7 @@ bool Enemy::HitShot()
 {
 	if (_dispTime <= 0 && _isAlive)
 	{
+		_sound->PlaySound("death");
 		_isAlive	= false;
 		_banishTime = 30;
 		return true;

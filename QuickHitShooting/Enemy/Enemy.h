@@ -3,6 +3,9 @@
 #include "../Game.h"
 #include "../Loader/FileSystem.h"
 #include "../Loader/ImageLoader.h"
+#include "../Loader/SoundLoader.h"
+
+class SoundPlayer;
 
 class Enemy
 {
@@ -15,6 +18,8 @@ protected:
 	int _banishTime;
 
 	bool _isAlive;		// true : ¶‘¶, false : €–S
+
+	std::shared_ptr<SoundPlayer> _sound;
 public:
 	virtual ~Enemy();
 

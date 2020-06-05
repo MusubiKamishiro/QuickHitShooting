@@ -2,8 +2,10 @@
 #include <memory>
 #include "Scene/Scene.h"
 #include "Geometry.h"
+#undef PlaySound;
 
 class FileSystem;
+class SoundPlayer;
 class Peripheral;
 
 // ゲーム全体を制御するクラス
@@ -17,6 +19,8 @@ private:
 	const Vector2<int> _screenSize;
 	std::unique_ptr<Peripheral> _peripheral;
 	std::shared_ptr<FileSystem> _fileSystem;
+	std::shared_ptr<SoundPlayer> _soundPlayer;
+
 public:
 	static Game& Instance()
 	{
@@ -36,7 +40,8 @@ public:
 	// ライブラリの後処理など
 	void Terminate();
 
-	const std::shared_ptr <FileSystem> GetFileSystem()const;
+	const std::shared_ptr<FileSystem> GetFileSystem()const;
+	const std::shared_ptr<SoundPlayer> GetSoundPlayer()const;
 
 	const Vector2<int>& GetScreenSize()const;
 };
