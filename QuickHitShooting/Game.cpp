@@ -4,6 +4,7 @@
 #include "Peripheral.h"
 #include "Scene/SceneManager.h"
 #include "Loader/FileSystem.h"
+#include "SoundPlayer.h"
 #include "FrameFixity/FrameFixity.h"
 #include <iostream>
 #include <thread>
@@ -67,6 +68,7 @@ void Game::Initialize()
 	DxLib::ChangeFont("Edmunds Distressed", DX_CHARSET_DEFAULT);
 	
 	_fileSystem.reset(new FileSystem());
+	_soundPlayer.reset(new SoundPlayer());
 	_peripheral.reset(new Peripheral());
 }
 
@@ -143,6 +145,11 @@ void Game::Terminate()
 const std::shared_ptr<FileSystem> Game::GetFileSystem() const
 {
 	return _fileSystem;
+}
+
+const std::shared_ptr<SoundPlayer> Game::GetSoundPlayer() const
+{
+	return _soundPlayer;
 }
 
 const Vector2<int>& Game::GetScreenSize()const

@@ -10,6 +10,7 @@
 #include "../Loader/FileSystem.h"
 #include "../Loader/ImageLoader.h"
 #include "../Loader/SoundLoader.h"
+#include "../SoundPlayer.h"
 #include "../TrimString.h"
 #include "../Menu.h"
 
@@ -40,6 +41,10 @@ ResultScene::ResultScene(const ResultData& resultData)
 	img = data.GetHandle();
 	_menu->AddMenuList("BackSelect", Vector2<int>(_scrSize.x/2 + 110, _scrSize.y - 130), Vector2<int>(_scrSize.x/2 + 410, _scrSize.y), img);
 
+	SoundData sdata;
+	Game::Instance().GetFileSystem()->Load("sound/bgm/result.mp3", sdata);
+	Game::Instance().GetSoundPlayer()->AddSound("resultBGM", sdata.GetHandle());
+
 	_resultData = resultData;
 
 	CheckDigit(_score, _resultData.score, _maxScoreDigit);
@@ -54,6 +59,8 @@ ResultScene::~ResultScene()
 
 void ResultScene::FadeinUpdate(const Peripheral & p)
 {
+	Game::Instance().GetSoundPlayer()->PlaySound("resultBGM", true);
+
 	if (_pal >= 255)
 	{
 		_pal = 255;
@@ -69,6 +76,7 @@ void ResultScene::FadeoutUpdate(const Peripheral & p)
 {
 	if (_pal <= 0)
 	{
+		Game::Instance().GetSoundPlayer()->StopSound("resultBGM");
 		SceneManager::Instance().ChangeScene(std::make_unique<SelectScene>());
 	}
 	else

@@ -9,6 +9,8 @@
 #include "../Game.h"
 #include "../Loader/FileSystem.h"
 #include "../Loader/ImageLoader.h"
+#include "../Loader/SoundLoader.h"
+#include "../SoundPlayer.h"
 #include "../Menu.h"
 
 SelectScene::SelectScene() : _dightMax(6)
@@ -78,6 +80,10 @@ SelectScene::SelectScene() : _dightMax(6)
 								Vector2<int>(_scrSize.x - btnSize.x - (btnSize.x / 2), (_scrSize.y / 2) - (btnSize.y / 2)), img);
 
 	Game::Instance().GetFileSystem()->Load("img/stageboard.png", data);
+
+	SoundData sdata;
+	Game::Instance().GetFileSystem()->Load("sound/bgm/select.mp3", sdata);
+	Game::Instance().GetSoundPlayer()->AddSound("selectBGM", sdata.GetHandle());
 
 	StageInit();
 
@@ -149,6 +155,8 @@ StageData SelectScene::GetStageData(const int& num)
 
 void SelectScene::FadeinUpdate(const Peripheral& p)
 {
+	Game::Instance().GetSoundPlayer()->PlaySound("selectBGM", true);
+
 	if (_pal >= 255)
 	{
 		_pal = 255;
@@ -164,6 +172,7 @@ void SelectScene::FadeoutUpdate(const Peripheral& p)
 {
 	if (_pal <= 0)
 	{
+		Game::Instance().GetSoundPlayer()->StopSound("selectBGM");
 		SceneManager::Instance().ChangeScene(std::make_unique<GamePlayingScene>(_gunState, _stageDatas[_stageCnt]));
 	}
 	else
