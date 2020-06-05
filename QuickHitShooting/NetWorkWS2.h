@@ -17,12 +17,6 @@
 // WinSock2を使用する際に必要なLib
 #pragma comment(lib,"ws2_32.lib")
 
-// ネットワークで送受信するデータ構造体（Test）
-struct SendDataWS2 {
-	std::string Buffer;
-	int data;
-};
-
 class NetWorkWS2
 {
 private:
@@ -42,7 +36,6 @@ private:
 	// 共有変数
 	WSADATA wsaData = {};
 	SOCKET sock = {};
-	SendDataWS2 dataBuffer = {};
 	int Port = 2222;
 
 	// サーバー側変数
@@ -76,13 +69,11 @@ public:
 	// クライアント側から接続があればデータを送信して
 	// 返信があるまで待機します。
 	// 引数に送るデータを入れる
-	void SendServer(SendDataWS2& data);
 	void SendServer(StageInfo& data);
 	// クライアント側処理関数
 	// サーバーに接続してデータが送られてくるのを待機
 	// 送られてきたら引数でもらってきたデータを送り返す。
 	// 引数にデータを受け取るためのバッファを渡す
-	void RecivedClient(SendDataWS2& data);
 	void RecivedClient(StageInfo& data);
 	//####################################################
 
@@ -92,13 +83,11 @@ public:
 	// 非リアルタイム通信をリアルタイムに改良したもの
 	// 処理としてはほぼ同じ
 	// 引数に送るデータを入れる
-	void RealTimeServer(SendDataWS2& data);
 	void RealTimeServer(StageInfo& data);
 	// クライアント側処理関数
 	// 非リアルタイム通信をリアルタイムに改良したもの
 	// 処理はほぼ同じ
 	// 引数にデータを受け取るためのバッファを渡す
-	void RealTimeClient(SendDataWS2& data);
 	void RealTimeClient(StageInfo& data);
 	//####################################################
 

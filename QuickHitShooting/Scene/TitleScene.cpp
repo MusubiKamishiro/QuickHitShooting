@@ -20,8 +20,8 @@ namespace {
 	// 送るデータ構造体の宣言
 	// これを書き換えると送られるデータも書き換えられる
 	// 受信するデータ構造体もここで宣言してよい
-	SendDataWS2 RealDataws2 = {};
-	SendDataWS2 dataws2 = {};
+	StageInfo info = {};
+	StageInfo realTimeInfo = {};
 }
 
 void TitleScene::FadeinUpdate(const Peripheral & p)
@@ -98,9 +98,8 @@ TitleScene::TitleScene()
 	//##############################################################
 	// リアルタイムサーバースレッド
 	/*std::thread RealSendThread([]() {
-		RealDataws2.Buffer = "REALKUSOZAKO";
 		NetWorkWS2::Instance().Initialize("192.168.11.47");
-		NetWorkWS2::Instance().RealTimeServer(RealDataws2);
+		NetWorkWS2::Instance().RealTimeServer(realTimeInfo);
 		});
 	RealSendThread.detach();*/
 	//##############################################################
@@ -108,9 +107,8 @@ TitleScene::TitleScene()
 	//##############################################################
 	// リアルタイムクライアントスレッド
 	/*std::thread RealReciveThread([]() {
-		RealDataws2.Buffer = "";
 		NetWorkWS2::Instance().Initialize("192.168.11.55");
-		NetWorkWS2::Instance().RealTimeClient(RealDataws2);
+		NetWorkWS2::Instance().RealTimeClient(realTimeInfo);
 		});
 	RealReciveThread.detach();*/
 	//##############################################################
@@ -137,11 +135,8 @@ void TitleScene::Update(const Peripheral& p)
 	
 	if (nowInput && !oldInput) {
 		std::thread reciveThread([]() {
-			dataws2.Buffer.resize(256);
-			dataws2.Buffer = "KUSOZAKO";
 			//######################################################
 			// StageInfoテストデータ
-			StageInfo info = {};
 			std::array<std::string, 3> names = { "Title","Game","Result" };
 			info.names = names;
 			TargetData tdata = {};
@@ -166,13 +161,12 @@ void TitleScene::Update(const Peripheral& p)
 	// ネットワーク通信呼び出し（仮）(クルァイアント)
 	/*if (nowInput && !oldInput) {
 		std::thread reciveThread([]() {
-			dataws2.Buffer.resize(256);
 			//######################################################
 			// StageInfoテストデータ
 			StageInfo info = {};
 			//######################################################
 			NetWorkWS2::Instance().Initialize("192.168.11.55");
-			NetWorkWS2::Instance().RecivedClient(dataws2);
+			NetWorkWS2::Instance().RecivedClient(info);
 			});
 		reciveThread.detach();
 	}
