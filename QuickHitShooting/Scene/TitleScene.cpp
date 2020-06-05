@@ -93,7 +93,7 @@ TitleScene::TitleScene()
 
 	SoundData sdata;
 	Game::Instance().GetFileSystem()->Load("sound/bgm/title.mp3", sdata);
-	Game::Instance().GetSoundPlayer()->AddSound("titleBGM", sdata.GetHandle());
+	Game::Instance().GetSoundPlayer()->AddSound("titleBGM", sdata.GetHandle(), 40);
 
 	//##############################################################
 	// リアルタイムサーバースレッド

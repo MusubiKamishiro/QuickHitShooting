@@ -54,13 +54,23 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const StageData& s
 
 	SoundData sdata;
 	Game::Instance().GetFileSystem()->Load("sound/bgm/game.mp3", sdata);
-	Game::Instance().GetSoundPlayer()->AddSound("gameBGM", sdata.GetHandle());
+	Game::Instance().GetSoundPlayer()->AddSound("gameBGM", sdata.GetHandle(), 40);
+
+	Game::Instance().GetFileSystem()->Load("sound/se/countdown.mp3", sdata);
+	Game::Instance().GetSoundPlayer()->AddSound("countdown", sdata.GetHandle(), 40);
+
+	Game::Instance().GetFileSystem()->Load("sound/se/start.mp3", sdata);
+	Game::Instance().GetSoundPlayer()->AddSound("start", sdata.GetHandle(), 70);
+
+	Game::Instance().GetFileSystem()->Load("sound/se/finish.mp3", sdata);
+	Game::Instance().GetSoundPlayer()->AddSound("finish", sdata.GetHandle(), 40);
+
 
 	_hitFlag   = false;
 	_hitCount  = _shotCount = 0.0f;
 	_waveCnt   = _score = _pal = 0;
 
-	_waitCnt   = 239;
+	_waitCnt   = 240;
 	
 	/// 敵の仮生成
 	CreateEnemy();
@@ -112,12 +122,20 @@ void GamePlayingScene::FadeoutUpdate(const Peripheral & p)
 /// カウントダウンの更新用
 void GamePlayingScene::CountDownUpdate(const Peripheral& p)
 {
+	if (_waitCnt == 60)
+	{
+		Game::Instance().GetSoundPlayer()->PlaySound("start");
+	}
 	if (_waitCnt <= 0)
 	{
 		CreateEnemy();
 		_pal	 = 255;
 		_updater = &GamePlayingScene::WaitUpdate;
 		_drawer  = &GamePlayingScene::GameDraw;
+	}
+	if (!(_waitCnt % 60) && _waitCnt >= 61)
+	{
+		Game::Instance().GetSoundPlayer()->PlaySound("countdown");
 	}
 	--_waitCnt;
 }
@@ -144,6 +162,8 @@ void GamePlayingScene::WaitUpdate(const Peripheral& p)
 			/// 全てのウェーブを終えた時に入る処理
 			_updater = &GamePlayingScene::FinishUpdate;
 			_drawer  = &GamePlayingScene::FinishDraw;
+
+			Game::Instance().GetSoundPlayer()->PlaySound("finish");
 
 			_waitCnt = 120;
 			return;
@@ -193,7 +213,7 @@ void GamePlayingScene::CountDownDraw()
 	{
 		/// カウントダウン時の描画
 		_trimString->ChangeFontSize(180);
-		std::string text = std::to_string(_waitCnt / 60);
+		std::string text = std::to_string((_waitCnt - 1) / 60);
 		GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
 
 		DxLib::DrawString((_scrSize.x / 2) - (_strSize.x / 2), (_scrSize.y / 2) - (_strSize.y / 2), 

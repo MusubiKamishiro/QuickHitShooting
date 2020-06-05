@@ -83,7 +83,7 @@ SelectScene::SelectScene() : _dightMax(6)
 
 	SoundData sdata;
 	Game::Instance().GetFileSystem()->Load("sound/bgm/select.mp3", sdata);
-	Game::Instance().GetSoundPlayer()->AddSound("selectBGM", sdata.GetHandle());
+	Game::Instance().GetSoundPlayer()->AddSound("selectBGM", sdata.GetHandle(), 35);
 
 	StageInit();
 

@@ -1,5 +1,4 @@
 #include "NormalEnemy.h"
-#include "../SoundPlayer.h"
 
 NormalEnemy::NormalEnemy(const int& dispTime, const int& banishTime, 
 						 const Vector2<int>& pos) : _point(30)
@@ -15,10 +14,9 @@ NormalEnemy::NormalEnemy(const int& dispTime, const int& banishTime,
 	Game::Instance().GetFileSystem()->Load("img/nEnemy.png", iData);
 	_targetImg = iData.GetHandle();
 
-	_sound = std::make_shared<SoundPlayer>();
 	SoundData sData;
-	Game::Instance().GetFileSystem()->Load("sound/se/glass-crack1.mp3", sData);
-	_sound->AddSound("death", sData.GetHandle());
+	Game::Instance().GetFileSystem()->Load("sound/se/normal.mp3", sData);
+	Game::Instance().GetSoundPlayer()->AddSound("normal", sData.GetHandle(), 90);
 
 	/// 矩形の設定
 	_rect = Rect(_pos, Size(75, 75));
@@ -26,6 +24,11 @@ NormalEnemy::NormalEnemy(const int& dispTime, const int& banishTime,
 
 NormalEnemy::~NormalEnemy()
 {
+}
+
+void NormalEnemy::HitSound()
+{
+	Game::Instance().GetSoundPlayer()->PlaySound("normal");
 }
 
 /// 得点取得用(通常の的)

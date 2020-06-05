@@ -43,7 +43,7 @@ bool Enemy::HitShot()
 {
 	if (_dispTime <= 0 && _isAlive)
 	{
-		_sound->PlaySound("death");
+		HitSound();
 		_isAlive	= false;
 		_banishTime = 30;
 		return true;

@@ -43,7 +43,13 @@ ResultScene::ResultScene(const ResultData& resultData)
 
 	SoundData sdata;
 	Game::Instance().GetFileSystem()->Load("sound/bgm/result.mp3", sdata);
-	Game::Instance().GetSoundPlayer()->AddSound("resultBGM", sdata.GetHandle());
+	Game::Instance().GetSoundPlayer()->AddSound("resultBGM", sdata.GetHandle(), 50);
+
+	Game::Instance().GetFileSystem()->Load("sound/se/machinegun-firing2.mp3", sdata);
+	Game::Instance().GetSoundPlayer()->AddSound("dramroll", sdata.GetHandle(), 40);
+
+	Game::Instance().GetFileSystem()->Load("sound/se/dramstop.mp3", sdata);
+	Game::Instance().GetSoundPlayer()->AddSound("dramstop", sdata.GetHandle(), 50);
 
 	_resultData = resultData;
 
@@ -59,10 +65,9 @@ ResultScene::~ResultScene()
 
 void ResultScene::FadeinUpdate(const Peripheral & p)
 {
-	Game::Instance().GetSoundPlayer()->PlaySound("resultBGM", true);
-
 	if (_pal >= 255)
 	{
+		Game::Instance().GetSoundPlayer()->PlaySound("dramroll", true);
 		_pal = 255;
 		_updater = &ResultScene::ScoreUpdate;
 	}
@@ -76,7 +81,6 @@ void ResultScene::FadeoutUpdate(const Peripheral & p)
 {
 	if (_pal <= 0)
 	{
-		Game::Instance().GetSoundPlayer()->StopSound("resultBGM");
 		SceneManager::Instance().ChangeScene(std::make_unique<SelectScene>());
 	}
 	else
@@ -100,6 +104,7 @@ void ResultScene::ScoreUpdate(const Peripheral& p)
 
 	if (++_time % 60 == 0)
 	{
+		Game::Instance().GetSoundPlayer()->PlaySound("dramstop");
 		++_score.nowDigit;
 	}
 }
@@ -115,6 +120,11 @@ void ResultScene::HitRateUpdate(const Peripheral& p)
 		{
 			_updater = &ResultScene::RankinUpdate;
 		}
+
+		/// いったんここでBGMの再生を行る
+		Game::Instance().GetSoundPlayer()->StopSound("dramroll");
+		/// 終了時、銃の発射音を流す部分を追加する。
+		Game::Instance().GetSoundPlayer()->PlaySound("resultBGM", true);
 	}
 	else
 	{
@@ -123,6 +133,7 @@ void ResultScene::HitRateUpdate(const Peripheral& p)
 
 	if (++_time % 60 == 0)
 	{
+		Game::Instance().GetSoundPlayer()->PlaySound("dramstop");
 		++_hitRate.nowDigit;
 	}
 }

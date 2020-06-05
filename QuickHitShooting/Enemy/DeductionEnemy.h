@@ -9,6 +9,7 @@ public:
 	DeductionEnemy(const int& dispTime, const int& banishTime,
 				   const Vector2<int>& pos);
 	~DeductionEnemy();
+	void HitSound() override;
 
 	int GetScore() const override;
 };

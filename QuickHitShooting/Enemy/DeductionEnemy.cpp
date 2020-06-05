@@ -1,5 +1,4 @@
 #include "DeductionEnemy.h"
-#include "../SoundPlayer.h"
 
 DeductionEnemy::DeductionEnemy(const int& dispTime, const int& banishTime, 
 							   const Vector2<int>& pos) : _point(-30)
@@ -15,10 +14,9 @@ DeductionEnemy::DeductionEnemy(const int& dispTime, const int& banishTime,
 	Game::Instance().GetFileSystem()->Load("img/dEnemy.png", data);
 	_targetImg = data.GetHandle();
 
-	_sound = std::make_shared<SoundPlayer>();
 	SoundData sData;
-	Game::Instance().GetFileSystem()->Load("sound/se/glass-crack1.mp3", sData);
-	_sound->AddSound("death", sData.GetHandle());
+	Game::Instance().GetFileSystem()->Load("sound/se/deduction.mp3", sData);
+	Game::Instance().GetSoundPlayer()->AddSound("deduction", sData.GetHandle());
 
 	/// 矩形の設定
 	_rect = Rect(_pos, Size(75, 75));
@@ -26,6 +24,11 @@ DeductionEnemy::DeductionEnemy(const int& dispTime, const int& banishTime,
 
 DeductionEnemy::~DeductionEnemy()
 {
+}
+
+void DeductionEnemy::HitSound()
+{
+	Game::Instance().GetSoundPlayer()->PlaySound("deduction");
 }
 
 /// 得点取得用(減点の的)

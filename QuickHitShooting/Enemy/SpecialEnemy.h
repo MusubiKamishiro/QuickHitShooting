@@ -10,6 +10,8 @@ public:
 				 const Vector2<int>& pos);
 	~SpecialEnemy();
 
+	void HitSound() override;
+
 	int GetScore() const override;
 };
 

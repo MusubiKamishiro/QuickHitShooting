@@ -9,6 +9,7 @@ public:
 	NormalEnemy(const int& dispTime, const int& banishTime,
 				const Vector2<int>& pos);
 	~NormalEnemy();
+	void HitSound() override;
 
 	int GetScore() const override;
 };

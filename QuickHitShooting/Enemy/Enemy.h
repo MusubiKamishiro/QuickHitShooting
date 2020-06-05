@@ -4,12 +4,12 @@
 #include "../Loader/FileSystem.h"
 #include "../Loader/ImageLoader.h"
 #include "../Loader/SoundLoader.h"
-
-class SoundPlayer;
+#include "../SoundPlayer.h"
 
 class Enemy
 {
 protected:
+	virtual void HitSound() = 0;
 	Vector2<int> _pos;
 	Rect _rect;
 
@@ -18,8 +18,6 @@ protected:
 	int _banishTime;
 
 	bool _isAlive;		// true : ê∂ë∂, false : éÄñS
-
-	std::shared_ptr<SoundPlayer> _sound;
 public:
 	virtual ~Enemy();
 
