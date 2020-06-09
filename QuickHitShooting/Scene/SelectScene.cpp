@@ -12,6 +12,7 @@
 #include "../Loader/SoundLoader.h"
 #include "../SoundPlayer.h"
 #include "../Menu.h"
+#include <thread>
 
 SelectScene::SelectScene() : _dightMax(6)
 {
@@ -203,7 +204,10 @@ void SelectScene::WaitUpdate(const Peripheral& p)
 	}
 	else{}
 
-	_menu->Update(p);
+	std::thread menuUpdateThread([&]() {
+		_menu->Update(p);
+		});
+	menuUpdateThread.join();
 }
 
 std::string SelectScene::GetStagePath(const int& num) const
@@ -219,7 +223,10 @@ void SelectScene::AddGunMenu(const GunStatus& gunstate, const Vector2<int>& ltPo
 
 void SelectScene::Update(const Peripheral& p)
 {
-	(this->*_updater)(p);
+	std::thread updateThread([&]() {
+		(this->*_updater)(p);
+		});
+	updateThread.join();
 }
 
 void SelectScene::Draw()
