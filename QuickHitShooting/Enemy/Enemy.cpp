@@ -6,19 +6,7 @@ Enemy::~Enemy()
 {
 }
 
-/// 的の更新
-void Enemy::Update()
-{
-	if (_dispTime <= 0)
-	{
-		--_banishTime;
-	}
-	else
-	{
-		--_dispTime;
-	}
-}
-
+/// 分割した画像情報を初期化する
 void Enemy::InitImgElem()
 {
 	Vector2<int> midPoint = { _pos.x - (_eSize.width / 2), _pos.y - (_eSize.height / 2) };
@@ -44,27 +32,77 @@ void Enemy::InitImgElem()
 	}
 }
 
+/// 的が壊れた時のアニメーションを更新する
+void Enemy::BreakUpdate()
+{
+	for (auto& elem : _imgElements)
+	{
+		elem.pos   += elem.vel;
+		elem.vel.y += 0.6f;
+
+		elem.deg = (elem.vel.x >= 0 ? elem.deg + 15 : elem.deg - 15);
+
+		/// 1回転した時の角度調整
+		if (elem.deg >= 360)
+		{
+			elem.deg = 0;
+		}
+		else if (elem.deg <= 0)
+		{
+			elem.deg = 360;
+		}
+		else {}
+	}
+}
+
+/// 的の更新
+void Enemy::Update()
+{
+	if (!_isAlive)
+	{
+		BreakUpdate();
+	}
+	if (_dispTime <= 0)
+	{
+		--_banishTime;
+	}
+	else
+	{
+		--_dispTime;
+	}
+}
+
 /// 的の描画
 void Enemy::Draw()
 {
 	if (_dispTime <= 0)
 	{
+		float extRate = (float)_eSize.width / 150;
 		if (_isAlive)
 		{
-			float extRate = (float)_eSize.width / 150;
-			float sita;
 			for (int i = 0; i < _imgElements.size(); ++i)
 			{
-				/// 現状、画像サイズは直値にしている
-				sita = _imgElements[i].deg * DX_TWO_PI / 360;
+				/// 分割した時の画像サイズは現状直値
 				DrawRectRotaGraph(_imgElements[i].pos.x, _imgElements[i].pos.y,
-					30 * (i % 5), 30 * (i / 5), 30, 30, extRate, sita, _targetImg, true);
+								  30 * (i % 5), 30 * (i / 5), 30, 30, extRate, 0, 
+								  _targetImg, true);
 			}
 		}
 		else
 		{
-			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 40);
-			DrawExtendGraph(_rect.Left(), _rect.Top(), _rect.Right(), _rect.Bottom(), _targetImg, true);
+			/// 透明度の計算
+			float rate = (float)_banishTime / _deathTime;
+			int alpha  = 255 * rate;
+			float sita;
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+			for (int i = 0; i < _imgElements.size(); ++i)
+			{
+				/// 分割した時の画像サイズは現状直値
+				sita = _imgElements[i].deg * DX_TWO_PI / 360;
+				DrawRectRotaGraph(_imgElements[i].pos.x, _imgElements[i].pos.y,
+								  30 * (i % 5), 30 * (i / 5), 30, 30, extRate, sita,
+								  _targetImg, true);
+			}
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 	}
@@ -77,13 +115,13 @@ bool Enemy::HitShot()
 	{
 		HitSound();
 		_isAlive	= false;
-		_banishTime = 30;
+		_banishTime = _deathTime;
 		return true;
 	}
 	return false;
 }
 
-/// 的を消すかの判定取得用
+/// 敵の削除を行うかの判定用
 bool Enemy::Destroy()
 {
 	return _banishTime <= 0;

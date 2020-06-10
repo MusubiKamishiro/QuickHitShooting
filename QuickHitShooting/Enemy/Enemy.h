@@ -19,9 +19,10 @@ class Enemy
 {
 protected:
 	void InitImgElem();
+	void BreakUpdate();
 	virtual void HitSound() = 0;
 	Vector2<int> _pos;
-	std::array<imgElem, 25> _imgElements;	// 
+	std::array<imgElem, 25> _imgElements;	// •ªŠ„‚µ‚½‰æ‘œî•ñ‚Ìæ“¾—p
 	Rect _rect;
 
 	int _targetImg;
@@ -31,6 +32,7 @@ protected:
 	bool _isAlive;		// true : ¶‘¶, false : €–S
 
 	const Size _eSize = Size(75, 75);	// “G‚Ì‘å‚«‚³
+	const int _deathTime = 30;
 public:
 	virtual ~Enemy();
 
