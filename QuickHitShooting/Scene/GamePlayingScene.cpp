@@ -54,16 +54,16 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const StageData& s
 
 	SoundData sdata;
 	Game::Instance().GetFileSystem()->Load("sound/bgm/game.mp3", sdata);
-	Game::Instance().GetSoundPlayer()->AddSound("gameBGM", sdata.GetHandle(), 40);
+	Game::Instance().GetSoundPlayer()->AddSound("gameBGM", sdata.GetHandle(), 50);
 
 	Game::Instance().GetFileSystem()->Load("sound/se/countdown.mp3", sdata);
-	Game::Instance().GetSoundPlayer()->AddSound("countdown", sdata.GetHandle(), 40);
+	Game::Instance().GetSoundPlayer()->AddSound("countdown", sdata.GetHandle(), 55);
 
 	Game::Instance().GetFileSystem()->Load("sound/se/start.mp3", sdata);
 	Game::Instance().GetSoundPlayer()->AddSound("start", sdata.GetHandle(), 70);
 
 	Game::Instance().GetFileSystem()->Load("sound/se/finish.mp3", sdata);
-	Game::Instance().GetSoundPlayer()->AddSound("finish", sdata.GetHandle(), 40);
+	Game::Instance().GetSoundPlayer()->AddSound("finish", sdata.GetHandle(), 60);
 
 
 	_hitFlag   = false;
@@ -109,8 +109,6 @@ void GamePlayingScene::FadeoutUpdate(const Peripheral & p)
 			r.ranking[i] = std::make_pair(_stageData.GetStageData().names[i], _stageData.GetStageData().scores[i]);
 		}
 		r.name = _stageData.GetStageData().stageName;
-
-		Game::Instance().GetSoundPlayer()->StopSound("gameBGM");
 		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>(r));
 	}
 	else
@@ -163,9 +161,10 @@ void GamePlayingScene::WaitUpdate(const Peripheral& p)
 			_updater = &GamePlayingScene::FinishUpdate;
 			_drawer  = &GamePlayingScene::FinishDraw;
 
+			Game::Instance().GetSoundPlayer()->StopSound("gameBGM");
 			Game::Instance().GetSoundPlayer()->PlaySound("finish");
 
-			_waitCnt = 120;
+			_waitCnt = 240;
 			return;
 		}
 	}
@@ -209,7 +208,7 @@ void GamePlayingScene::CountDownDraw()
 	DxLib::DrawGraph(570, _scrSize.y - 97, _bulletBd, true);
 
 	Vector2<int> _strSize;
-	if ((_waitCnt / 60) >= 1)
+	if ((_waitCnt - 1) / 60 >= 1)
 	{
 		/// カウントダウン時の描画
 		_trimString->ChangeFontSize(180);
