@@ -1,6 +1,5 @@
 #include <DxLib.h>
 #include "Enemy.h"
-#undef PlaySound;
 #include "../SoundPlayer.h"
 
 Enemy::~Enemy()
@@ -20,6 +19,31 @@ void Enemy::Update()
 	}
 }
 
+void Enemy::InitImgElem()
+{
+	Vector2<int> midPoint = { _pos.x - (_eSize.width / 2), _pos.y - (_eSize.height / 2) };
+	Vector2<int> offset;
+	Vector2<float> vec;
+	float cost, sint;
+	for (int i = 0; i < _imgElements.size(); ++i)
+	{
+		offset.x = (i % 5) * (_eSize.width / 5);
+		offset.y = (i / 5) * (_eSize.height / 5);
+
+		_imgElements[i].pos.x = midPoint.x + offset.x;
+		_imgElements[i].pos.y = midPoint.y + offset.y;
+
+		vec = { _imgElements[i].pos.x - (midPoint.x + (_eSize.width / 2)),
+				_imgElements[i].pos.y - (midPoint.y + (_eSize.height / 2)) };
+		vec.Normalize();
+
+		_imgElements[i].deg = 0;
+
+		_imgElements[i].vel.x = vec.x * 4.f;
+		_imgElements[i].vel.y = vec.y * 4.f;
+	}
+}
+
 /// 的の描画
 void Enemy::Draw()
 {
@@ -27,7 +51,15 @@ void Enemy::Draw()
 	{
 		if (_isAlive)
 		{
-			DrawExtendGraph(_rect.Left(), _rect.Top(), _rect.Right(), _rect.Bottom(), _targetImg, true);
+			float extRate = (float)_eSize.width / 150;
+			float sita;
+			for (int i = 0; i < _imgElements.size(); ++i)
+			{
+				/// 現状、画像サイズは直値にしている
+				sita = _imgElements[i].deg * DX_TWO_PI / 360;
+				DrawRectRotaGraph(_imgElements[i].pos.x, _imgElements[i].pos.y,
+					30 * (i % 5), 30 * (i / 5), 30, 30, extRate, sita, _targetImg, true);
+			}
 		}
 		else
 		{

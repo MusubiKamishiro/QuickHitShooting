@@ -20,6 +20,8 @@ NormalEnemy::NormalEnemy(const int& dispTime, const int& banishTime,
 
 	/// ‹éŒ`‚Ìİ’è
 	_rect = Rect(_pos, Size(75, 75));
+
+	InitImgElem();
 }
 
 NormalEnemy::~NormalEnemy()

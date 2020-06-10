@@ -55,6 +55,29 @@ struct Vector2
 	{
 		return ((x == in.x) || (y == in.y));
 	}
+
+	/// 値を正規化する
+	void Normalize()
+	{
+		float mag = Magnitude();
+
+		x /= mag;
+		y /= mag;
+	}
+
+	// 正規化済みの値を返す
+	Vector2<T> Normalized()
+	{
+		float mag = Magnitude();
+
+		return Vector2<T>(x / mag, y / mag);
+	}
+
+	// 斜辺の長さを返す
+	float Magnitude() const
+	{
+		return hypotf(x, y);
+	}
 };
 
 /// サイズを表す構造体
