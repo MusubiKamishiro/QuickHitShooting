@@ -174,6 +174,7 @@ void ResultScene::WaitUpdate(const Peripheral & p)
 	}
 	else if (_menu->CheckClick("BackSelect", p))
 	{
+		Game::Instance().GetSoundPlayer()->PlaySound("shot");
 		Game::Instance().GetSoundPlayer()->StopSound("resultBGM");
 		_updater = &ResultScene::FadeoutUpdate;
 	}

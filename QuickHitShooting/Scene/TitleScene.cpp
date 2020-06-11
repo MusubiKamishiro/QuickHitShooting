@@ -56,6 +56,7 @@ void TitleScene::WaitUpdate(const Peripheral & p)
 {
 	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
+		Game::Instance().GetSoundPlayer()->PlaySound("shot");
 		_updater = &TitleScene::FadeoutUpdate;
 	}
 }
@@ -94,6 +95,10 @@ TitleScene::TitleScene()
 	SoundData sdata;
 	Game::Instance().GetFileSystem()->Load("sound/bgm/title.mp3", sdata);
 	Game::Instance().GetSoundPlayer()->AddSound("titleBGM", sdata.GetHandle(), 40);
+	/// タイトルやステージ選択の時にショットの効果音を使用するので移動した。◆
+	Game::Instance().GetFileSystem()->Load("sound/se/handgun-firing.mp3", sdata);
+	Game::Instance().GetSoundPlayer()->AddSound("shot", sdata.GetHandle(), 80);	
+
 
 	//##############################################################
 	// リアルタイムサーバースレッド

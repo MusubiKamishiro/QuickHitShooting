@@ -86,6 +86,9 @@ SelectScene::SelectScene() : _dightMax(6)
 	Game::Instance().GetFileSystem()->Load("sound/bgm/select.mp3", sdata);
 	Game::Instance().GetSoundPlayer()->AddSound("selectBGM", sdata.GetHandle(), 35);
 
+	Game::Instance().GetFileSystem()->Load("sound/se/selectstg.mp3", sdata);
+	Game::Instance().GetSoundPlayer()->AddSound("selectstg", sdata.GetHandle(), 50);
+
 	StageInit();
 
 	_updater = &SelectScene::FadeinUpdate;
@@ -188,6 +191,7 @@ void SelectScene::WaitUpdate(const Peripheral& p)
 	{
 		if (_menu->CheckClick(_gunStatus[i].name.c_str(), p))
 		{
+			Game::Instance().GetSoundPlayer()->PlaySound("shot");
 			_gunState = _gunStatus[i];
 			_updater  = &SelectScene::FadeoutUpdate;
 		}
@@ -196,10 +200,12 @@ void SelectScene::WaitUpdate(const Peripheral& p)
 	/// ステージ選択を行うためのメニュー
 	if (_menu->CheckClick("right", p))
 	{
+		Game::Instance().GetSoundPlayer()->PlaySound("selectstg");
 		_stageCnt = (_stageCnt + 1) % _stageCntMax;
 	}
 	else if (_menu->CheckClick("left", p))
 	{
+		Game::Instance().GetSoundPlayer()->PlaySound("selectstg");
 		_stageCnt = ((_stageCnt + _stageCntMax) - 1) % _stageCntMax;
 	}
 	else{}

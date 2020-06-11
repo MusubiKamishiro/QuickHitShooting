@@ -6,6 +6,7 @@
 
 #include "../Game.h"
 #include "../Menu.h"
+#include "../SoundPlayer.h"
 #include "../Loader/FileSystem.h"
 #include "../Loader/ImageLoader.h"
 
@@ -54,6 +55,7 @@ void PauseScene::WaitUpdate(const Peripheral & p)
 {
 	if (_menu->CheckClick("BackGame", p))
 	{
+		Game::Instance().GetSoundPlayer()->PlaySound("pause");
 		SceneManager::Instance().PopScene();
 	}
 	else if (_menu->CheckClick("ReTry", p))
@@ -62,6 +64,8 @@ void PauseScene::WaitUpdate(const Peripheral & p)
 	}
 	else if (_menu->CheckClick("BackSelect", p))
 	{
+		Game::Instance().GetSoundPlayer()->PlaySound("shot");
+		Game::Instance().GetSoundPlayer()->StopSound("gameBGM");
 		_updater = &PauseScene::FadeoutUpdate;
 	}
 }

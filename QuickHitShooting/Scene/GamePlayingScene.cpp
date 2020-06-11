@@ -50,7 +50,6 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const StageData& s
 	Game::Instance().GetFileSystem()->Load("img/button/menu.png", data);
 	int i = data.GetHandle();
 	_menu->AddMenuList("pause", Vector2<int>(_scrSize.x - 50, 0), Vector2<int>(_scrSize.x, 50), i);
-	_menu->AddMenuList("test", Vector2<int>(0, 0), Vector2<int>(50, 50), i);
 
 	SoundData sdata;
 	Game::Instance().GetFileSystem()->Load("sound/bgm/game.mp3", sdata);
@@ -65,6 +64,11 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const StageData& s
 	Game::Instance().GetFileSystem()->Load("sound/se/finish.mp3", sdata);
 	Game::Instance().GetSoundPlayer()->AddSound("finish", sdata.GetHandle(), 60);
 
+	Game::Instance().GetFileSystem()->Load("sound/se/pause.mp3", sdata);
+	Game::Instance().GetSoundPlayer()->AddSound("pause", sdata.GetHandle(), 70);
+
+	Game::Instance().GetFileSystem()->Load("sound/se/reload.mp3", sdata);
+	Game::Instance().GetSoundPlayer()->AddSound("reload", sdata.GetHandle(), 70);
 
 	_hitFlag   = false;
 	_hitCount  = _shotCount = 0.0f;
@@ -172,6 +176,7 @@ void GamePlayingScene::WaitUpdate(const Peripheral& p)
 	//ポーズボタンを押したらポーズシーンに切り替え
 	if (_menu->CheckClick("pause", p))
 	{
+		Game::Instance().GetSoundPlayer()->PlaySound("pause");
 		SceneManager::Instance().PushScene(std::make_unique<PauseScene>());
 	}
 	else if (p.IsTrigger(MOUSE_INPUT_LEFT))
@@ -194,6 +199,7 @@ void GamePlayingScene::WaitUpdate(const Peripheral& p)
 	}
 	else if (p.IsTrigger(MOUSE_INPUT_RIGHT))
 	{
+		Game::Instance().GetSoundPlayer()->PlaySound("reload");
 		_gun->Reload();
 	}
 }
@@ -239,7 +245,7 @@ void GamePlayingScene::GameDraw()
 
 	_trimString->ChangeFontSize(40);
 	DxLib::DrawFormatString(_trimString->GetStringCenterPosx("00000"), 0, 0x000000, "%05d", _score);
-	DxLib::DrawFormatString(0, 0, 0x000000, "WAVE %d", (_waveCnt + 1));
+	DxLib::DrawFormatString(100, 0, 0x000000, "WAVE %d", (_waveCnt + 1));
 
 	for (auto& enemy : _enemies)
 	{
@@ -305,11 +311,6 @@ std::shared_ptr<Enemy> GamePlayingScene::GetEnemyInfo(const TargetData& target)
 
 void GamePlayingScene::Update(const Peripheral& p)
 {
-	if (_menu->CheckClick("test", p))
-	{
-		_updater = &GamePlayingScene::FadeoutUpdate;
-	}
-
 	for (auto& enemy : _enemies)
 	{
 		enemy->Update();

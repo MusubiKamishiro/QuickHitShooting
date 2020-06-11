@@ -64,7 +64,7 @@ bool StageLoader::Load(const std::string& path, Data& data)
 
 			/// ステージデータの登録
 			stageInfo.stageName = path;
-			_table[path]		= stageInfo;
+			_table.emplace(path, stageInfo);
 			
 			/// ステージデータを開放する
 			stageInfo.targetData.clear();
