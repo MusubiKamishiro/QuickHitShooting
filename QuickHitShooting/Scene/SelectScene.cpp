@@ -287,7 +287,7 @@ void SelectScene::Draw()
 	std::string text;
 	Vector2<int> strSize;
 
-	/// スコアの間隔(debug用)
+	/// スコアの間隔
 	int space = 400;
 	
 	/// スコアの描画
@@ -296,18 +296,18 @@ void SelectScene::Draw()
 	{
 		text = GetScoreDight(score[i], _dightMax);
 		GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
-		DrawString(240 + (space * i) - (strSize.x / 2), 150 - strSize.y / 2,
+		DrawString(240 + (space * i) - (strSize.x / 2), strSize.y + (strSize.y / 2),
 				  text.c_str(), 0x000000);
 	}
 
 	/// プレイヤーランキングの描画
-	text = std::to_string(0) + "位 " + "AAA";
+	text = std::to_string(0) + ". " + "AAA";
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
 	auto name = _stageDatas[_stageCnt].GetStageData().names;
 	for (int i = 0; i < name.size(); ++i)
 	{
-		text = std::to_string(i + 1) + "位 " + name[i];
-		DrawString(240 + (space * i) - (strSize.x / 2), 80 - (strSize.y / 2),
+		text = std::to_string(i + 1) + ". " + name[i];
+		DrawString(240 + (space * i) - (strSize.x / 2), (strSize.y / 2),
 			text.c_str(), 0xff0000);
 	}
 
@@ -317,7 +317,7 @@ void SelectScene::Draw()
 
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
 	DrawString((Game::Instance().GetScreenSize().x / 2) - (strSize.x / 2), 
-			   (Game::Instance().GetScreenSize().y / 2) - (strSize.y / 2) + (strSize.y / 7),
+			   (Game::Instance().GetScreenSize().y / 2) - (strSize.y / 2) - (strSize.y / 10),
 			   text.c_str(), 0x000080);
 	
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, std::abs(_pal - 255));
