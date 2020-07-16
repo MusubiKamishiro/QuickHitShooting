@@ -55,6 +55,7 @@ ResultScene::ResultScene(const ResultData& resultData)
 
 	CheckDigit(_score, _resultData.score, _maxScoreDigit);
 	CheckDigit(_hitRate, _resultData.hitRate * 100, _maxHitRateDigit);
+	
 
 	_updater = &ResultScene::FadeinUpdate;
 }
@@ -113,7 +114,8 @@ void ResultScene::HitRateUpdate(const Peripheral& p)
 {
 	if (p.IsTrigger(MOUSE_INPUT_LEFT) || (_hitRate.nowDigit >= _hitRate.digit) || (_hitRate.nowDigit == _maxHitRateDigit))
 	{
-		_hitRate.num = _resultData.hitRate;
+		/// –½’†—¦‚ª”ñ”’l‚É‚È‚Á‚Ä‚¢‚é‚©‚ÌŠm”F
+		_hitRate.num = (std::isnan(_resultData.hitRate) ? 0 : _resultData.hitRate);
 
 		_updater = &ResultScene::WaitUpdate;
 		if (_score.num > _resultData.ranking[2].second)
