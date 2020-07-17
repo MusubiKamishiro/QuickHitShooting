@@ -2,6 +2,7 @@
 #include <cmath>
 #include <random>
 #include "ResultScene.h"
+#include "GamePlayingScene.h"
 #include "SceneManager.h"
 #include "SelectScene.h"
 #include "../Peripheral.h"
