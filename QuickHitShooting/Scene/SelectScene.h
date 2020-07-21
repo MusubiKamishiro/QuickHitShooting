@@ -9,6 +9,7 @@
 
 class TrimString;
 class Menu;
+class ImageData;
 
 class SelectScene : public Scene
 {
@@ -18,6 +19,10 @@ private:
 	void FadeinUpdate(const Peripheral& p);	
 	void FadeoutUpdate(const Peripheral& p);
 	void WaitUpdate(const Peripheral& p);
+
+	void GunInit(ImageData& data);
+	void ButtonInit(ImageData& data);
+	void SoundInit();
 
 	std::unique_ptr<TrimString> _trimString;
 	std::shared_ptr<Menu> _menu;
@@ -34,6 +39,8 @@ private:
 
 	// 背景画像
 	int _selectBg;
+
+	Size _rankBdSize, _gunBdSize, _stageBdSize;
 
 	const int _dightMax;			// スコアの桁数最大値(とりあえず6桁)
 

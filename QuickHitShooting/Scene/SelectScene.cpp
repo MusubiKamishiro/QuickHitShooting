@@ -19,11 +19,62 @@ SelectScene::SelectScene() : _dightMax(6)
 	_pal = 0;
 	_trimString = std::make_unique<TrimString>();
 
+	ImageData data;
+	_menu.reset(new Menu());
+
+	/// セレクトシーンの初期化
+	ButtonInit(data);
+	GunInit(data);
+	StageInit();
+
+	_updater = &SelectScene::FadeinUpdate;
+}
+
+SelectScene::~SelectScene()
+{
+}
+
+///銃の初期化
+void SelectScene::GunInit(ImageData& data)
+{
+	int space	 = 95;
+	Size btnSize = Size(300, 150);
+	
+	/* 銃の登録 */
+
+	/// 左端の銃
+	Game::Instance().GetFileSystem()->Load("img/gun1.png", data);
+	_gunState.name = "Gun1";
+	_gunState.maxBullets = 700;
+	_gunState.maxBulletsInMagazine = 10;
+	AddGunMenu(_gunState, Vector2<int>(space, _scrSize.y - btnSize.height - 30),
+						  Vector2<int>(space + btnSize.width, _scrSize.y - 30), data.GetHandle());
+
+	/// 真ん中の銃
+	Game::Instance().GetFileSystem()->Load("img/gun2.png", data);
+	_gunState.name		 = "Gun2";
+	_gunState.maxBullets = 500;
+	_gunState.maxBulletsInMagazine = 10;
+	AddGunMenu(_gunState, Vector2<int>((_scrSize.x / 2) - (btnSize.width / 2), _scrSize.y - btnSize.height - 30),
+						  Vector2<int>((_scrSize.x / 2) + (btnSize.width / 2), _scrSize.y - 30), data.GetHandle());
+
+	/// 右端の銃
+	Game::Instance().GetFileSystem()->Load("img/gun3.png", data);
+	_gunState.name		 = "Gun3";
+	_gunState.maxBullets = 300;
+	_gunState.maxBulletsInMagazine = 40;
+	AddGunMenu(_gunState, Vector2<int>(_scrSize.x - space - btnSize.width, _scrSize.y - btnSize.height - 30),
+						  Vector2<int>(_scrSize.x - space, _scrSize.y - 30), data.GetHandle());
+}
+
+/// ボタンの初期化
+void SelectScene::ButtonInit(ImageData& data)
+{
 	/// スクリーンサイズの取得
-	Vector2<int> btnSize = Vector2<int>(300, 150);
+	Size btnSize = Size(300, 150);
+	int img;
 
 	/// 下地画像の取得
-	ImageData data;
 	Game::Instance().GetFileSystem()->Load("img/plate/rankBd.png", data);
 	_rankBd = data.GetHandle();
 
@@ -37,67 +88,34 @@ SelectScene::SelectScene() : _dightMax(6)
 	Game::Instance().GetFileSystem()->Load("img/select.png", data);
 	_selectBg = data.GetHandle();
 
-	/// 銃のメニュー登録
-	int space = 95;
-	Game::Instance().GetFileSystem()->Load("img/gun1.png", data);
-	int img = data.GetHandle();
-
-	_menu.reset(new Menu());
-	_gunState.name		 = "Gun1";
-	_gunState.maxBullets = 700;
-	_gunState.maxBulletsInMagazine = 10;
-	AddGunMenu(_gunState, Vector2<int>(space, _scrSize.y - btnSize.y - 30),
-						  Vector2<int>(space + btnSize.x, _scrSize.y - 30), img);
-
-	Game::Instance().GetFileSystem()->Load("img/gun2.png", data);
-	img = data.GetHandle();
-
-	_gunState.name		 = "Gun2";
-	_gunState.maxBullets = 500;
-	_gunState.maxBulletsInMagazine = 10;
-	AddGunMenu(_gunState, Vector2<int>((_scrSize.x / 2) - (btnSize.x / 2), _scrSize.y - btnSize.y - 30),
-						  Vector2<int>((_scrSize.x / 2) + (btnSize.x / 2), _scrSize.y - 30), img);
-
-	Game::Instance().GetFileSystem()->Load("img/gun3.png", data);
-	img = data.GetHandle();
-
-	_gunState.name		 = "Gun3";
-	_gunState.maxBullets = 300;
-	_gunState.maxBulletsInMagazine = 40;
-	AddGunMenu(_gunState, Vector2<int>(_scrSize.x - space - btnSize.x, _scrSize.y - btnSize.y - 30),
-						  Vector2<int>(_scrSize.x - space, _scrSize.y - 30), img);
-
 	btnSize = Vector2<int>(150, 150);
 	/// 左矢印ボタンの表示
 	Game::Instance().GetFileSystem()->Load("img/leftArrow.png", data);
 	img = data.GetHandle();
-	_menu->AddMenuList("left", Vector2<int>((btnSize.x / 2), (_scrSize.y / 2) - (btnSize.y / 2)),
-							   Vector2<int>(btnSize.x + (btnSize.x / 2), (_scrSize.y / 2) + (btnSize.y / 2)), img);
+	_menu->AddMenuList("left", Vector2<int>((btnSize.width / 2), (_scrSize.y / 2) - (btnSize.height / 2)),
+							   Vector2<int>(btnSize.width + (btnSize.width / 2), (_scrSize.y / 2) + (btnSize.height / 2)), img);
 
 	/// 右矢印ボタンの表示
 	Game::Instance().GetFileSystem()->Load("img/rightArrow.png", data);
 	img = data.GetHandle();
-	_menu->AddMenuList("right", Vector2<int>(_scrSize.x - (btnSize.x / 2),(_scrSize.y / 2) + (btnSize.y / 2)), 
-								Vector2<int>(_scrSize.x - btnSize.x - (btnSize.x / 2), (_scrSize.y / 2) - (btnSize.y / 2)), img);
+	_menu->AddMenuList("right", Vector2<int>(_scrSize.x - (btnSize.width / 2), (_scrSize.y / 2) + (btnSize.height / 2)),
+								Vector2<int>(_scrSize.x - btnSize.width - (btnSize.width / 2), (_scrSize.y / 2) - (btnSize.height / 2)), img);
 
 	Game::Instance().GetFileSystem()->Load("img/stageboard.png", data);
+}
 
+/// 音の初期化
+void SelectScene::SoundInit()
+{
 	SoundData sdata;
 	Game::Instance().GetFileSystem()->Load("sound/bgm/select.mp3", sdata);
 	Game::Instance().GetSoundPlayer()->AddSound("selectBGM", sdata.GetHandle(), 35);
 
 	Game::Instance().GetFileSystem()->Load("sound/se/selectstg.mp3", sdata);
 	Game::Instance().GetSoundPlayer()->AddSound("selectstg", sdata.GetHandle(), 50);
-
-	StageInit();
-
-	_updater = &SelectScene::FadeinUpdate;
 }
 
-SelectScene::~SelectScene()
-{
-}
-
+/// ステージの初期化
 void SelectScene::StageInit()
 {
 	/// フォルダーの中にあるステージ数を取得するもの
@@ -148,6 +166,7 @@ void SelectScene::StageInit()
 	}
 }
 
+/// ステージデータの取得用
 StageData SelectScene::GetStageData(const int& num)
 {
 	std::string stagePath = GetStagePath(num + 1);
@@ -157,6 +176,7 @@ StageData SelectScene::GetStageData(const int& num)
 	return stage;
 }
 
+/// フェードイン処理の更新用
 void SelectScene::FadeinUpdate(const Peripheral& p)
 {
 	Game::Instance().GetSoundPlayer()->PlaySound("selectBGM", true);
@@ -172,6 +192,7 @@ void SelectScene::FadeinUpdate(const Peripheral& p)
 	}
 }
 
+/// フェードアウト処理の更新用
 void SelectScene::FadeoutUpdate(const Peripheral& p)
 {
 	if (_pal <= 0)
@@ -216,11 +237,13 @@ void SelectScene::WaitUpdate(const Peripheral& p)
 	menuUpdateThread.join();
 }
 
+/// ステージパスの取得用
 std::string SelectScene::GetStagePath(const int& num) const
 {
 	return "StageData/stage" + std::to_string(num) + ".bin";
 }
 
+/// 銃のメニュー追加用
 void SelectScene::AddGunMenu(const GunStatus& gunstate, const Vector2<int>& ltPos, const Vector2<int>& rbPos, const int& img)
 {
 	_menu->AddMenuList(gunstate.name.c_str(), ltPos, rbPos, img);
@@ -235,6 +258,7 @@ void SelectScene::Update(const Peripheral& p)
 	updateThread.join();
 }
 
+/// 描画用
 void SelectScene::Draw()
 {
 	/// 6桁表示のスコアの文字列を取得するもの
@@ -277,7 +301,8 @@ void SelectScene::Draw()
 
 	/// 下地の描画
 	DxLib::DrawGraph(40, 0, _rankBd, true);
-	DxLib::DrawGraph(300, _scrSize.y / 2 - 110, _stageBd, true);
+	DxLib::DrawGraph((_scrSize.x / 3) - (_scrSize.x / 8), 
+					 _scrSize.y / 2 - 110, _stageBd, true);
 	DxLib::DrawGraph(40, _scrSize.y - 230, _gunBd, true);
 
 	/// メニューの描画
@@ -316,8 +341,8 @@ void SelectScene::Draw()
 	text = "STAGE " + std::to_string(_stageCnt + 1);
 
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
-	DrawString((Game::Instance().GetScreenSize().x / 2) - (strSize.x / 2), 
-			   (Game::Instance().GetScreenSize().y / 2) - (strSize.y / 2) - (strSize.y / 10),
+	DrawString((_scrSize.x / 2) - (_scrSize.x / 5), 
+			   (_scrSize.y / 2) - (strSize.y / 2) - (strSize.y / 10),
 			   text.c_str(), 0x000080);
 	
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, std::abs(_pal - 255));
