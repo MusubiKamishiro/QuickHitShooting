@@ -56,7 +56,8 @@ private:
 	bool _hitFlag;
 
 public:
-	GamePlayingScene(const GunStatus& gunState, const StageData& stageData);
+	GamePlayingScene(const GunStatus& gunState, const StageData& stageData);		//Ç±Ç¢Ç¬ÇÕÇ¢Ç∏ÇÍè¡Ç∑
+	GamePlayingScene(const GunStatus& gunStage, const std::string& stagePath);
 	~GamePlayingScene();
 
 	void Update(const Peripheral& p);

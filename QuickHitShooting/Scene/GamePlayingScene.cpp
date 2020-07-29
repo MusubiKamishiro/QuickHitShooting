@@ -21,7 +21,7 @@
 #include "../Enemy/DeductionEnemy.h"
 #include "../CollisionDetector.h"
 
-GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const StageData& stageData)
+GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const std::string& stagePath)
 {
 	_updater = &GamePlayingScene::FadeinUpdate;
 	_drawer  = &GamePlayingScene::CountDownDraw;
@@ -31,8 +31,10 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const StageData& s
 	_menu.reset(new Menu());
 	_trimString.reset(new TrimString());
 
+	StageData stage;
+	Game::Instance().GetFileSystem()->Load(stagePath.c_str(), stage);
 	/// ƒXƒe[ƒW‚Ì“Ç‚İ‚İ
-	_stageData = stageData;
+	_stageData = stage;
 
 	ImageData data;
 
@@ -45,12 +47,13 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const StageData& s
 
 	/// ”wŒi‰æ‘œ‚Ìæ“¾
 	Game::Instance().GetFileSystem()->Load("img/game.png", data);
-	_gameBg  = data.GetHandle();
+	_gameBg = data.GetHandle();
 
 	Game::Instance().GetFileSystem()->Load("img/button/menu.png", data);
 	int i = data.GetHandle();
 	_menu->AddMenuList("pause", Vector2<int>(_scrSize.x - 50, 0), Vector2<int>(_scrSize.x, 50), i);
 
+	/// ‰¹‚Ì“Ç‚İ‚İ‚Æ“o˜^
 	SoundData sdata;
 	Game::Instance().GetFileSystem()->Load("sound/bgm/game.mp3", sdata);
 	Game::Instance().GetSoundPlayer()->AddSound("gameBGM", sdata.GetHandle(), 50);
@@ -70,12 +73,13 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const StageData& s
 	Game::Instance().GetFileSystem()->Load("sound/se/reload.mp3", sdata);
 	Game::Instance().GetSoundPlayer()->AddSound("reload", sdata.GetHandle(), 70);
 
-	_hitFlag   = false;
-	_hitCount  = _shotCount = 0.0f;
-	_waveCnt   = _score = _pal = 0;
+	/// ƒvƒŒƒCƒ„[î•ñ‚Ì‰Šú‰»
+	_hitFlag  = false;
+	_hitCount = _shotCount = 0.0f;
+	_waveCnt  = _score = _pal = 0;
 
-	_waitCnt   = 240;
-	
+	_waitCnt  = 240;
+
 	/// “G‚Ì‰¼¶¬
 	CreateEnemy();
 }

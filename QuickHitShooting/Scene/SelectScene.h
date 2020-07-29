@@ -28,7 +28,9 @@ private:
 	std::shared_ptr<Menu> _menu;
 
 	GunStatus _gunState;
-	std::vector<StageData> _stageDatas;
+
+	std::array<int, 3> _scores;
+	std::array<std::string, 3> _names;
 
 	int _stageCnt, _stageCntMax;
 

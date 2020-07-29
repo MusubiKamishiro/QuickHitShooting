@@ -26,6 +26,7 @@ SelectScene::SelectScene() : _dightMax(6)
 	ButtonInit(data);
 	GunInit(data);
 	StageInit();
+	SoundInit();
 
 	_updater = &SelectScene::FadeinUpdate;
 }
@@ -150,20 +151,13 @@ void SelectScene::StageInit()
 		return cnt;
 	};
 	/// ステージカウントの初期化
-	_stageCnt = 0;
+	_stageCnt	 = 0;
 	_stageCntMax = stageCnt();
 
-	/// 全ステージの読み込みを行う
 	StageData stage;
-	_stageDatas.resize(_stageCntMax);
-	for (int i = 0; i < _stageCntMax; ++i)
-	{
-		std::string stagePath = GetStagePath(i + 1);
-		Game::Instance().GetFileSystem()->Load(stagePath.c_str(), stage);
-
-		/// ステージデータの登録
-		_stageDatas[i] = stage;
-	}
+	Game::Instance().GetFileSystem()->Load(GetStagePath(_stageCnt + 1).c_str(), stage);
+	_scores = stage.GetStageData().scores;
+	_names  = stage.GetStageData().names;
 }
 
 /// ステージデータの取得用
@@ -198,7 +192,8 @@ void SelectScene::FadeoutUpdate(const Peripheral& p)
 	if (_pal <= 0)
 	{
 		Game::Instance().GetSoundPlayer()->StopSound("selectBGM");
-		SceneManager::Instance().ChangeScene(std::make_unique<GamePlayingScene>(_gunState, _stageDatas[_stageCnt]));
+		/// ステージデータの読み込み
+		SceneManager::Instance().ChangeScene(std::make_unique<GamePlayingScene>(_gunState, GetStagePath(_stageCnt + 1)));
 	}
 	else
 	{
@@ -223,11 +218,23 @@ void SelectScene::WaitUpdate(const Peripheral& p)
 	{
 		Game::Instance().GetSoundPlayer()->PlaySound("selectstg");
 		_stageCnt = (_stageCnt + 1) % _stageCntMax;
+
+		/// スコアとランキング名の更新を行う
+		StageData stage;
+		Game::Instance().GetFileSystem()->Load(GetStagePath(_stageCnt + 1).c_str(), stage);
+		_scores = stage.GetStageData().scores;
+		_names  = stage.GetStageData().names;
 	}
 	else if (_menu->CheckClick("left", p))
 	{
 		Game::Instance().GetSoundPlayer()->PlaySound("selectstg");
 		_stageCnt = ((_stageCnt + _stageCntMax) - 1) % _stageCntMax;
+
+		/// スコアとランキング名の更新を行う
+		StageData stage;
+		Game::Instance().GetFileSystem()->Load(GetStagePath(_stageCnt + 1).c_str(), stage);
+		_scores = stage.GetStageData().scores;
+		_names  = stage.GetStageData().names;
 	}
 	else{}
 
@@ -290,7 +297,6 @@ void SelectScene::Draw()
 		
 		return name;
 	};
-
 	/* 描画開始位置 */
 
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, _pal);
@@ -314,26 +320,25 @@ void SelectScene::Draw()
 
 	/// スコアの間隔
 	int space = 400;
-	
+
 	/// スコアの描画
-	auto score = _stageDatas[_stageCnt].GetStageData().scores;
-	for (int i = 0; i < score.size(); ++i)
+	for (int i = 0; i < _scores.size(); ++i)
 	{
-		text = GetScoreDight(score[i], _dightMax);
-		GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
+		text = GetScoreDight(_scores[i], _dightMax);
+		GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(),
+			strlen(text.c_str()));
 		DrawString(240 + (space * i) - (strSize.x / 2), strSize.y + (strSize.y / 2),
-				  text.c_str(), 0x000000);
+				   text.c_str(), 0x000000);
 	}
 
 	/// プレイヤーランキングの描画
 	text = std::to_string(0) + ". " + "AAA";
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
-	auto name = _stageDatas[_stageCnt].GetStageData().names;
-	for (int i = 0; i < name.size(); ++i)
+	for (int i = 0; i < _names.size(); ++i)
 	{
-		text = std::to_string(i + 1) + ". " + name[i];
+		text = std::to_string(i + 1) + ". " + _names[i];
 		DrawString(240 + (space * i) - (strSize.x / 2), (strSize.y / 2),
-			text.c_str(), 0xff0000);
+				  text.c_str(), 0xff0000);
 	}
 
 	/// ステージの描画
