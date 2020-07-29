@@ -21,6 +21,7 @@
 #include "../Enemy/DeductionEnemy.h"
 #include "../CollisionDetector.h"
 
+/// セレクトシーンからステージを選択したときに入る
 GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const std::string& stagePath)
 {
 	_updater = &GamePlayingScene::FadeinUpdate;
@@ -79,9 +80,67 @@ GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const std::string&
 	_waveCnt  = _score = _pal = 0;
 
 	_waitCnt  = 240;
+}
 
-	/// 敵の仮生成
-	CreateEnemy();
+/// ポーズシーンからリトライを選択したときに入る
+GamePlayingScene::GamePlayingScene(const std::shared_ptr<Gun>& gun, const std::string& stagePath)
+{
+	_updater = &GamePlayingScene::FadeinUpdate;
+	_drawer  = &GamePlayingScene::CountDownDraw;
+
+	_gun = gun;
+	_cd.reset(new CollisionDetector());
+	_menu.reset(new Menu());
+	_trimString.reset(new TrimString());
+
+	StageData stage;
+	Game::Instance().GetFileSystem()->Load(stagePath.c_str(), stage);
+	/// ステージの読み込み
+	_stageData = stage;
+
+	ImageData data;
+
+	/// 下地画像の取得
+	Game::Instance().GetFileSystem()->Load("img/plate/bulletBd.png", data);
+	_bulletBd = data.GetHandle();
+
+	Game::Instance().GetFileSystem()->Load("img/plate/waveBd.png", data);
+	_waveBd = data.GetHandle();
+
+	/// 背景画像の取得
+	Game::Instance().GetFileSystem()->Load("img/game.png", data);
+	_gameBg = data.GetHandle();
+
+	Game::Instance().GetFileSystem()->Load("img/button/menu.png", data);
+	int i = data.GetHandle();
+	_menu->AddMenuList("pause", Vector2<int>(_scrSize.x - 50, 0), Vector2<int>(_scrSize.x, 50), i);
+
+	/// 音の読み込みと登録
+	SoundData sdata;
+	Game::Instance().GetFileSystem()->Load("sound/bgm/game.mp3", sdata);
+	Game::Instance().GetSoundPlayer()->AddSound("gameBGM", sdata.GetHandle(), 50);
+
+	Game::Instance().GetFileSystem()->Load("sound/se/countdown.mp3", sdata);
+	Game::Instance().GetSoundPlayer()->AddSound("countdown", sdata.GetHandle(), 55);
+
+	Game::Instance().GetFileSystem()->Load("sound/se/start.mp3", sdata);
+	Game::Instance().GetSoundPlayer()->AddSound("start", sdata.GetHandle(), 70);
+
+	Game::Instance().GetFileSystem()->Load("sound/se/finish.mp3", sdata);
+	Game::Instance().GetSoundPlayer()->AddSound("finish", sdata.GetHandle(), 60);
+
+	Game::Instance().GetFileSystem()->Load("sound/se/pause.mp3", sdata);
+	Game::Instance().GetSoundPlayer()->AddSound("pause", sdata.GetHandle(), 70);
+
+	Game::Instance().GetFileSystem()->Load("sound/se/reload.mp3", sdata);
+	Game::Instance().GetSoundPlayer()->AddSound("reload", sdata.GetHandle(), 70);
+
+	/// プレイヤー情報の初期化
+	_hitFlag = false;
+	_hitCount = _shotCount = 0.0f;
+	_waveCnt = _score = _pal = 0;
+
+	_waitCnt = 240;
 }
 
 GamePlayingScene::~GamePlayingScene()
@@ -181,7 +240,7 @@ void GamePlayingScene::WaitUpdate(const Peripheral& p)
 	if (_menu->CheckClick("pause", p))
 	{
 		Game::Instance().GetSoundPlayer()->PlaySound("pause");
-		SceneManager::Instance().PushScene(std::make_unique<PauseScene>());
+		SceneManager::Instance().PushScene(std::make_unique<PauseScene>(_gun, _stageData.GetStageData().stageName));
 	}
 	else if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
@@ -259,6 +318,7 @@ void GamePlayingScene::GameDraw()
 	_menu->Draw();
 }
 
+/// ゲーム終了時の描画
 void GamePlayingScene::FinishDraw()
 {
 	/// 背景の描画
@@ -275,6 +335,7 @@ void GamePlayingScene::FinishDraw()
 					  "FINISH", 0xff0000);
 }
 
+/// 敵の生成
 bool GamePlayingScene::CreateEnemy()
 {
 	/// 仮でステージデータを読み込んでいる
@@ -291,6 +352,7 @@ bool GamePlayingScene::CreateEnemy()
 	return false;
 }
 
+/// 敵の情報取得用
 std::shared_ptr<Enemy> GamePlayingScene::GetEnemyInfo(const TargetData& target)
 {
 	if (target.type == 0)
@@ -313,6 +375,7 @@ std::shared_ptr<Enemy> GamePlayingScene::GetEnemyInfo(const TargetData& target)
 	return nullptr;
 }
 
+/// 更新処理
 void GamePlayingScene::Update(const Peripheral& p)
 {
 	for (auto& enemy : _enemies)
@@ -331,6 +394,7 @@ void GamePlayingScene::Update(const Peripheral& p)
 	(this->*_updater)(p);
 }
 
+/// 描画処理
 void GamePlayingScene::Draw()
 {
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
