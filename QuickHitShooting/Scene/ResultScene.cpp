@@ -18,16 +18,19 @@
 #include "../Keyboard.h"
 
 
-constexpr int _maxScoreDigit = 6;	// スコアの最大桁数
+constexpr int _maxScoreDigit   = 6;	// スコアの最大桁数
 constexpr int _maxHitRateDigit = 5;	// 命中率の最大桁数
 
-ResultScene::ResultScene(const ResultData& resultData)
+ResultScene::ResultScene(const std::shared_ptr<Gun>& gun, const ResultData& resultData)
 {
-	_pal = 0;
+	_updater = &ResultScene::FadeinUpdate;
+
+	_pal  = 0;
 	_time = 0;
 	_trimString = std::make_unique<TrimString>();
 	_keyboard.reset(new Keyboard());
 	_menu.reset(new Menu());
+	_gun = gun;
 
 	ImageData data;
 	Game::Instance().GetFileSystem()->Load("img/result.png", data);
@@ -37,10 +40,10 @@ ResultScene::ResultScene(const ResultData& resultData)
 
 	Game::Instance().GetFileSystem()->Load("img/button/retry.png", data);
 	int img = data.GetHandle();
-	_menu->AddMenuList("ReTry", Vector2<int>(_scrSize.x/2 - 400, _scrSize.y - 130), Vector2<int>(_scrSize.x/2 - 80, _scrSize.y), img);
+	_menu->AddMenuList("ReTry", Vector2<int>(_scrSize.x / 2 - 400, _scrSize.y - 130), Vector2<int>(_scrSize.x / 2 - 80, _scrSize.y), img);
 	Game::Instance().GetFileSystem()->Load("img/button/backselect.png", data);
 	img = data.GetHandle();
-	_menu->AddMenuList("BackSelect", Vector2<int>(_scrSize.x/2 + 110, _scrSize.y - 130), Vector2<int>(_scrSize.x/2 + 410, _scrSize.y), img);
+	_menu->AddMenuList("BackSelect", Vector2<int>(_scrSize.x / 2 + 110, _scrSize.y - 130), Vector2<int>(_scrSize.x / 2 + 410, _scrSize.y), img);
 
 	SoundData sdata;
 	Game::Instance().GetFileSystem()->Load("sound/bgm/result.mp3", sdata);
@@ -56,13 +59,22 @@ ResultScene::ResultScene(const ResultData& resultData)
 
 	CheckDigit(_score, _resultData.score, _maxScoreDigit);
 	CheckDigit(_hitRate, _resultData.hitRate * 100, _maxHitRateDigit);
-	
-
-	_updater = &ResultScene::FadeinUpdate;
 }
 
 ResultScene::~ResultScene()
 {
+}
+
+void ResultScene::RetryUpdate(const Peripheral& p)
+{
+	if (_pal <= 0)
+	{
+		SceneManager::Instance().ChangeScene(std::make_unique<GamePlayingScene>(_gun, _resultData.name));
+	}
+	else
+	{
+		_pal -= 20;
+	}
 }
 
 void ResultScene::FadeinUpdate(const Peripheral & p)
@@ -173,7 +185,10 @@ void ResultScene::WaitUpdate(const Peripheral & p)
 
 	if (_menu->CheckClick("ReTry", p))
 	{
-
+		_updater = &ResultScene::RetryUpdate;
+		_pal	 = 255;
+		Game::Instance().GetSoundPlayer()->PlaySound("shot");
+		Game::Instance().GetSoundPlayer()->StopSound("resultBGM");
 	}
 	else if (_menu->CheckClick("BackSelect", p))
 	{

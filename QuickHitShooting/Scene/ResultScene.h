@@ -37,6 +37,7 @@ class ResultScene : public Scene
 private:
 	void (ResultScene::*_updater)(const Peripheral& p);
 	
+	void RetryUpdate(const Peripheral& p);
 	void FadeinUpdate(const Peripheral& p);
 	void FadeoutUpdate(const Peripheral& p);
 	void ScoreUpdate(const Peripheral& p);
@@ -51,6 +52,8 @@ private:
 	std::unique_ptr<TrimString> _trimString;
 	std::shared_ptr<Menu> _menu;
 	std::shared_ptr<Keyboard> _keyboard;
+
+	std::shared_ptr<Gun> _gun;
 
 	int _resultBg;
 	int _resultBd;
@@ -72,7 +75,7 @@ private:
 	float RandomCountUp(const unsigned int& maxDigit, const NumData& numData);
 
 public:
-	ResultScene(const ResultData& resultData);
+	ResultScene(const std::shared_ptr<Gun>& gun, const ResultData& resultData);
 	~ResultScene();
 
 	void Update(const Peripheral& p);

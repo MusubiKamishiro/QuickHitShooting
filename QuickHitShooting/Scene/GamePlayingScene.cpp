@@ -176,7 +176,7 @@ void GamePlayingScene::FadeoutUpdate(const Peripheral & p)
 			r.ranking[i] = std::make_pair(_stageData.GetStageData().names[i], _stageData.GetStageData().scores[i]);
 		}
 		r.name = _stageData.GetStageData().stageName;
-		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>(r));
+		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>(_gun, r));
 	}
 	else
 	{
