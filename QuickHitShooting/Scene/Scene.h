@@ -8,12 +8,23 @@ class Peripheral;
 class Scene
 {
 protected:
+
+	void DrawEffect();
+
+	Vector2<int> _efkPos;
+
 	// 描画ブレンドモードのパラメータ(0~255)
 	int _pal;
 	// 画面のサイズ
 	Vector2<int> _scrSize;
 	// シーン開始からの経過時間
 	int _sceneTime;
+
+	/// 弾を発射した時のエフェクト
+	int _shotEffect;
+
+	/// 再生中のエフェクト
+	int _playEffect;
 
 public:
 	Scene();

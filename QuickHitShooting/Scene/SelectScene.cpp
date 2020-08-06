@@ -14,6 +14,8 @@
 #include "../Menu.h"
 #include <thread>
 
+#include "EffekseerForDXLib.h"
+
 SelectScene::SelectScene() : _dightMax(6)
 {
 	_pal = 0;
@@ -115,7 +117,6 @@ void SelectScene::SoundInit()
 	Game::Instance().GetFileSystem()->Load("sound/se/selectstg.mp3", sdata);
 	Game::Instance().GetSoundPlayer()->AddSound("selectstg", sdata.GetHandle(), 50);
 }
-
 /// ステージの初期化
 void SelectScene::StageInit()
 {
@@ -211,6 +212,15 @@ void SelectScene::WaitUpdate(const Peripheral& p)
 			_gunState = _gunStatus[i];
 			_updater  = &SelectScene::FadeoutUpdate;
 		}
+	}
+
+	/// エフェクトの再生を行う
+	if (p.IsTrigger(MOUSE_INPUT_LEFT))
+	{
+		/// エフェクトの再生
+		_playEffect = PlayEffekseer2DEffect(_shotEffect);
+
+		_efkPos = p.GetMousePos();
 	}
 
 	/// ステージ選択を行うためのメニュー
@@ -327,7 +337,7 @@ void SelectScene::Draw()
 		text = GetScoreDight(_scores[i], _dightMax);
 		GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(),
 			strlen(text.c_str()));
-		DrawString(240 + (space * i) - (strSize.x / 2), strSize.y + (strSize.y / 2),
+		DrawString(240 + (space * i) - (strSize.x / 2), (strSize.y / 2) + (strSize.y / 3),
 				   text.c_str(), 0x000000);
 	}
 
@@ -337,7 +347,7 @@ void SelectScene::Draw()
 	for (int i = 0; i < _names.size(); ++i)
 	{
 		text = std::to_string(i + 1) + ". " + _names[i];
-		DrawString(240 + (space * i) - (strSize.x / 2), (strSize.y / 2),
+		DrawString(240 + (space * i) - (strSize.x / 2), (strSize.y / 4),
 				  text.c_str(), 0xff0000);
 	}
 
@@ -346,10 +356,14 @@ void SelectScene::Draw()
 	text = "STAGE " + std::to_string(_stageCnt + 1);
 
 	GetDrawStringSize(&strSize.x, &strSize.y, nullptr, text.c_str(), strlen(text.c_str()));
-	DrawString((_scrSize.x / 2) - (_scrSize.x / 5), 
-			   (_scrSize.y / 2) - (strSize.y / 2) - (strSize.y / 10),
+	DrawString((_scrSize.x / 2) - (_scrSize.x / 5),  (_scrSize.y / 2) - (strSize.y / 3),
 			   text.c_str(), 0x000080);
-	
+
+	/// エフェクトの描画
+	DrawEffect();
+
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, std::abs(_pal - 255));
 	DxLib::DrawBox(0, 0, _scrSize.x, _scrSize.y, 0x000000, true);
+
+
 }

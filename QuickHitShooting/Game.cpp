@@ -10,6 +10,10 @@
 #include <thread>
 
 #include "Loader/StageLoader.h"
+#include "Loader/EffekseerLoader.h"
+
+/// Effekseerを使用するためのヘッダー
+#include "EffekseerForDXLib.h"
 
 namespace {
 	int nowInput = 0;
@@ -49,6 +53,9 @@ void Game::Initialize()
 	// 画面サイズの設定
 	DxLib::SetGraphMode(_screenSize.x, _screenSize.y, 32);
 
+	/// effekseerを使用するための初期設定(DirectX11を使用する)
+	SetUseDirect3DVersion(DX_DIRECT3D_11);
+
 	// DxLibの初期化
 	if (DxLib::DxLib_Init() == -1)
 	{
@@ -58,6 +65,25 @@ void Game::Initialize()
 	DxLib::SetMainWindowText("QuickHitGame");	// タイトル
 	//DxLib::SetWindowIconID(IDI_ICON1);			// アイコン
 	DxLib::SetDrawScreen(DX_SCREEN_BACK);		// 裏画面に描画
+
+	// Effekseerの初期化(引数にパーティクルの最大生成数を指定)
+	if (Effekseer_Init(8000) == -1)
+	{
+		DxLib_End();
+		return;
+	}
+	// Effekseerを使用する時の設定
+	SetChangeScreenModeGraphicsSystemResetFlag(false);
+
+	// Zバッファの有効化(2DゲームでもZバッファを使用する)		◆
+	SetUseZBuffer3D(true);
+
+	// Zバッファへの書き込みの有効化(2DゲームでもZバッファを使用する)
+	// Effekseerを使用する場合、2DゲームでもZバッファを使用する。		◆
+	SetWriteZBuffer3D(true);
+
+	// Effekseerに2D描画の設定をする。　◆
+	Effekseer_Set2DSetting(_screenSize.x, _screenSize.y);
 
 	// フォントの変更
 	if (!AddFontResourceEx("Font/font.ttf", FR_PRIVATE, nullptr))
@@ -74,7 +100,7 @@ void Game::Initialize()
 
 void Game::Run()
 {
-	auto& scenes = SceneManager::Instance();
+	auto& scenes	= SceneManager::Instance();
 	FrameFixity& ff = FrameFixity::Instance();
 	ff.FFInitialize();
 

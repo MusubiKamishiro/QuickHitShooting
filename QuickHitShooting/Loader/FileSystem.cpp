@@ -3,7 +3,7 @@
 #include "ImageLoader.h"
 #include "SoundLoader.h"
 #include "StageLoader.h"
-
+#include "EffekseerLoader.h"
 
 FileSystem::FileSystem()
 {
@@ -13,6 +13,7 @@ FileSystem::FileSystem()
 	loaders["bmp"] = loaders["png"] = loaders["jpg"] = std::make_shared<ImageLoader>();
 	loaders["mp3"] = loaders["wav"] = std::make_shared<SoundLoader>();
 	loaders["bin"] = std::make_shared<StageLoader>();
+	loaders["efk"] = std::make_shared<EffekseerLoader>();
 }
 
 

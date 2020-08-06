@@ -9,6 +9,7 @@
 #include "../Loader/FileSystem.h"
 #include "../Loader/ImageLoader.h"
 #include "../Loader/SoundLoader.h"
+#include "../Loader/EffekseerLoader.h"
 #include "../SoundPlayer.h"
 #include "../TrimString.h"
 
@@ -98,7 +99,6 @@ TitleScene::TitleScene()
 	/// タイトルやステージ選択の時にショットの効果音を使用するので移動した。◆
 	Game::Instance().GetFileSystem()->Load("sound/se/handgun-firing.mp3", sdata);
 	Game::Instance().GetSoundPlayer()->AddSound("shot", sdata.GetHandle(), 80);	
-
 
 	//##############################################################
 	// リアルタイムサーバースレッド

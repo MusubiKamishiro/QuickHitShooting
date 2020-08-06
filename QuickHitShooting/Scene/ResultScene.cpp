@@ -17,6 +17,7 @@
 
 #include "../Keyboard.h"
 
+#include "EffekseerForDXLib.h"
 
 constexpr int _maxScoreDigit   = 6;	// スコアの最大桁数
 constexpr int _maxHitRateDigit = 5;	// 命中率の最大桁数
@@ -290,6 +291,15 @@ float ResultScene::RandomCountUp(const unsigned int& maxDigit, const NumData& nu
 void ResultScene::Update(const Peripheral& p)
 {
 	(this->*_updater)(p);
+
+	/// エフェクトの再生を行う
+	if (p.IsTrigger(MOUSE_INPUT_LEFT))
+	{
+		/// エフェクトの再生
+		_playEffect = PlayEffekseer2DEffect(_shotEffect);
+
+		_efkPos = p.GetMousePos();
+	}
 }
 
 void ResultScene::Draw()
@@ -318,6 +328,8 @@ void ResultScene::Draw()
 	{
 		_menu->Draw();
 	}
+
+	DrawEffect();
 
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, std::abs(_pal - 255));
 	DxLib::DrawBox(0, 0, _scrSize.x, _scrSize.y, 0x000000, true);

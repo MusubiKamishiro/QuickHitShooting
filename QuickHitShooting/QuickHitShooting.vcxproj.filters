@@ -126,6 +126,9 @@
     <ClCompile Include="SoundPlayer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Loader\EffekseerLoader.cpp">
+      <Filter>Loader\ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -208,6 +211,9 @@
     </ClInclude>
     <ClInclude Include="SoundPlayer.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Loader\EffekseerLoader.h">
+      <Filter>Loader\ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

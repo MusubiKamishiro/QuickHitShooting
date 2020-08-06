@@ -21,6 +21,8 @@
 #include "../Enemy/DeductionEnemy.h"
 #include "../CollisionDetector.h"
 
+#include "EffekseerForDXLib.h"
+
 /// セレクトシーンからステージを選択したときに入る
 GamePlayingScene::GamePlayingScene(const GunStatus& gunState, const std::string& stagePath)
 {
@@ -258,7 +260,18 @@ void GamePlayingScene::WaitUpdate(const Peripheral& p)
 					_hitFlag = true;
 				}
 			}
+
+			/// エフェクトの再生を行う
+			if (p.IsTrigger(MOUSE_INPUT_LEFT))
+			{
+				/// エフェクトの再生
+				_playEffect = PlayEffekseer2DEffect(_shotEffect);
+
+				_efkPos = p.GetMousePos();
+			}
 		}
+
+		
 	}
 	else if (p.IsTrigger(MOUSE_INPUT_RIGHT))
 	{
@@ -401,6 +414,8 @@ void GamePlayingScene::Draw()
 	DxLib::DrawBox(0, 0, _scrSize.x, _scrSize.y, 0xffffff, true);
 	
 	(this->*_drawer)();
+
+	DrawEffect();
 
 	// フェードイン,アウトのための幕
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, std::abs(_pal - 255));

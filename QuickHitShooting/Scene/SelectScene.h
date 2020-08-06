@@ -41,7 +41,6 @@ private:
 
 	// 背景画像
 	int _selectBg;
-
 	Size _rankBdSize, _gunBdSize, _stageBdSize;
 
 	const int _dightMax;			// スコアの桁数最大値(とりあえず6桁)

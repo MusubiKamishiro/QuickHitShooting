@@ -1,7 +1,6 @@
 #include "ImageLoader.h"
 #include <DxLib.h>
 
-
 ImageLoader::ImageLoader()
 {
 }
