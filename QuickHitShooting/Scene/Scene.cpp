@@ -30,7 +30,6 @@ void Scene::DrawEffect()
 	// Effekseerにより再生中のエフェクトを更新する。	◆
 	UpdateEffekseer2D();
 
-
 	// Effekseerにより再生中のエフェクトを描画する。	◆
 	DrawEffekseer2D();
 }
