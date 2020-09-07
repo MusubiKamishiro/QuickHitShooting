@@ -20,7 +20,7 @@ private:
 	
 	std::unique_ptr<TrimString> _trimString;
 
-	int _titleBg;
+	int _titleBg, _titleLogo;
 
 public:
 	TitleScene();

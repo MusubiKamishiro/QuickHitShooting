@@ -8,6 +8,7 @@
 #include "FrameFixity/FrameFixity.h"
 #include <iostream>
 #include <thread>
+#include "resource.h"
 
 #include "Loader/StageLoader.h"
 #include "Loader/EffekseerLoader.h"
@@ -61,9 +62,10 @@ void Game::Initialize()
 	{
 		return;
 	}
+	
 
 	DxLib::SetMainWindowText("QuickHitGame");	// タイトル
-	//DxLib::SetWindowIconID(IDI_ICON1);			// アイコン
+	DxLib::SetWindowIconID(IDI_ICON1);			// アイコン
 	DxLib::SetDrawScreen(DX_SCREEN_BACK);		// 裏画面に描画
 
 	// Effekseerの初期化(引数にパーティクルの最大生成数を指定)

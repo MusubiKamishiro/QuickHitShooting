@@ -65,11 +65,15 @@ void TitleScene::WaitUpdate(const Peripheral & p)
 void TitleScene::StartDraw()
 {
 	DxLib::DrawGraph(0, 0, _titleBg, true);
+
+	Vector2<int> imgSize;
+	DxLib::GetGraphSize(_titleLogo, &imgSize.x, &imgSize.y);
+	DxLib::DrawGraph((_scrSize.x / 2) - (imgSize.x / 2), (_scrSize.y / 3) - (imgSize.y / 2), _titleLogo, true);
 	if ((_sceneTime / 30 % 2) == 0)
 	{
 		/// 文字サイズと位置を少しいじった。
 		_trimString->ChangeFontSize(80);
-		DxLib::DrawString(_trimString->GetStringCenterPosx("Click"), _trimString->GetFontSize() + 550, "Click", 0x000000);
+		DxLib::DrawString(_trimString->GetStringCenterPosx("Click"), _trimString->GetFontSize() + 500, "Click", 0x000000);
 	}
 }
 
@@ -89,6 +93,8 @@ TitleScene::TitleScene()
 	ImageData data;
 	Game::Instance().GetFileSystem()->Load("img/title.png", data);
 	_titleBg = data.GetHandle();
+	Game::Instance().GetFileSystem()->Load("img/titleLogo.png", data);
+	_titleLogo = data.GetHandle();
 
 	_updater = &TitleScene::FadeinUpdate;
 	_drawer  = &TitleScene::StartDraw;
